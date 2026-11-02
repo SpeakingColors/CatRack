@@ -1,0 +1,7 @@
+build/
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
+docs/manual/
+docs/manual.html

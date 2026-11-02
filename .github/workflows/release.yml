@@ -1,0 +1,203 @@
+# Release build: Windows installer (.exe), macOS installer (.pkg), Linux Flatpak extension (for Flatpak DAWs) and a plain
+# .vst3 tarball, plus the PDF manual, all in one zip on the GitHub release. Run by pushing a tag like v0.1.0, or by hand
+# (workflow_dispatch) with a tag to publish a pre-release, or with no tag to only build the same zip as an artifact.
+name: release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Publish a pre-release with this tag (for example v0.1.0). Leave empty to only build.'
+        required: false
+        default: ''
+      skip_macos:
+        description: 'Skip the macOS job (use when the macOS runner queue is stuck). The release page then says so.'
+        type: boolean
+        required: false
+        default: false
+concurrency:
+  group: catrack-release-${{ github.ref }}-${{ inputs.tag }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+env:
+  TAGIN: ${{ inputs.tag }}
+  NAME: CatRack
+  PRODUCT: "CatRack"
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the manual PDF
+        run: |
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || ver=0.0.1
+          pip install Pillow
+          python3 tools/gen_manual.py "$ver"
+          google-chrome --headless --no-sandbox --disable-gpu --no-pdf-header-footer --print-to-pdf="$NAME-manual.pdf" "file://$PWD/docs/manual.html"
+          test -s "$NAME-manual.pdf"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: manual
+          path: "*.pdf"
+
+  windows:
+    needs: manual
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: manual
+          path: "manual"
+      - name: Build
+        run: |
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; if echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then sed -i.bak -E "s/^(project\([A-Za-z0-9_]+ VERSION )[0-9.]+/\1$ver/" CMakeLists.txt; rm -f CMakeLists.txt.bak; fi
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release --parallel 4
+      - name: Stage files
+        run: |
+          mkdir -p stage/vst3
+          find build -type d -name "*.vst3" -print0 | while IFS= read -r -d '' v; do echo "VST3: $v"; cp -r "$v" "stage/vst3/"; done
+          [ -d "stage/vst3/$PRODUCT.vst3" ] || { echo "missing the VST3 bundle"; ls stage/vst3; exit 1; }
+          cp manual/*.pdf "stage/$NAME-manual.pdf"
+      - name: Installer (Inno Setup)
+        run: |
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || ver=0.0.1
+          iscc="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          [ -f "$iscc" ] || { choco install innosetup -y --no-progress; }
+          "$iscc" "//DName=$NAME" "//DProduct=$PRODUCT" "//DVersion=$ver" packaging/windows.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: "Output/*.exe"
+
+  macos:
+    if: ${{ inputs.skip_macos != true }}
+    needs: manual
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: manual
+          path: "manual"
+      - name: Build (universal)
+        run: |
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; if echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then sed -i.bak -E "s/^(project\([A-Za-z0-9_]+ VERSION )[0-9.]+/\1$ver/" CMakeLists.txt; rm -f CMakeLists.txt.bak; fi
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+          cmake --build build --config Release --parallel 4
+      - name: Installer (.pkg)
+        run: |
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || ver=0.0.1
+          id="io.github.speakingcolors.$(echo "$NAME" | tr 'A-Z' 'a-z')"
+          mkdir -p root/vst3 root/app root/doc
+          find build -type d -name "*.vst3" -print0 | while IFS= read -r -d '' v; do echo "VST3: $v"; cp -R "$v" root/vst3/; done
+          [ -d "root/vst3/$PRODUCT.vst3" ] || { echo "missing the VST3 bundle"; ls root/vst3; exit 1; }
+          osacompile -o "root/app/Uninstall $PRODUCT.app" packaging/macos-uninstall.applescript
+          cp assets/icon.icns "root/app/Uninstall $PRODUCT.app/Contents/Resources/applet.icns"; touch "root/app/Uninstall $PRODUCT.app"
+          cp manual/*.pdf "root/doc/$NAME-manual.pdf"
+          for b in root/vst3/*.vst3; do codesign --force --deep -s - "$b"; done; codesign --force --deep -s - "root/app/Uninstall $PRODUCT.app"
+          pkgbuild --root root/vst3 --identifier "$id.vst3" --version "$ver" --install-location "/Library/Audio/Plug-Ins/VST3" vst3.pkg
+          pkgbuild --root root/app --identifier "$id.app" --version "$ver" --install-location "/Applications" app.pkg
+          pkgbuild --root root/doc --identifier "$id.doc" --version "$ver" --install-location "/Library/Application Support/Studio 87/$PRODUCT" doc.pkg
+          productbuild --package vst3.pkg --package app.pkg --package doc.pkg "$NAME-macOS.pkg"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: "*.pkg"
+
+  linux-native:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxinerama-dev libxext-dev libxrandr-dev libxcursor-dev libxcomposite-dev libfreetype-dev libfontconfig1-dev libgl1-mesa-dev
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; if echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then sed -i.bak -E "s/^(project\([A-Za-z0-9_]+ VERSION )[0-9.]+/\1$ver/" CMakeLists.txt; rm -f CMakeLists.txt.bak; fi
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel 4
+          mkdir -p tarroot out
+          find build -type d -name "*.vst3" -print0 | while IFS= read -r -d '' v; do echo "VST3: $v"; cp -r "$v" tarroot/; done
+          [ -d "tarroot/$PRODUCT.vst3" ] || { echo "missing the VST3 bundle"; ls tarroot; exit 1; }
+          cp assets/icon.png "tarroot/$PRODUCT.png"
+          tar -C tarroot -czf "out/$NAME-linux-vst3.tar.gz" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-native
+          path: "out/*"
+
+  linux-flatpak:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: ['25.08']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the extension
+        shell: bash
+        run: |
+          set -o pipefail
+          (
+          set -ex
+          ver="${TAGIN:-$GITHUB_REF_NAME}"; ver="${ver#v}"; if echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then sed -i.bak -E "s/^(project\([A-Za-z0-9_]+ VERSION )[0-9.]+/\1$ver/" CMakeLists.txt; rm -f CMakeLists.txt.bak; fi
+          sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          basev="${{ matrix.runtime }}"; [ "$basev" = "25.08" ] && basev=stable
+          sed -e "s/@RUNTIME@/${{ matrix.runtime }}/g" -e "s/@BASEV@/$basev/g" packaging/flatpak-ext.yml > ext.yml
+          flatpak-builder --user --force-clean --install-deps-from=flathub --repo=repo build-dir ext.yml
+          echo "--- files in the extension:"; find build-dir/files -name "*.vst3" -maxdepth 6 | head
+          n=$(find build-dir/files -name "*.vst3" | wc -l); [ "$n" -gt 0 ] || { echo "no .vst3 in the extension"; find build-dir/files | head -40; exit 1; }
+          mkdir -p out
+          flatpak build-bundle --runtime repo "out/$NAME-flatpak-${{ matrix.runtime }}.flatpak" "org.freedesktop.LinuxAudio.Plugins.$NAME" "${{ matrix.runtime }}"
+          ) 2>&1 | tee flatpak.log
+      - name: Show errors
+        if: failure()
+        shell: bash
+        run: (grep -iE "error|fail|cannot|no such" flatpak.log | grep -v "end-of-life" | tail -n 5; tail -n 5 flatpak.log) | while IFS= read -r l; do echo "::error::${l:0:300}"; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-${{ matrix.runtime }}
+          path: "out/*"
+
+  package:
+    permissions:
+      contents: write
+    if: ${{ !cancelled() && needs.manual.result == 'success' && needs.windows.result == 'success' && needs.linux-native.result == 'success' && needs.linux-flatpak.result == 'success' && (needs.macos.result == 'success' || needs.macos.result == 'skipped') }}
+    needs: [manual, windows, macos, linux-native, linux-flatpak]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: parts }
+      - name: Assemble the zip
+        run: |
+          tag="$GITHUB_REF_NAME"; if [ "$GITHUB_REF_TYPE" != "tag" ]; then tag="${TAGIN:-dev}"; fi
+          d="$NAME-$tag"; mkdir -p "$d/windows" "$d/macos" "$d/linux"
+          cp parts/windows/*.exe "$d/windows/"
+          if ls parts/macos/*.pkg >/dev/null 2>&1; then cp parts/macos/*.pkg "$d/macos/"; echo "MACOS=yes" >> "$GITHUB_ENV"; else rmdir "$d/macos"; echo "MACOS=no" >> "$GITHUB_ENV"; fi
+          cp parts/linux-native/* parts/flatpak-*/* "$d/linux/"
+          cp parts/manual/*.pdf "$d/"; cp LICENSE "$d/"
+          cp packaging/INSTALL.txt "$d/INSTALL.txt"
+          (cd "$d" && find . -type f ! -name SHA256SUMS | sort | xargs sha256sum > SHA256SUMS)
+          zip -r "$d.zip" "$d"
+          ls -l "$d.zip"
+          echo "TAG=$tag" >> "$GITHUB_ENV"; echo "ZIP=$d.zip" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-zip
+          path: "*.zip"
+      - name: Publish release
+        if: github.ref_type == 'tag' || inputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp release/NOTES.md notes.md
+          if [ "$MACOS" = "no" ]; then printf '\n\n**The macOS installer is not in this build** (the macOS runner was skipped). Windows and Linux files are complete. A rerun with macOS will add it.\n' >> notes.md; fi
+          if gh release view "$TAG" >/dev/null 2>&1; then gh release upload "$TAG" "$ZIP" --clobber; gh release edit "$TAG" --notes-file notes.md; exit 0; fi
+          gh release create "$TAG" "$ZIP" --target "$GITHUB_SHA" --prerelease --title "$PRODUCT $TAG (test build)" --notes-file notes.md

@@ -1,0 +1,5268 @@
+{
+ "units": {
+  "purr": {
+   "name": "Purrrstressor",
+   "code": "PUR",
+   "kind": "Compressor",
+   "color": "#02EBBA",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Punchy compressor with a wide ratio range. Good on drums, bass and vocals.",
+   "params": [
+    {
+     "id": "in",
+     "l": "Input",
+     "s": "IN",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Input: how hard the signal drives the compressor. Turn it up for more squeeze.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ratio",
+     "l": "Ratio",
+     "s": "RATIO",
+     "kl": "",
+     "min": 1.5,
+     "max": 20,
+     "def": 4,
+     "u": ":1",
+     "d": 1,
+     "tip": "Ratio: how firmly loud parts are pushed down. 2:1 is gentle, 10:1 and above is a hard squeeze.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit. Use it to match the loudness with the unit switched off.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "atk",
+     "l": "Attack",
+     "s": "ATK",
+     "kl": "",
+     "min": 0.1,
+     "max": 30,
+     "def": 3,
+     "u": " ms",
+     "d": 1,
+     "tip": "Attack: how fast the unit grabs a loud hit. Slower lets the start of a drum through.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "rel",
+     "l": "Release",
+     "s": "REL",
+     "kl": "",
+     "min": 50,
+     "max": 2000,
+     "def": 300,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how fast the unit lets go after a loud part. Short is lively, long is smooth.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "fur": {
+   "name": "Furchild",
+   "code": "FUR",
+   "kind": "Tube limiter",
+   "color": "#FFA600",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Smooth tube limiter that squeezes gently and adds warmth. Great on mixes and pads.",
+   "params": [
+    {
+     "id": "in",
+     "l": "Input",
+     "s": "IN",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Input: how hard the signal pushes into the tubes. More input means more limiting and more colour.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "thr",
+     "l": "Threshold",
+     "s": "THR",
+     "kl": "",
+     "min": -30,
+     "max": 0,
+     "def": -14,
+     "u": " dB",
+     "d": 1,
+     "tip": "Threshold: the level where limiting starts. Lower means more of the signal is squeezed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "time",
+     "l": "Time",
+     "s": "TIME",
+     "kl": "",
+     "min": 1,
+     "max": 6,
+     "def": 3,
+     "u": "",
+     "d": 0,
+     "tip": "Time: how fast the unit recovers. 1 is quick, 6 is slow and smooth.",
+     "log": false,
+     "names": [
+      "",
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6"
+     ],
+     "sn": null
+    },
+    {
+     "id": "warm",
+     "l": "Warmth",
+     "s": "WARM",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 20,
+     "u": " %",
+     "d": 0,
+     "tip": "Warmth: how much tube colour is added. Turn it up for a thicker, rounder sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "lap": {
+   "name": "LapCat2A",
+   "code": "LAP",
+   "kind": "Optical leveler",
+   "color": "#6CC9F5",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Slow, musical leveler. Evens out vocals and bass without grabbing hard.",
+   "params": [
+    {
+     "id": "red",
+     "l": "Reduce",
+     "s": "REDUCE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 45,
+     "u": " %",
+     "d": 0,
+     "tip": "Reduce: how much leveling you ask for. Turn it up to calm louder parts more.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "gain",
+     "l": "Gain",
+     "s": "GAIN",
+     "kl": "",
+     "min": 0,
+     "max": 20,
+     "def": 6,
+     "u": " dB",
+     "d": 1,
+     "tip": "Gain: makes the sound louder again after it has been leveled.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mode",
+     "l": "Mode",
+     "s": "MODE",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Mode: Compress is soft and gentle. Limit is firmer and catches peaks harder.",
+     "log": false,
+     "names": [
+      "Compress",
+      "Limit"
+     ],
+     "sn": [
+      "Comp",
+      "Limit"
+     ]
+    },
+    {
+     "id": "emph",
+     "l": "Emphasis",
+     "s": "EMPH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Emphasis: makes the leveler react more to the top end. Helps tame bright, hissy sounds.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "warm",
+     "l": "Warmth",
+     "s": "WARM",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 25,
+     "u": " %",
+     "d": 0,
+     "tip": "Warmth: adds a little tube-style colour after the leveler.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "paw": {
+   "name": "Pawltec",
+   "code": "PAW",
+   "kind": "Tube EQ",
+   "color": "#CD92FE",
+   "cat": "EQ",
+   "src": "Classic-style",
+   "vz": "eq",
+   "real": false,
+   "ana": false,
+   "blurb": "Passive tube EQ. Adds weight, air and shine, and boost and cut together for full bass without mud.",
+   "params": [
+    {
+     "id": "lb",
+     "l": "Low Boost",
+     "s": "LOW",
+     "kl": "",
+     "min": 0,
+     "max": 12,
+     "def": 3,
+     "u": " dB",
+     "d": 1,
+     "tip": "Low Boost: adds bass at the Low Freq setting.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hb",
+     "l": "High Boost",
+     "s": "HIGH",
+     "kl": "",
+     "min": 0,
+     "max": 12,
+     "def": 2,
+     "u": " dB",
+     "d": 1,
+     "tip": "High Boost: adds air and sparkle around 8 kHz.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hc",
+     "l": "High Cut",
+     "s": "CUT",
+     "kl": "",
+     "min": 0,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "High Cut: gently turns the top end down. Smooths harsh or brittle sounds.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lc",
+     "l": "Low Cut",
+     "s": "LCUT",
+     "kl": "",
+     "min": 0,
+     "max": 12,
+     "def": 1.5,
+     "u": " dB",
+     "d": 1,
+     "tip": "Low Cut: turns the low end down just above the boost. Using both gives full bass without mud.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "bw",
+     "l": "Bandwidth",
+     "s": "BW",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Bandwidth: how wide the high boost is. Low is focused, high is broad.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lf",
+     "l": "Low Freq",
+     "s": "LFREQ",
+     "kl": "",
+     "min": 0,
+     "max": 3,
+     "def": 2,
+     "u": "",
+     "d": 0,
+     "tip": "Low Freq: the bass frequency the low controls work at.",
+     "log": false,
+     "names": [
+      "20 Hz",
+      "30 Hz",
+      "60 Hz",
+      "100 Hz"
+     ],
+     "sn": [
+      "20",
+      "30",
+      "60",
+      "100"
+     ]
+    }
+   ]
+  },
+  "fet": {
+   "name": "FetlinePounce",
+   "code": "FET",
+   "kind": "Fast limiter",
+   "color": "#FF1383",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Fast, aggressive limiter. Adds bite and energy to drums, bass and kicks.",
+   "params": [
+    {
+     "id": "in",
+     "l": "Input",
+     "s": "IN",
+     "kl": "",
+     "min": 0,
+     "max": 30,
+     "def": 12,
+     "u": " dB",
+     "d": 1,
+     "tip": "Input: how hard the signal is pushed into the limiter. More input means more squeeze and more bite.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -20,
+     "max": 0,
+     "def": -6,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ratio",
+     "l": "Ratio",
+     "s": "RATIO",
+     "kl": "",
+     "min": 4,
+     "max": 20,
+     "def": 8,
+     "u": ":1",
+     "d": 0,
+     "tip": "Ratio: how firmly loud parts are pushed down. 20:1 is a hard limit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "atk",
+     "l": "Attack",
+     "s": "ATK",
+     "kl": "",
+     "min": 20,
+     "max": 800,
+     "def": 100,
+     "u": " µs",
+     "d": 0,
+     "tip": "Attack: how fast the unit reacts, in millionths of a second. Slow lets the click of a drum through.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "rel",
+     "l": "Release",
+     "s": "REL",
+     "kl": "",
+     "min": 50,
+     "max": 1100,
+     "def": 300,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how fast the unit lets go. Short is pumping and lively.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "punch": {
+   "name": "PunchPaw",
+   "code": "PNC",
+   "kind": "Drum limiter",
+   "color": "#FFD100",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Transparent limiter for kicks, drums and the final level. Keeps peaks under the ceiling.",
+   "params": [
+    {
+     "id": "punch",
+     "l": "Punch",
+     "s": "PUNCH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Punch: how much the unit squeezes the loud hits. Higher is denser and louder.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ceil",
+     "l": "Ceiling",
+     "s": "CEIL",
+     "kl": "",
+     "min": -12,
+     "max": 0,
+     "def": -1,
+     "u": " dB",
+     "d": 1,
+     "tip": "Ceiling: the loudest level that can leave the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "rel",
+     "l": "Release",
+     "s": "REL",
+     "kl": "",
+     "min": 10,
+     "max": 500,
+     "def": 80,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how fast the unit lets go. Short keeps drums snappy.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "look",
+     "l": "Lookahead",
+     "s": "LOOK",
+     "kl": "",
+     "min": 0,
+     "max": 5,
+     "def": 1,
+     "u": " ms",
+     "d": 1,
+     "tip": "Lookahead: lets the unit see peaks a moment early so nothing gets past. Adds a tiny delay.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "clip",
+     "l": "Soft Clip",
+     "s": "CLIP",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 20,
+     "u": " %",
+     "d": 0,
+     "tip": "Soft Clip: rounds off the very top of the peaks for more loudness.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "apu": {
+   "name": "Apurrr2500",
+   "code": "APU",
+   "kind": "Bus compressor",
+   "color": "#F57F01",
+   "cat": "Dynamics",
+   "src": "Classic-style",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Glue compressor for groups and the mix bus. Ties sounds together.",
+   "params": [
+    {
+     "id": "thr",
+     "l": "Threshold",
+     "s": "THR",
+     "kl": "",
+     "min": -30,
+     "max": 10,
+     "def": -12,
+     "u": " dB",
+     "d": 1,
+     "tip": "Threshold: the level where compression starts. Lower means more of the signal is squeezed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ratio",
+     "l": "Ratio",
+     "s": "RATIO",
+     "kl": "",
+     "min": 1.5,
+     "max": 10,
+     "def": 4,
+     "u": ":1",
+     "d": 1,
+     "tip": "Ratio: how firmly loud parts are pushed down. 2:1 gives gentle glue.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mk",
+     "l": "Makeup",
+     "s": "MKUP",
+     "kl": "",
+     "min": 0,
+     "max": 20,
+     "def": 3,
+     "u": " dB",
+     "d": 1,
+     "tip": "Makeup: makes the sound louder again after it has been squeezed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "atk",
+     "l": "Attack",
+     "s": "ATK",
+     "kl": "",
+     "min": 0.1,
+     "max": 30,
+     "def": 10,
+     "u": " ms",
+     "d": 1,
+     "tip": "Attack: how fast the unit grabs a loud hit. Slower lets drums keep their punch.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "rel",
+     "l": "Release",
+     "s": "REL",
+     "kl": "",
+     "min": 100,
+     "max": 1200,
+     "def": 400,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how fast the unit lets go. Match it to the tempo for a groove.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "clw": {
+   "name": "Clawpressor",
+   "code": "CLW",
+   "kind": "Compressor",
+   "color": "#FE27D6",
+   "cat": "Dynamics",
+   "src": "Studio 87 plugin",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Everyday compressor with a firm, clear grip. A good first choice for vocals, synths and drums.",
+   "params": [
+    {
+     "id": "thr",
+     "l": "Threshold",
+     "s": "THR",
+     "kl": "",
+     "min": -40,
+     "max": 0,
+     "def": -18,
+     "u": " dB",
+     "d": 1,
+     "tip": "Threshold: the level where compression starts. Lower means more of the signal is squeezed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ratio",
+     "l": "Ratio",
+     "s": "RATIO",
+     "kl": "",
+     "min": 1.5,
+     "max": 20,
+     "def": 4,
+     "u": ":1",
+     "d": 1,
+     "tip": "Ratio: how firmly loud parts are pushed down.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mk",
+     "l": "Makeup",
+     "s": "MKUP",
+     "kl": "",
+     "min": 0,
+     "max": 24,
+     "def": 4,
+     "u": " dB",
+     "d": 1,
+     "tip": "Makeup: makes the sound louder again after it has been squeezed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "atk",
+     "l": "Attack",
+     "s": "ATK",
+     "kl": "",
+     "min": 0.1,
+     "max": 100,
+     "def": 10,
+     "u": " ms",
+     "d": 1,
+     "tip": "Attack: how fast the unit grabs a loud hit.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "rel",
+     "l": "Release",
+     "s": "REL",
+     "kl": "",
+     "min": 10,
+     "max": 1500,
+     "def": 200,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how fast the unit lets go after a loud part.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "tms": {
+   "name": "Trance Master",
+   "code": "TMS",
+   "kind": "4-band squeezer",
+   "color": "#774BF9",
+   "cat": "Dynamics",
+   "src": "from JPurrr-8000",
+   "vz": "gr",
+   "real": false,
+   "ana": false,
+   "blurb": "Four-band multiband compressor and limiter with a big, bright squeeze. One Depth knob does most of the work.",
+   "params": [
+    {
+     "id": "depth",
+     "l": "Depth",
+     "s": "DEPTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 60,
+     "u": " %",
+     "d": 0,
+     "tip": "Depth: how hard all four bands are squeezed. Up for a big, dense sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "time",
+     "l": "Time",
+     "s": "TIME",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 40,
+     "u": " %",
+     "d": 0,
+     "tip": "Time: how fast the bands let go. Low is quick and lively, high is slow and smooth.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lo",
+     "l": "Low band",
+     "s": "LOW",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Low band: level of the bass band after squeezing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hi",
+     "l": "High band",
+     "s": "HIGH",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "High band: level of the top band after squeezing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ceil",
+     "l": "Ceiling",
+     "s": "CEIL",
+     "kl": "",
+     "min": -6,
+     "max": 0,
+     "def": -0.3,
+     "u": " dB",
+     "d": 1,
+     "tip": "Ceiling: the loudest level that can leave the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "peq": {
+   "name": "Parametric EQ",
+   "code": "PEQ",
+   "kind": "3-band EQ",
+   "color": "#BDF9EB",
+   "cat": "EQ",
+   "src": "from WhiskerMix",
+   "vz": "eq",
+   "real": false,
+   "ana": false,
+   "blurb": "Simple three-band EQ: bass shelf, a movable middle band and a treble shelf.",
+   "params": [
+    {
+     "id": "lg",
+     "l": "Low",
+     "s": "LOW",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Low: boost or cut the bass below about 120 Hz.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mg",
+     "l": "Mid",
+     "s": "MID",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Mid: boost or cut around the Mid Freq.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hg",
+     "l": "High",
+     "s": "HIGH",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "High: boost or cut the treble above about 6 kHz.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mf",
+     "l": "Mid Freq",
+     "s": "FREQ",
+     "kl": "",
+     "min": 100,
+     "max": 8000,
+     "def": 1000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Mid Freq: the pitch the middle band works at.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "q",
+     "l": "Width",
+     "s": "WIDTH",
+     "kl": "",
+     "min": 0.3,
+     "max": 4,
+     "def": 1,
+     "u": "",
+     "d": 1,
+     "tip": "Width: how wide the middle band is. Low is broad, high is narrow.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "pdr": {
+   "name": "Purr Drive",
+   "code": "PDR",
+   "kind": "Clean drive",
+   "color": "#FFD100",
+   "cat": "Saturation",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "First of the three Purr colour stages: a smooth, symmetric drive.",
+   "params": [
+    {
+     "id": "drv",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive: how hard the sound is pushed. More drive means more thickness and grit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "tone",
+     "l": "Tone",
+     "s": "TONE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Tone: darker when turned down, brighter when turned up.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "ptr": {
+   "name": "Purr Trans",
+   "code": "PTR",
+   "kind": "Transistor drive",
+   "color": "#FFA600",
+   "cat": "Saturation",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Second Purr colour stage: warm, lopsided drive with extra low-end weight.",
+   "params": [
+    {
+     "id": "drv",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive: how hard the sound is pushed. More drive means more thickness and grit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "warm",
+     "l": "Warmth",
+     "s": "WARM",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Warmth: adds even harmonics and low-end weight.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "pfz": {
+   "name": "Purr Fuzz",
+   "code": "PFZ",
+   "kind": "Fuzz",
+   "color": "#FE006D",
+   "cat": "Saturation",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Third Purr colour stage: thick fuzz with an octave-up edge when pushed.",
+   "params": [
+    {
+     "id": "drv",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive: how hard the sound is pushed. More drive means more thickness and grit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "tone",
+     "l": "Tone",
+     "s": "TONE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Tone: darker when turned down, brighter when turned up.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "ech": {
+   "name": "Echo",
+   "code": "ECH",
+   "kind": "Delay",
+   "color": "#02EBBA",
+   "cat": "Space",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Stereo echo with feedback and a tone control. Good for dub and lead tails.",
+   "params": [
+    {
+     "id": "time",
+     "l": "Time",
+     "s": "TIME",
+     "kl": "",
+     "min": 10,
+     "max": 1000,
+     "def": 375,
+     "u": " ms",
+     "d": 0,
+     "tip": "Time: the gap between echoes.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fb",
+     "l": "Feedback",
+     "s": "FDBK",
+     "kl": "",
+     "min": 0,
+     "max": 95,
+     "def": 35,
+     "u": " %",
+     "d": 0,
+     "tip": "Feedback: how many repeats you hear.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "tone",
+     "l": "Tone",
+     "s": "TONE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Tone: darker when turned down, brighter when turned up.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "sp",
+     "l": "Spread",
+     "s": "SPREAD",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Spread: bounces the echoes between left and right.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lc",
+     "l": "Low Cut",
+     "s": "LCUT",
+     "kl": "",
+     "min": 20,
+     "max": 600,
+     "def": 100,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Low Cut: removes bass from the repeats.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Wet",
+     "s": "WET",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Wet: how much of the effect is mixed in with the original sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "cho": {
+   "name": "Chorus",
+   "code": "CHO",
+   "kind": "Chorus",
+   "color": "#A43DFF",
+   "cat": "Creative",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Thickens and widens a sound with slow detuned copies.",
+   "params": [
+    {
+     "id": "rate",
+     "l": "Rate",
+     "s": "RATE",
+     "kl": "",
+     "min": 0.1,
+     "max": 5,
+     "def": 0.8,
+     "u": " Hz",
+     "d": 1,
+     "tip": "Rate: how fast the sound sways.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "depth",
+     "l": "Depth",
+     "s": "DEPTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Depth: how far the copies drift in pitch.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "del",
+     "l": "Delay",
+     "s": "DELAY",
+     "kl": "",
+     "min": 1,
+     "max": 30,
+     "def": 12,
+     "u": " ms",
+     "d": 0,
+     "tip": "Delay: the base delay of the copies.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "wid",
+     "l": "Width",
+     "s": "WIDTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 80,
+     "u": " %",
+     "d": 0,
+     "tip": "Width: how wide the copies spread.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Wet",
+     "s": "WET",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Wet: how much of the effect is mixed in with the original sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "pha": {
+   "name": "Phaser",
+   "code": "PHA",
+   "kind": "Phaser",
+   "color": "#E900AE",
+   "cat": "Creative",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Sweeping, swirling notches that move through the sound.",
+   "params": [
+    {
+     "id": "rate",
+     "l": "Rate",
+     "s": "RATE",
+     "kl": "",
+     "min": 0.05,
+     "max": 8,
+     "def": 0.5,
+     "u": " Hz",
+     "d": 2,
+     "tip": "Rate: how fast the sweep moves.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "depth",
+     "l": "Depth",
+     "s": "DEPTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 60,
+     "u": " %",
+     "d": 0,
+     "tip": "Depth: how far the sweep travels.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fb",
+     "l": "Feedback",
+     "s": "FDBK",
+     "kl": "",
+     "min": 0,
+     "max": 95,
+     "def": 40,
+     "u": " %",
+     "d": 0,
+     "tip": "Feedback: makes the swirl sharper.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "cen",
+     "l": "Centre",
+     "s": "CENTRE",
+     "kl": "",
+     "min": 200,
+     "max": 4000,
+     "def": 800,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Centre: the middle pitch of the sweep.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Wet",
+     "s": "WET",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Wet: how much of the effect is mixed in with the original sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "fln": {
+   "name": "Flanger",
+   "code": "FLN",
+   "kind": "Flanger",
+   "color": "#4F10FD",
+   "cat": "Creative",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Jet-like sweep from a very short, moving delay.",
+   "params": [
+    {
+     "id": "rate",
+     "l": "Rate",
+     "s": "RATE",
+     "kl": "",
+     "min": 0.05,
+     "max": 8,
+     "def": 0.3,
+     "u": " Hz",
+     "d": 2,
+     "tip": "Rate: how fast the sweep moves.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "depth",
+     "l": "Depth",
+     "s": "DEPTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 60,
+     "u": " %",
+     "d": 0,
+     "tip": "Depth: how far the sweep travels.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fb",
+     "l": "Feedback",
+     "s": "FDBK",
+     "kl": "",
+     "min": -95,
+     "max": 95,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Feedback: makes the jet sound sharper. Negative values sound hollow.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "del",
+     "l": "Delay",
+     "s": "DELAY",
+     "kl": "",
+     "min": 0.1,
+     "max": 10,
+     "def": 2,
+     "u": " ms",
+     "d": 1,
+     "tip": "Delay: the base delay of the sweep.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Wet",
+     "s": "WET",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Wet: how much of the effect is mixed in with the original sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "air": {
+   "name": "Air Exciter",
+   "code": "AIR",
+   "kind": "Top-end sparkle",
+   "color": "#E1CBF4",
+   "cat": "Creative",
+   "src": "from Meowximizer",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Adds shine and openness to the top end without making it harsh.",
+   "params": [
+    {
+     "id": "air",
+     "l": "Air",
+     "s": "AIR",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Air: how much sparkle is added.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "freq",
+     "l": "From",
+     "s": "FROM",
+     "kl": "",
+     "min": 2000,
+     "max": 12000,
+     "def": 6000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "From: the pitch where the sparkle starts.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "sm",
+     "l": "Smooth",
+     "s": "SMOOTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Smooth: rounds off any harshness.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: the level leaving the unit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/Wet",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "ms": {
+   "name": "Mid Side",
+   "code": "MS",
+   "kind": "Stereo width",
+   "color": "#9bd7ff",
+   "cat": "Utility",
+   "src": "from WhiskerMix",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Splits the sound into middle and sides so you can make it wider or narrower.",
+   "params": [
+    {
+     "id": "wid",
+     "l": "Width",
+     "s": "WIDTH",
+     "kl": "",
+     "min": 0,
+     "max": 200,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Width: 0 is mono, 100 is unchanged, 200 is extra wide.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mid",
+     "l": "Mid",
+     "s": "MID",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Mid: level of the centre of the sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "side",
+     "l": "Side",
+     "s": "SIDE",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Side: level of the left and right edges.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "gan": {
+   "name": "Gain",
+   "code": "GAN",
+   "kind": "Level and pan",
+   "color": "#D9EBE9",
+   "cat": "Utility",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": false,
+   "ana": false,
+   "blurb": "Plain volume, pan and mono switch. Useful to match levels between units.",
+   "params": [
+    {
+     "id": "gain",
+     "l": "Gain",
+     "s": "GAIN",
+     "kl": "",
+     "min": -24,
+     "max": 24,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Gain: turns the level up or down.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "pan",
+     "l": "Pan",
+     "s": "PAN",
+     "kl": "",
+     "min": -100,
+     "max": 100,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Pan: moves the sound left or right. 0 is centre.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mono",
+     "l": "Mono",
+     "s": "MONO",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Mono: Stereo leaves the sound alone. Mono sums left and right.",
+     "log": false,
+     "names": [
+      "Stereo",
+      "Mono"
+     ],
+     "sn": [
+      "Ster",
+      "Mono"
+     ]
+    }
+   ]
+  },
+  "mxz": {
+   "name": "Meowximizer",
+   "code": "MXZ",
+   "kind": "Maximizer",
+   "color": "#FF9000",
+   "cat": "Dynamics",
+   "src": "Studio 87 plugin",
+   "vz": "gr",
+   "real": true,
+   "ana": false,
+   "blurb": "Three phase-aligned bands with bass harmonics, a lift for the highs, an air exciter, a squeeze, light clipping and a limiter with a ceiling.",
+   "params": [
+    {
+     "id": "squeeze",
+     "l": "Squeeze",
+     "s": "SQUEEZE",
+     "kl": "Squeeze",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Squeeze: how much each of the three bands is evened out, pressing loud parts down and lifting quiet ones up. More = denser.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "air",
+     "l": "Air",
+     "s": "AIR",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 25,
+     "u": " %",
+     "d": 0,
+     "tip": "Air: a smooth high shelf at 9 kHz (up to +4.5 dB) for sheen, plus an exciter that adds new harmonics above 5 kHz for brilliance and excitement. The exciter runs 2x oversampled, so it stays smooth.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ceil",
+     "l": "Ceiling",
+     "s": "CEIL",
+     "kl": "Ceiling",
+     "min": -12,
+     "max": 0,
+     "def": -0.3,
+     "u": " dB",
+     "d": 1,
+     "tip": "Ceiling: the output limiter never lets the signal go above this level.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "contour",
+     "l": "Lo contour",
+     "s": "CONTOUR",
+     "kl": "Lo contour",
+     "min": 0,
+     "max": 10,
+     "def": 3,
+     "u": "",
+     "d": 1,
+     "tip": "Low contour: a gentle low shelf for weight and warmth in the bottom end.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "bass",
+     "l": "Bass harmonics",
+     "s": "BASS H",
+     "kl": "Bass harm",
+     "min": 0,
+     "max": 100,
+     "def": 25,
+     "u": " %",
+     "d": 0,
+     "tip": "Bass harmonics: adds overtones to the bass so it stays audible on small speakers.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "process",
+     "l": "Process",
+     "s": "PROCESS",
+     "kl": "",
+     "min": 0,
+     "max": 10,
+     "def": 5,
+     "u": "",
+     "d": 1,
+     "tip": "Process: the sonic-maximizer effect. Delays the lows and mids a tiny bit behind the highs and lifts the highs when the mids are quiet, for clarity and punch.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mode",
+     "l": "Squeeze mode",
+     "s": "STYLE",
+     "kl": "Squeeze mode",
+     "min": 0,
+     "max": 10,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Squeeze style: each style is a different chain. Gentle keeps dynamics natural. OTT presses the loud down and lifts the quiet up hard. Dance Master is a controlled multiband compressor with soft knee, auto release and a limiter on each band. Glue is mild and sticky. Slow Smooth is slow and smooth, like an opto. Punchy lets the attack through. Tight Lock clamps hard and fast. Lift brings up quiet parts. Hardstyle Lock is fast and firm with extra low-end control. Highs Tamer holds back harsh highs on leads (good after a reverb). Thick Supersaw is a slow, soft squeeze that pairs with the Opto knob to fatten supersaw leads.",
+     "log": false,
+     "names": [
+      "Gentle",
+      "OTT style",
+      "Dance Master",
+      "Glue",
+      "Slow Smooth",
+      "Punchy",
+      "Tight Lock",
+      "Lift",
+      "Hard Lock",
+      "Highs Tamer",
+      "Thick Saw"
+     ],
+     "sn": [
+      "Gentl",
+      "OTT s",
+      "Dance",
+      "Glue",
+      "Slow ",
+      "Punch",
+      "Tight",
+      "Lift",
+      "Hard ",
+      "Highs",
+      "Thick"
+     ]
+    },
+    {
+     "id": "warm",
+     "l": "Warm",
+     "s": "WARM",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 20,
+     "u": " %",
+     "d": 0,
+     "tip": "Warm: saturation on the whole signal. Rounds peaks and adds body. With a Warm character other than tanh it adds disto, transistor or fuzz grit when pushed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "clip",
+     "l": "Clip",
+     "s": "CLIP",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Light peak clipper: pushes the signal up to 9 dB harder into a smooth clipper at the Ceiling, then the limiter. Shaves the peaks so the whole thing can sit much louder.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "push",
+     "l": "Push",
+     "s": "PUSH",
+     "kl": "",
+     "min": 0,
+     "max": 18,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Push: raises the level going into the squeeze and the limiter for more loudness.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "opto",
+     "l": "Opto",
+     "s": "OPTO",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Opto: extra optical-style leveller on top of whatever the squeeze style already uses. Slow, smooth, program-dependent compression that thickens leads and bass. 0 = only what the style brings.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Mix",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Mix: dry/wet blend for parallel processing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "Output",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: final level. Match it with the bypassed level when comparing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lcmode",
+     "l": "Loudness match",
+     "s": "LOUDM",
+     "kl": "Loud match",
+     "min": 0,
+     "max": 2,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Loudness match: a slow level follower lifts the processed sound back up to the level that went in, so heavy squeeze or opto settings never lose volume or loudness. Auto switches it on as the Opto amount grows. It only ever lifts, and never past the Ceiling.",
+     "log": false,
+     "names": [
+      "Auto",
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Auto",
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "airchar",
+     "l": "Air exciter",
+     "s": "AIRSH",
+     "kl": "Air shaper",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "The shaper that makes the Air harmonics. The stack version gets gritty and fuzzy when Air is pushed high.",
+     "log": false,
+     "names": [
+      "Shipped",
+      "PurrOne stack"
+     ],
+     "sn": [
+      "Shipp",
+      "PurrO"
+     ]
+    },
+    {
+     "id": "wchar",
+     "l": "Warm character",
+     "s": "WARMTY",
+     "kl": "Warm type",
+     "min": 0,
+     "max": 4,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "What the Warm knob does. Shipped is the plain tanh. The others are the PurrOne colour stages, oversampled 2x. Stack grows from drive to transistor to fuzz as you push Warm.",
+     "log": false,
+     "names": [
+      "Shipped",
+      "Drive",
+      "Transistor",
+      "Fuzz",
+      "Stack"
+     ],
+     "sn": [
+      "Shipp",
+      "Drive",
+      "Trans",
+      "Fuzz",
+      "Stack"
+     ]
+    },
+    {
+     "id": "clipPos",
+     "l": "Clipper position",
+     "s": "CLIPPOS",
+     "kl": "Clip place",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Where the Clip stage sits. Post (before the limiter) keeps the squeeze natural and is what mastering clippers do. Pre clips the input before everything.",
+     "log": false,
+     "names": [
+      "Pre",
+      "Post"
+     ],
+     "sn": [
+      "Pre",
+      "Post"
+     ]
+    }
+   ]
+  },
+  "crc": {
+   "name": "Cat Crusher",
+   "code": "CRU",
+   "kind": "Drive, filter, compressor",
+   "color": "#FF7BB1",
+   "cat": "Saturation",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Compressor into a choice of ten distortion types, a crunchy Mech stage and a multimode filter. Also works as a parallel crush.",
+   "params": [
+    {
+     "id": "tube",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "Drive",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive: how hard the selected distortion type is pushed. Higher = more saturation and harmonics.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "comp",
+     "l": "Comp amount",
+     "s": "COMP",
+     "kl": "Comp amount",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Compressor amount: lowers the threshold and raises the ratio together. Make-up gain is automatic, so the level stays the same at any amount and only the density changes.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "vol",
+     "l": "Volume",
+     "s": "VOL",
+     "kl": "Volume",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 0,
+     "tip": "Volume: final output level. Match it to the bypassed level when comparing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mech",
+     "l": "Mech",
+     "s": "MECH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Mech: harder, more aggressive digital-style crunch (folds and clips the wave). 0 = off.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "cut",
+     "l": "Cutoff",
+     "s": "CUTOFF",
+     "kl": "",
+     "min": 40,
+     "max": 20000,
+     "def": 20000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Cutoff: frequency of the 24 dB filter (low-pass, high-pass or band-pass). As a low-pass it rolls off the harsh highs that distortion creates.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "res",
+     "l": "Res",
+     "s": "RES",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 10,
+     "u": " %",
+     "d": 0,
+     "tip": "Resonance: boosts the frequencies right at the cutoff for a vocal or squelchy edge.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "type",
+     "l": "Type",
+     "s": "TYPE",
+     "kl": "Type",
+     "min": 0,
+     "max": 9,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Distortion type. Tube: warm even harmonics. Soft Sat: smooth and symmetric, great on buses. Transistor: console-style, punchy and forward. Tape: gentle and rounded. Diode: edgy and asymmetric. Hard Clip: tight, loud and aggressive. Fuzz: thick, gated and woolly. Distort: hard-clipped, gritty distortion pedal style. Overdrive: smooth, mid-forward tube-pedal style. Rectifier: adds a bright octave-ish edge.",
+     "log": false,
+     "names": [
+      "Tube",
+      "Soft Sat",
+      "Transistor",
+      "Tape",
+      "Diode",
+      "Hard Clip",
+      "Fuzz",
+      "Distort",
+      "Overdrive",
+      "Rectifier"
+     ],
+     "sn": [
+      "Tube",
+      "Soft ",
+      "Trans",
+      "Tape",
+      "Diode",
+      "Hard ",
+      "Fuzz",
+      "Disto",
+      "Overd",
+      "Recti"
+     ]
+    },
+    {
+     "id": "mix",
+     "l": "Mix",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Mix: dry/wet blend. Lower values keep the original punch (parallel crush).",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "phat",
+     "l": "Phat mode",
+     "s": "PHAT",
+     "kl": "Phat mode",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Phat mode: adds low-end weight before the compressor, a slower release and a soft ceiling. Great on kicks and bass.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "don",
+     "l": "Distortion",
+     "s": "DIST",
+     "kl": "Distortion",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Distortion on/off.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "ftype",
+     "l": "Filter type",
+     "s": "FILT T",
+     "kl": "Filter type",
+     "min": 0,
+     "max": 2,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Filter type: Low-pass keeps the lows and cuts the highs, High-pass keeps the highs and cuts the lows, Band-pass keeps only a band around the cutoff.",
+     "log": false,
+     "names": [
+      "Low-pass",
+      "High-pass",
+      "Band-pass"
+     ],
+     "sn": [
+      "Low-p",
+      "High-",
+      "Band-"
+     ]
+    },
+    {
+     "id": "fon",
+     "l": "Filter",
+     "s": "FILTER",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Filter on/off.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "con",
+     "l": "Compressor",
+     "s": "COMP ON",
+     "kl": "Comp on",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Compressor on/off.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    }
+   ]
+  },
+  "fat": {
+   "name": "Fat Cat",
+   "code": "FAT",
+   "kind": "Saturator",
+   "color": "#F57F01",
+   "cat": "Saturation",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Thickens sound with a drive, transistor, grit and fuzz chain, a colour control and a stereo turbo for width.",
+   "params": [
+    {
+     "id": "drive",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 40,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive: how hard the sound is saturated. Even at 0 % a very light touch of warmth stays on by design. Dynamics are kept at any input level. With the PurrOne stack character this is the opamp-style tanh stage; above 80 % it stacks a second stage.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "color",
+     "l": "Color",
+     "s": "COLOR",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Color: emphasises one band of the sound before it is saturated. Low = bass and warmth, high = bite and air.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "Output",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 0,
+     "tip": "Output: final level. Use it to match the loudness of the original when comparing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "xs",
+     "l": "Transistor",
+     "s": "TRANS",
+     "kl": "Transistor",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Transistor: asymmetric soft clip with even harmonics, warm and thick, not buzzy. Adds on top of Drive in Shipped, and is the middle stage of the PurrOne stack.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "grit",
+     "l": "Grit",
+     "s": "GRIT",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Grit: lopsided fuzz-style clip, above 80 % it adds a smooth octave-up growl. Adds on top of Drive in Shipped, and is the last stage of the PurrOne stack.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fuzz",
+     "l": "Fuzz",
+     "s": "FUZZ",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Fuzz: adds clipped high frequencies (above about 1.5 kHz) for a buzzy, raw top end.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "turbo",
+     "l": "Stereo Turbo",
+     "s": "TURBO",
+     "kl": "Stereo Turbo",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Stereo Turbo: delays the right channel by a few milliseconds for width. Check the mix in mono, too much can thin it out.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Mix",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Mix: blend between the original (dry) and the saturated (wet) sound.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "schar",
+     "l": "Drive character",
+     "s": "CHAR",
+     "kl": "Drive char.",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Shipped is the plain saturation (Transistor and Grit can be added on top). The PurrOne stack is the three-stage colour shaper from the PurrOne synth: opamp drive, console-style transistor and fuzz, nastier above 80 %, smooth (no digital fizz), with a fizz low-pass that closes as it gets nastier.",
+     "log": false,
+     "names": [
+      "Shipped",
+      "PurrOne stack"
+     ],
+     "sn": [
+      "Shipp",
+      "PurrO"
+     ]
+    }
+   ]
+  },
+  "spc": {
+   "name": "Cat Spacer",
+   "code": "SPC",
+   "kind": "Spectral ducker",
+   "color": "#01FCDC",
+   "cat": "Dynamics",
+   "src": "Studio 87 plugin",
+   "vz": "gr",
+   "real": true,
+   "ana": false,
+   "blurb": "Carves gaps in this sound where the sidechain is loud, in 64 bands, so a lead and a vocal or kick can share the mix. Needs a sidechain; with none connected it uses the main signal.",
+   "params": [
+    {
+     "id": "amount",
+     "l": "Amount",
+     "s": "AMOUNT",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Amount: 0 = no ducking at all. Low settings carve only the bands where the sidechain is loud (transparent space). Towards 100 it turns into a full-on pump that ducks everything with each hit. Gradual in between.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "attack",
+     "l": "Attack",
+     "s": "ATK",
+     "kl": "Attack",
+     "min": 1,
+     "max": 300,
+     "def": 20,
+     "u": " ms",
+     "d": 0,
+     "tip": "Attack: how fast the ducking engages when the sidechain gets loud.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "release",
+     "l": "Release",
+     "s": "REL",
+     "kl": "Release",
+     "min": 10,
+     "max": 2000,
+     "def": 160,
+     "u": " ms",
+     "d": 0,
+     "tip": "Release: how long the ducking takes to let go after the sidechain stops. Short = tight, long = the big breathing pump.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lo",
+     "l": "Low cut",
+     "s": "LOWCUT",
+     "kl": "Low cut",
+     "min": 20,
+     "max": 20000,
+     "def": 20,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Low cut: sidechain content below this frequency does not trigger any ducking (stops a kick from carving the whole mix, for example).",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hi",
+     "l": "High cut",
+     "s": "HIGHCUT",
+     "kl": "High cut",
+     "min": 20,
+     "max": 20000,
+     "def": 20000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "High cut: sidechain content above this frequency does not trigger any ducking.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "range",
+     "l": "Max cut",
+     "s": "MAXCUT",
+     "kl": "Max cut",
+     "min": 3,
+     "max": 36,
+     "def": 24,
+     "u": " dB",
+     "d": 0,
+     "tip": "Max cut: the deepest reduction any band can get at 100 % amount.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "floor",
+     "l": "Floor",
+     "s": "FLOOR",
+     "kl": "",
+     "min": 10,
+     "max": 70,
+     "def": 50,
+     "u": " dB",
+     "d": 0,
+     "tip": "Floor: how far below the loudest sidechain band a band can be and still cause ducking. Lower = only the strongest bands duck, higher = more bands duck.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mode",
+     "l": "Stereo mode",
+     "s": "STEREO",
+     "kl": "Stereo mode",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Stereo mode: L/R ducks left and right, M/S ducks mid and side.",
+     "log": false,
+     "names": [
+      "L/R",
+      "M/S"
+     ],
+     "sn": [
+      "L/R",
+      "M/S"
+     ]
+    },
+    {
+     "id": "freeze",
+     "l": "Freeze",
+     "s": "FREEZE",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Freeze: holds the current sidechain curve so it keeps carving the same gaps (a static EQ taken from the sidechain).",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "pan",
+     "l": "Pan",
+     "s": "PAN",
+     "kl": "",
+     "min": -100,
+     "max": 100,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Pan: moves the effect toward one side. Left of centre applies less to the right channel, right of centre applies less to the left (or to side instead of mid in M/S).",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Mix",
+     "s": "MIX",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Mix: dry/wet blend of the ducked signal.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "latency",
+     "l": "Latency",
+     "s": "LATENCY",
+     "kl": "",
+     "min": 0,
+     "max": 3,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Latency: the delay this plugin adds (the host compensates). Ultra 256 is about 6 ms, Low 512 about 11 ms, Normal 1024 about 21 ms, High 2048 about 43 ms. Shorter = tighter timing but less precise at low frequencies; longer = cleaner and more exact in the bass.",
+     "log": false,
+     "names": [
+      "Ultra 256",
+      "Low 512",
+      "Normal 1024",
+      "High 2048"
+     ],
+     "sn": [
+      "Ultra",
+      "Low 5",
+      "Norma",
+      "High "
+     ]
+    },
+    {
+     "id": "audition",
+     "l": "Audition",
+     "s": "AUDIT",
+     "kl": "Audition",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Audition: listen to the sidechain as the plugin hears it (after low and high cut). Useful for setting the cuts.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "cmode",
+     "l": "Colour",
+     "s": "COLOUR",
+     "kl": "",
+     "min": 0,
+     "max": 3,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Where Drive, Transistor and Fuzz act. Sound: dirties the audio you hear, level kept. Sidechain: only colours what the ducker listens to (Audition shows it). Both: does both. Not ducked: colours only what the sidechain never touches, below the Low cut and above the High cut (needs those set inside 20 Hz to 20 kHz).",
+     "log": false,
+     "names": [
+      "Sound",
+      "Sidechain",
+      "Both",
+      "Not ducked"
+     ],
+     "sn": [
+      "Sound",
+      "Sidec",
+      "Both",
+      "Not d"
+     ]
+    },
+    {
+     "id": "sdrive",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 150,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Drive (PurrOne opamp tanh). Colour: sound dirties the audio you hear with automatic gain staging so it never gets quieter. Colour: sidechain colours what the ducker listens to: more harmonics means more bands duck, so the cut gets wider.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "sxs",
+     "l": "Transistor",
+     "s": "TRANS",
+     "kl": "Transistor",
+     "min": 0,
+     "max": 150,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Transistor (PurrOne, asymmetric, even harmonics). On the sound: warm, thick even harmonics with the level kept. On the sidechain: the ducker also reacts one octave up from the fundamental.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "sfuzz",
+     "l": "Fuzz",
+     "s": "FUZZ",
+     "kl": "",
+     "min": 0,
+     "max": 150,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Fuzz (PurrOne lopsided clip with octave-up growl). On the sound: nasty fuzz with the level kept. On the sidechain: spreads the sidechain energy across the spectrum, so a bass or kick carves holes far up (and the result gets quieter).",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "bas": {
+   "name": "Meowbass",
+   "code": "BAS",
+   "kind": "Bass enhancer",
+   "color": "#009572",
+   "cat": "Creative",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Splits the bass with a phase-aligned crossover, builds harmonics from it so it is heard on small speakers, shapes its dynamics and adds it back.",
+   "params": [
+    {
+     "id": "freq",
+     "l": "Bass range",
+     "s": "RANGE",
+     "kl": "Bass range",
+     "min": 30,
+     "max": 200,
+     "def": 80,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Bass range: the frequency below which the bass is picked up to make harmonics. Set it near the lowest note you want to feel (kick or bass fundamental, often 50 to 100 Hz).",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "harm",
+     "l": "Harmonics",
+     "s": "HARM",
+     "kl": "Harmonics",
+     "min": -36,
+     "max": 18,
+     "def": -12,
+     "u": " dB",
+     "d": 0,
+     "tip": "Harmonics: level of the added overtones that make small speakers suggest deep bass. Start low and raise until the bass feels bigger. Range -36 to +18 dB: from subtle to obvious.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dyn",
+     "l": "Dynamics",
+     "s": "DYN",
+     "kl": "Dynamics",
+     "min": -100,
+     "max": 100,
+     "def": -40,
+     "u": " %",
+     "d": 0,
+     "tip": "Dynamics: how the harmonics follow the bass level. 0 = off (neutral). Negative = evens out quiet and loud notes (-100 = most even, quiet notes are boosted). Positive = the harmonics follow the level more and more, so loud notes get far more harmonics than quiet ones (+100 = drastic). Tailor it from subtle to extreme either way.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "orig",
+     "l": "Original bass",
+     "s": "ORIG",
+     "kl": "Original bass",
+     "min": -48,
+     "max": 6,
+     "def": 0,
+     "u": " dB",
+     "d": 0,
+     "tip": "Original bass: level of the untouched low end. Pull it down to free headroom and let the harmonics carry the bass.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "in",
+     "l": "Input",
+     "s": "IN",
+     "kl": "Input",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Input: level into the effect. Raise it for more harmonics from a quiet source.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "Output",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Output: final level. Match it with the bypassed level when comparing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "resp",
+     "l": "Dyn response",
+     "s": "RESP",
+     "kl": "Dyn response",
+     "min": 1,
+     "max": 1000,
+     "def": 40,
+     "u": " ms",
+     "d": 0,
+     "tip": "Dynamics response: how fast the harmonics follow the bass level (works together with Dynamics; at Dynamics 0 it does nothing). Short = every hit snaps the harmonics (punchy, tight); long = the harmonics glide over whole notes (smooth, slow swell). With Dynamics up, the difference is big.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "decay",
+     "l": "Even/Odd",
+     "s": "EVENODD",
+     "kl": "Even/Odd",
+     "min": 0,
+     "max": 1,
+     "def": 0.5,
+     "u": "",
+     "d": 2,
+     "tip": "Even/Odd: character of the harmonics. Even = warm and round (rectifier style), Odd = harder and more edgy (clipper style).",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hdrive",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 30,
+     "u": " %",
+     "d": 0,
+     "tip": "Harmonic drive: how hard the bass is pushed into the harmonic generator. Low = clean and subtle, high = thick, obvious and colourful. Works together with Even/Odd.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hfilt",
+     "l": "Harmonic filter",
+     "s": "FILTER",
+     "kl": "Harm filter",
+     "min": 0,
+     "max": 2,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Harmonic filter: Smooth is balanced, Wide lets more upper harmonics through (brighter), Tight keeps only the lowest ones (cleaner).",
+     "log": false,
+     "names": [
+      "Smooth",
+      "Wide",
+      "Tight"
+     ],
+     "sn": [
+      "Smoot",
+      "Wide",
+      "Tight"
+     ]
+    },
+    {
+     "id": "quality",
+     "l": "Quality",
+     "s": "QUALITY",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Quality: High runs the harmonic generator and its filters at twice the sample rate, so hard-driven settings stay clean (less aliasing). It adds no delay and costs very little CPU. Normal is the plain 1x path.",
+     "log": false,
+     "names": [
+      "Normal",
+      "High (2x)"
+     ],
+     "sn": [
+      "Norma",
+      "High "
+     ]
+    }
+   ]
+  },
+  "shm": {
+   "name": "Shimmer Reverb",
+   "code": "REV",
+   "kind": "Reverb",
+   "color": "#C0A9FE",
+   "cat": "Space",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Five reverbs in one: plate, hall, shimmer plate, shimmer hall and velvet. From the shimmerstuff plugin.",
+   "params": [
+    {
+     "id": "decay",
+     "l": "Decay",
+     "s": "DECAY",
+     "kl": "Decay",
+     "min": 0,
+     "max": 100,
+     "def": 60,
+     "u": " %",
+     "d": 0,
+     "tip": "Decay: how long the tail rings.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "shimmer",
+     "l": "Shimmer amount",
+     "s": "SHIM",
+     "kl": "Shimmer",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Shimmer amount: how much pitched-up glow is added to the tail.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Reverb mix",
+     "s": "MIX",
+     "kl": "Mix",
+     "min": 0,
+     "max": 100,
+     "def": 35,
+     "u": " %",
+     "d": 0,
+     "tip": "Reverb mix: how much reverb is blended with the original.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "type",
+     "l": "Reverb type",
+     "s": "TYPE",
+     "kl": "Type",
+     "min": 0,
+     "max": 4,
+     "def": 3,
+     "u": "",
+     "d": 0,
+     "tip": "Reverb type: Plate, Hall, Shimmer Plate, Shimmer Hall or Velvet. The shimmer types add a pitched-up glow to the tail.",
+     "log": false,
+     "names": [
+      "Plate",
+      "Hall",
+      "Shim Plate",
+      "Shim Hall",
+      "Velvet"
+     ],
+     "sn": [
+      "Plate",
+      "Hall",
+      "ShPl",
+      "ShHl",
+      "Velv"
+     ]
+    },
+    {
+     "id": "size",
+     "l": "Size",
+     "s": "SIZE",
+     "kl": "Size",
+     "min": 0.5,
+     "max": 1.6,
+     "def": 1,
+     "u": " x",
+     "d": 2,
+     "tip": "Size: how big the room feels.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "predelay",
+     "l": "Pre-delay",
+     "s": "PRE",
+     "kl": "Pre-delay",
+     "min": 0,
+     "max": 250,
+     "def": 20,
+     "u": " ms",
+     "d": 0,
+     "tip": "Pre-delay: a gap before the reverb starts, so the dry sound stays clear.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "damp",
+     "l": "Damping",
+     "s": "DAMP",
+     "kl": "Damping",
+     "min": 500,
+     "max": 16000,
+     "def": 6000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Damping: the reverb tail loses highs above this pitch.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "shift",
+     "l": "Shimmer pitch",
+     "s": "PITCH",
+     "kl": "Shim pitch",
+     "min": -12,
+     "max": 12,
+     "def": 12,
+     "u": " st",
+     "d": 1,
+     "tip": "Shimmer pitch: how many semitones the glow is shifted. 12 is an octave up.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mod",
+     "l": "Modulation",
+     "s": "MOD",
+     "kl": "Modulation",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Modulation: slow movement inside the reverb that keeps the tail alive.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "color",
+     "l": "Velvet colour",
+     "s": "COLOUR",
+     "kl": "Vel colour",
+     "min": -100,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Velvet colour: darker when negative, brighter when positive. Used by the Velvet type.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "shift2",
+     "l": "Shimmer 2 pitch",
+     "s": "PITCH2",
+     "kl": "Shim 2 pitch",
+     "min": -12,
+     "max": 12,
+     "def": 7,
+     "u": " st",
+     "d": 1,
+     "tip": "Shimmer 2 pitch: pitch of the second shimmer voice.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "shimmer2",
+     "l": "Shimmer 2 amount",
+     "s": "SHIM2",
+     "kl": "Shim 2 amt",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Shimmer 2 amount: level of the second shimmer voice.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hp",
+     "l": "Wet high-pass",
+     "s": "WET HP",
+     "kl": "Wet HP",
+     "min": 20,
+     "max": 2000,
+     "def": 20,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Wet high-pass: removes bass from the reverb so the mix stays clean.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "lp",
+     "l": "Wet low-pass",
+     "s": "WET LP",
+     "kl": "Wet LP",
+     "min": 1000,
+     "max": 20000,
+     "def": 20000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Wet low-pass: removes the top end of the reverb.",
+     "log": true,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "sdl": {
+   "name": "Shimmer Delay",
+   "code": "SDL",
+   "kind": "Delay",
+   "color": "#9bd7ff",
+   "cat": "Space",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Delay whose repeats can shift in pitch and shimmer. From the shimmerstuff plugin.",
+   "params": [
+    {
+     "id": "dtime",
+     "l": "Delay time",
+     "s": "TIME",
+     "kl": "Time",
+     "min": 20,
+     "max": 2000,
+     "def": 450,
+     "u": " ms",
+     "d": 0,
+     "tip": "Delay time: the gap between repeats.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dfb",
+     "l": "Delay feedback",
+     "s": "FDBK",
+     "kl": "Feedback",
+     "min": 0,
+     "max": 95,
+     "def": 55.00000000000001,
+     "u": " %",
+     "d": 0,
+     "tip": "Delay feedback: how many repeats you hear.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dmix",
+     "l": "Delay mix",
+     "s": "MIX",
+     "kl": "Mix",
+     "min": 0,
+     "max": 100,
+     "def": 40,
+     "u": " %",
+     "d": 0,
+     "tip": "Delay mix: how much delay is blended with the original.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dshift",
+     "l": "Delay shift",
+     "s": "SHIFT",
+     "kl": "Shift",
+     "min": -12,
+     "max": 12,
+     "def": 12,
+     "u": " st",
+     "d": 1,
+     "tip": "Delay shift: pitch change of the repeats in semitones.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dshim",
+     "l": "Delay shimmer",
+     "s": "SHIM",
+     "kl": "Shimmer",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Delay shimmer: how much shimmer glow the repeats get.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "ddamp",
+     "l": "Delay damping",
+     "s": "DAMP",
+     "kl": "Damping",
+     "min": 500,
+     "max": 16000,
+     "def": 5000,
+     "u": " Hz",
+     "d": 0,
+     "tip": "Delay damping: the repeats lose highs above this pitch.",
+     "log": true,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "hbl": {
+   "name": "Hairball",
+   "code": "HBL",
+   "kind": "Grain freeze (FX mode)",
+   "color": "#FE91E8",
+   "cat": "Creative",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Freezes, holds and shreds what plays into tiny grains, and can build a riser from it. The FX mode of Hairball.",
+   "params": [
+    {
+     "id": "freeze",
+     "l": "Freeze",
+     "s": "FREEZE",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "FX mode: stop recording and keep looping what is in the buffer. Grains then play only the frozen audio.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "hold",
+     "l": "Hold",
+     "s": "HOLD",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Holds the playing position still, like Wave Spacing at 0 for a moment. Automate it for stutters and stalls.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "capOff",
+     "l": "Lag",
+     "s": "LAG",
+     "kl": "",
+     "min": 0,
+     "max": 2000,
+     "def": 120,
+     "u": " ms",
+     "d": 0,
+     "tip": "FX mode, not frozen: how far behind the live audio the grains read.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "liveLen",
+     "l": "Capture",
+     "s": "CAPTURE",
+     "kl": "",
+     "min": 0.5,
+     "max": 8,
+     "def": 4,
+     "u": " s",
+     "d": 1,
+     "tip": "How many seconds of the incoming audio Hairball keeps ready to freeze (FX mode).",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "grainLen",
+     "l": "Hold len",
+     "s": "HOLDLEN",
+     "kl": "Hold len",
+     "min": 2,
+     "max": 800,
+     "def": 80,
+     "u": " ms",
+     "d": 0,
+     "tip": "Length each grain plays before the next one takes over.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "spacing",
+     "l": "Gr. spacing",
+     "s": "SPACING",
+     "kl": "Gr. spacing",
+     "min": 25,
+     "max": 400,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Gap between grains. 100 percent places them end to end with a clean crossfade. Lower means more overlap and a thicker sound, higher means gaps.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "waveSpacing",
+     "l": "Wave spacing",
+     "s": "WAVE SP",
+     "kl": "Wave spacing",
+     "min": -300,
+     "max": 300,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "How fast the playing position moves through the sound. 100 is normal, 0 freezes, negative plays the grains backwards in order, 300 is three times faster.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "pitch",
+     "l": "Pitch",
+     "s": "PITCH",
+     "kl": "",
+     "min": -48,
+     "max": 48,
+     "def": 0,
+     "u": " st",
+     "d": 0,
+     "tip": "Pitch in semitones. Grains are read faster or slower; the position still moves at Wave spacing.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "dance",
+     "l": "Dance",
+     "s": "DANCE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Glue compressor on everything above 150 Hz, bass left alone. Pumps and holds the sound together for dance music.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "riseOn",
+     "l": "Riser",
+     "s": "RISER",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Starts the riser. In Instrument mode every note starts it. Turn it off and it eases back.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "riseTime",
+     "l": "Riser time",
+     "s": "RISE T",
+     "kl": "Riser time",
+     "min": 0.1,
+     "max": 32,
+     "def": 4,
+     "u": " s",
+     "d": 0,
+     "tip": "How long the riser takes to reach its end.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "risePitch",
+     "l": "Riser pitch up",
+     "s": "RISE ST",
+     "kl": "Pitch up",
+     "min": 0,
+     "max": 60,
+     "def": 24,
+     "u": " st",
+     "d": 0,
+     "tip": "How many semitones the riser lifts the pitch.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "width",
+     "l": "Width",
+     "s": "WIDTH",
+     "kl": "",
+     "min": 0,
+     "max": 200,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Mid/side width. 100 is unchanged, 0 is mono, 200 is double the side signal.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "drive",
+     "l": "Drive",
+     "s": "DRIVE",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Symmetric analog clip. Odd harmonics, loud and bright. Above 100 percent needs Nasty range.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "transistor",
+     "l": "Transistor",
+     "s": "TRANS",
+     "kl": "Transistor",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "console-style asymmetric stage. Even harmonics, warm and thick. Above 100 percent needs Nasty range.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fuzz",
+     "l": "Fuzz",
+     "s": "FUZZ",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Lopsided hard fuzz. Above 80 percent it turns nasty on purpose. Above 100 percent needs Nasty range.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mix",
+     "l": "Dry/wet",
+     "s": "MIX",
+     "kl": "Dry/wet",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "Blend between the untouched input and Hairball. At 0 the input passes bit for bit.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "out",
+     "l": "Output",
+     "s": "OUT",
+     "kl": "Output",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 0,
+     "tip": "Output level.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "scr": {
+   "name": "Scratch Cat FX",
+   "code": "SCR",
+   "kind": "Scratch deck and FX",
+   "color": "#F5A66E",
+   "cat": "Creative",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Scratch, brake and backspin the sound from your track, with EQ, colour and an effect slot. From the Scratch Cat FX plugin.",
+   "params": [
+    {
+     "id": "speed",
+     "l": "Platter speed",
+     "s": "SPEED",
+     "kl": "Speed",
+     "min": -4,
+     "max": 4,
+     "def": 0,
+     "u": " x",
+     "d": 1,
+     "tip": "Platter speed: how fast the platter turns. 0 holds the sound still, negative plays it backwards.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "brake",
+     "l": "Brake",
+     "s": "BRAKE",
+     "kl": "",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Brake: slows the sound down to a stop like a turntable.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "backspin",
+     "l": "Backspin",
+     "s": "BKSPIN",
+     "kl": "Backspin",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Backspin: spins the sound backwards fast, then returns.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "touch",
+     "l": "Hand on platter",
+     "s": "HAND",
+     "kl": "Hand",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Hand on platter: holds the platter like a DJ hand so you can scratch.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "lo",
+     "l": "Low",
+     "s": "LOW",
+     "kl": "",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Low: bass level of the deck EQ.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "mid",
+     "l": "Mid",
+     "s": "MID",
+     "kl": "",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Mid: middle level of the deck EQ.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "hi",
+     "l": "High",
+     "s": "HIGH",
+     "kl": "",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "High: treble level of the deck EQ.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "colour",
+     "l": "Colour",
+     "s": "COLOUR",
+     "kl": "",
+     "min": -100,
+     "max": 100,
+     "def": 0,
+     "u": " %",
+     "d": 0,
+     "tip": "Colour: a filter sweep. Negative cuts the highs, positive cuts the lows.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "trim",
+     "l": "Trim",
+     "s": "TRIM",
+     "kl": "",
+     "min": -12,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Trim: input level of the deck.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fx1t",
+     "l": "FX 1 type",
+     "s": "FX 1",
+     "kl": "FX 1 type",
+     "min": 0,
+     "max": 4,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "FX 1 type: Filter, Echo, Reverb, Flanger or Crush.",
+     "log": false,
+     "names": [
+      "Filter",
+      "Echo",
+      "Reverb",
+      "Flanger",
+      "Crush"
+     ],
+     "sn": [
+      "Filt",
+      "Echo",
+      "Verb",
+      "Flan",
+      "Crush"
+     ]
+    },
+    {
+     "id": "fx1p1",
+     "l": "FX 1 amount",
+     "s": "FXAMT",
+     "kl": "FX amount",
+     "min": 0,
+     "max": 100,
+     "def": 25,
+     "u": " %",
+     "d": 0,
+     "tip": "FX 1 amount: the main control of the chosen effect.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fx1p2",
+     "l": "FX 1 dry/wet",
+     "s": "FXMIX",
+     "kl": "FX mix",
+     "min": 0,
+     "max": 100,
+     "def": 100,
+     "u": " %",
+     "d": 0,
+     "tip": "FX 1 dry/wet: how much of the effect is mixed in.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "master",
+     "l": "Master",
+     "s": "MASTER",
+     "kl": "",
+     "min": -24,
+     "max": 6,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Master: final level.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "stc": {
+   "name": "Stretch Cat",
+   "code": "STC",
+   "kind": "Time stretch and pitch",
+   "color": "#FFEF5E",
+   "cat": "Creative",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": false,
+   "blurb": "Changes the speed without changing the pitch, or the pitch without changing the speed. Today it is a sampler plugin; use in the rack is planned.",
+   "params": [
+    {
+     "id": "mode",
+     "l": "Stretch mode",
+     "s": "MODE",
+     "kl": "Mode",
+     "min": 0,
+     "max": 5,
+     "def": 4,
+     "u": "",
+     "d": 0,
+     "tip": "Stretch mode: Beats for drums, Tones for single notes, Texture for pads, Re-Pitch for tape style, Complex for full mixes, Formant+ for voices.",
+     "log": false,
+     "names": [
+      "Beats",
+      "Tones",
+      "Texture",
+      "Re-Pitch",
+      "Complex",
+      "Formant+"
+     ],
+     "sn": [
+      "Beats",
+      "Tones",
+      "Textu",
+      "RePit",
+      "Compl",
+      "Form+"
+     ]
+    },
+    {
+     "id": "speed",
+     "l": "Speed",
+     "s": "SPEED",
+     "kl": "",
+     "min": 0.25,
+     "max": 4,
+     "def": 1,
+     "u": " x",
+     "d": 2,
+     "tip": "Speed: playback speed without changing the pitch. 1 is normal.",
+     "log": true,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "tr",
+     "l": "Transpose",
+     "s": "TRANSP",
+     "kl": "Transpose",
+     "min": -24,
+     "max": 24,
+     "def": 0,
+     "u": " st",
+     "d": 0,
+     "tip": "Transpose: pitch in semitones without changing the speed.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "fine",
+     "l": "Fine (cents)",
+     "s": "FINE",
+     "kl": "Fine",
+     "min": -100,
+     "max": 100,
+     "def": 0,
+     "u": " ct",
+     "d": 0,
+     "tip": "Fine: fine tune in cents.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "grain",
+     "l": "Grain",
+     "s": "GRAIN",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Grain: size of the grains the stretch engine uses.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "trans",
+     "l": "Transients",
+     "s": "TRANS",
+     "kl": "Transients",
+     "min": 0,
+     "max": 100,
+     "def": 50,
+     "u": " %",
+     "d": 0,
+     "tip": "Transients: how well the hits keep their snap.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "smooth",
+     "l": "Smooth",
+     "s": "SMOOTH",
+     "kl": "",
+     "min": 0,
+     "max": 100,
+     "def": 70,
+     "u": " %",
+     "d": 0,
+     "tip": "Smooth: how smoothly the grains blend together.",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "tape",
+     "l": "Speed and pitch linked",
+     "s": "LINK",
+     "kl": "Linked",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Speed and pitch linked: when on, speed and pitch move together like tape.",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    },
+    {
+     "id": "gain",
+     "l": "Gain",
+     "s": "GAIN",
+     "kl": "",
+     "min": -24,
+     "max": 12,
+     "def": 0,
+     "u": " dB",
+     "d": 1,
+     "tip": "Gain: output level.",
+     "log": false,
+     "names": null,
+     "sn": null
+    }
+   ]
+  },
+  "cpy": {
+   "name": "Copycat",
+   "code": "CPY",
+   "kind": "Sound analyser",
+   "color": "#FFD1A1",
+   "cat": "Utility",
+   "src": "Studio 87 plugin",
+   "vz": "wet",
+   "real": true,
+   "ana": true,
+   "blurb": "Listens and tells you the note, key, chord, tempo, oscillator shape, voices, filter and envelope so you can rebuild the sound. The audio passes through unchanged.",
+   "params": [
+    {
+     "id": "listen",
+     "l": "Listen level",
+     "s": "LISTEN",
+     "kl": "Listen level",
+     "min": -60,
+     "max": 0,
+     "def": -40,
+     "u": " dB",
+     "d": 0,
+     "tip": "Listen level: how loud the sound must be before it is analysed. (Mockup control.)",
+     "log": false,
+     "names": null,
+     "sn": null
+    },
+    {
+     "id": "cap",
+     "l": "Capture 2 s",
+     "s": "CAPTURE",
+     "kl": "Capture",
+     "min": 0,
+     "max": 1,
+     "def": 0,
+     "u": "",
+     "d": 0,
+     "tip": "Capture 2 s: grabs the last two seconds to analyse. (Mockup control.)",
+     "log": false,
+     "names": [
+      "Idle",
+      "Capture"
+     ],
+     "sn": [
+      "Idle",
+      "Capt"
+     ]
+    },
+    {
+     "id": "auto",
+     "l": "Auto capture",
+     "s": "AUTO",
+     "kl": "Auto capture",
+     "min": 0,
+     "max": 1,
+     "def": 1,
+     "u": "",
+     "d": 0,
+     "tip": "Auto capture: analyses by itself when a new sound arrives. (Mockup control.)",
+     "log": false,
+     "names": [
+      "Off",
+      "On"
+     ],
+     "sn": [
+      "Off",
+      "On"
+     ]
+    }
+   ]
+  }
+ },
+ "factory": [
+  {
+   "name": "Start Here",
+   "type": "Mix",
+   "desc": "A safe first chain: a little tone, a gentle squeeze and light glue. Works on most things.",
+   "chain": [
+    [
+     "paw",
+     {
+      "lb": 2,
+      "hb": 1.5
+     }
+    ],
+    [
+     "purr",
+     {
+      "in": 2,
+      "ratio": 3,
+      "rel": 250
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -10,
+      "ratio": 2,
+      "mk": 1.5
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Vocal Silk",
+   "type": "Vocal",
+   "desc": "Smooth leveling, a touch of air, then a soft catch for the loudest words.",
+   "chain": [
+    [
+     "lap",
+     {
+      "red": 42,
+      "gain": 6,
+      "warm": 35
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 0,
+      "hb": 3,
+      "lc": 0
+     }
+    ],
+    [
+     "purr",
+     {
+      "in": -2,
+      "ratio": 2.5,
+      "atk": 8,
+      "rel": 200
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Vocal Up Front",
+   "type": "Vocal",
+   "desc": "Tube limiter for density, bright EQ, then a fast limiter for presence.",
+   "chain": [
+    [
+     "fur",
+     {
+      "in": 2,
+      "thr": -16,
+      "time": 3
+     }
+    ],
+    [
+     "paw",
+     {
+      "hb": 4,
+      "lb": 0.5
+     }
+    ],
+    [
+     "fet",
+     {
+      "in": 10,
+      "ratio": 4,
+      "out": -4,
+      "rel": 200
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Drum Bus Glue",
+   "type": "Drums",
+   "desc": "Bus compressor to hold the kit together, then a light limiter on top.",
+   "chain": [
+    [
+     "apu",
+     {
+      "thr": -14,
+      "ratio": 4,
+      "atk": 30,
+      "rel": 200
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 30,
+      "ceil": -0.5
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Drum Parallel Smash",
+   "type": "Drums",
+   "desc": "A hard limiter and a soft compressor side by side, blended with the original. Big and punchy.",
+   "chain": [
+    {
+     "par": [
+      [
+       "fet",
+       {
+        "in": 24,
+        "ratio": 20,
+        "atk": 60,
+        "rel": 100
+       }
+      ],
+      [
+       "purr",
+       {
+        "ratio": 2
+       }
+      ]
+     ],
+     "mix": 55
+    },
+    [
+     "paw",
+     {
+      "lb": 3,
+      "hb": 3
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mix Bus Glue",
+   "type": "Mix",
+   "desc": "Gentle tone, slow glue and a light ceiling. Finish a mix without squashing it.",
+   "chain": [
+    [
+     "paw",
+     {
+      "lb": 1,
+      "hb": 1
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -8,
+      "ratio": 2,
+      "atk": 30,
+      "rel": 300,
+      "mk": 2
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 20,
+      "ceil": -0.3
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mix Bus Tube Gloss",
+   "type": "Mix",
+   "desc": "Tube limiter for warmth, a lift in the lows and highs, then soft glue.",
+   "chain": [
+    [
+     "fur",
+     {
+      "in": 1,
+      "thr": -10,
+      "time": 4,
+      "warm": 35
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 2,
+      "hb": 2.5
+     }
+    ],
+    [
+     "apu",
+     {
+      "ratio": 2,
+      "thr": -6
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Bass Tight",
+   "type": "Bass",
+   "desc": "Level the notes, add weight at 60 Hz without mud, then catch the peaks.",
+   "chain": [
+    [
+     "lap",
+     {
+      "red": 55,
+      "gain": 5
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 3,
+      "lc": 2,
+      "lf": 2,
+      "hb": 0
+     }
+    ],
+    [
+     "fet",
+     {
+      "in": 10,
+      "ratio": 4,
+      "rel": 150
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Bass Parallel Weight",
+   "type": "Bass",
+   "desc": "A clean lane and a smashed lane added together. Keeps the punch and adds body.",
+   "chain": [
+    {
+     "par": [
+      [
+       "purr",
+       {
+        "ratio": 2
+       }
+      ],
+      [
+       "fet",
+       {
+        "in": 20,
+        "ratio": 12,
+        "rel": 120
+       }
+      ]
+     ],
+     "mix": 65
+    },
+    [
+     "paw",
+     {
+      "lb": 4,
+      "lc": 2,
+      "lf": 1
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Kick Slam",
+   "type": "Kick",
+   "desc": "Fast limiter for bite, then the drum limiter for a solid, loud kick.",
+   "chain": [
+    [
+     "fet",
+     {
+      "in": 16,
+      "ratio": 8,
+      "atk": 200,
+      "rel": 120
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 60,
+      "ceil": -0.5,
+      "rel": 60
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Kick Trance Tight",
+   "type": "Kick",
+   "desc": "Short, tight kick: quick compressor, low end boost at 100 Hz, hard ceiling.",
+   "chain": [
+    [
+     "purr",
+     {
+      "ratio": 6,
+      "atk": 5,
+      "rel": 100
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 3,
+      "lf": 3,
+      "lc": 1
+     }
+    ],
+    [
+     "punch",
+     {
+      "ceil": -0.3
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Lead Smooth",
+   "type": "Synth",
+   "desc": "Takes the sharp edges off a lead and keeps the shine.",
+   "chain": [
+    [
+     "lap",
+     {
+      "red": 35,
+      "gain": 4,
+      "warm": 40
+     }
+    ],
+    [
+     "paw",
+     {
+      "hb": 3.5,
+      "hc": 1
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Pad Gentle",
+   "type": "Synth",
+   "desc": "Slow tube limiting and a little air. Pads stay wide and steady.",
+   "chain": [
+    [
+     "fur",
+     {
+      "in": 0,
+      "thr": -20,
+      "time": 5
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 1,
+      "hb": 2
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Hard Dance Master",
+   "type": "Mix",
+   "desc": "Four units in a row: tone, glue, tube density, then a firm ceiling. For loud, tight masters.",
+   "chain": [
+    [
+     "paw",
+     {
+      "lb": 3,
+      "hb": 2.5,
+      "lf": 2
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -9,
+      "ratio": 3,
+      "atk": 10,
+      "rel": 250,
+      "mk": 3
+     }
+    ],
+    [
+     "fur",
+     {
+      "thr": -8,
+      "time": 3
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 55,
+      "ceil": -0.2,
+      "look": 2
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Parallel Mix Lift",
+   "type": "Mix",
+   "desc": "Tone, then a hard-squeezed lane blended in lightly under the mix, then a ceiling.",
+   "chain": [
+    [
+     "paw",
+     {}
+    ],
+    {
+     "par": [
+      [
+       "apu",
+       {
+        "thr": -20,
+        "ratio": 6,
+        "rel": 150
+       }
+      ],
+      [
+       "fet",
+       {
+        "in": 18,
+        "ratio": 12
+       }
+      ]
+     ],
+     "mix": 30
+    },
+    [
+     "punch",
+     {
+      "ceil": -0.5
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Vocal Chain",
+   "type": "Vocal",
+   "desc": "Cut mud, squeeze, level, add air, then a plate and a short echo side by side, and a light maximizer. Seven units.",
+   "chain": [
+    [
+     "peq",
+     {
+      "lg": -1.5,
+      "mg": 2,
+      "mf": 3000,
+      "hg": 1.5
+     }
+    ],
+    [
+     "clw",
+     {
+      "thr": -20,
+      "ratio": 3
+     }
+    ],
+    [
+     "lap",
+     {
+      "red": 40
+     }
+    ],
+    [
+     "air",
+     {
+      "air": 25
+     }
+    ],
+    {
+     "par": [
+      [
+       "shm",
+       {
+        "type": 0,
+        "mix": 18,
+        "decay": 40
+       }
+      ],
+      [
+       "ech",
+       {
+        "mix": 15,
+        "time": 300
+       }
+      ]
+     ],
+     "mix": 100
+    },
+    [
+     "mxz",
+     {
+      "squeeze": 20
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Drum Bus",
+   "type": "Drums",
+   "desc": "EQ, glue, then a hard limiter and a crusher side by side for parallel punch, saturation and a ceiling.",
+   "chain": [
+    [
+     "peq",
+     {
+      "lg": 2,
+      "mg": -2,
+      "mf": 400,
+      "hg": 2
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -14,
+      "ratio": 4,
+      "atk": 30,
+      "rel": 200
+     }
+    ],
+    {
+     "par": [
+      [
+       "fet",
+       {
+        "in": 20,
+        "ratio": 12
+       }
+      ],
+      [
+       "crc",
+       {
+        "tube": 35,
+        "mix": 60
+       }
+      ]
+     ],
+     "mix": 50
+    },
+    [
+     "fat",
+     {
+      "drive": 20
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 40
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Mix Bus",
+   "type": "Mix",
+   "desc": "Tone, glue, a light four-band squeeze, a touch of width, and a maximizer on top.",
+   "chain": [
+    [
+     "peq",
+     {
+      "lg": 1,
+      "hg": 1
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 1,
+      "hb": 1
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -8,
+      "ratio": 2,
+      "atk": 30,
+      "rel": 300
+     }
+    ],
+    [
+     "tms",
+     {
+      "depth": 25,
+      "mix": 70
+     }
+    ],
+    [
+     "ms",
+     {
+      "wid": 110
+     }
+    ],
+    [
+     "mxz",
+     {
+      "squeeze": 25
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Trance Lead",
+   "type": "Synth",
+   "desc": "Drive, EQ, chorus, then shimmer and echo side by side, duck under the kick, and finish with the maximizer.",
+   "chain": [
+    [
+     "ptr",
+     {
+      "drv": 30
+     }
+    ],
+    [
+     "peq",
+     {
+      "mg": 2,
+      "mf": 2500,
+      "hg": 2
+     }
+    ],
+    [
+     "cho",
+     {
+      "mix": 35
+     }
+    ],
+    {
+     "par": [
+      [
+       "shm",
+       {
+        "type": 3,
+        "mix": 40,
+        "decay": 75
+       }
+      ],
+      [
+       "sdl",
+       {
+        "dmix": 30,
+        "dtime": 375
+       }
+      ]
+     ],
+     "mix": 45
+    },
+    [
+     "spc",
+     {
+      "amount": 55
+     }
+    ],
+    [
+     "mxz",
+     {
+      "squeeze": 30
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Bass",
+   "type": "Bass",
+   "desc": "Overtones for small speakers, EQ, a clean lane and a fat lane side by side, mono it, then catch the peaks.",
+   "chain": [
+    [
+     "bas",
+     {
+      "harm": -8
+     }
+    ],
+    [
+     "peq",
+     {
+      "lg": 2,
+      "mg": -2,
+      "mf": 300
+     }
+    ],
+    {
+     "par": [
+      [
+       "clw",
+       {
+        "ratio": 3
+       }
+      ],
+      [
+       "fat",
+       {
+        "drive": 50
+       }
+      ]
+     ],
+     "mix": 65
+    },
+    [
+     "ms",
+     {
+      "wid": 15
+     }
+    ],
+    [
+     "fet",
+     {
+      "in": 8,
+      "ratio": 4
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 30
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Master",
+   "type": "Master",
+   "desc": "Nine units for a final master: EQ, tone, glue, four-band squeeze, air, width, tube density, maximizer and ceiling.",
+   "chain": [
+    [
+     "peq",
+     {
+      "lg": 1,
+      "hg": 1
+     }
+    ],
+    [
+     "paw",
+     {
+      "lb": 2,
+      "hb": 2
+     }
+    ],
+    [
+     "apu",
+     {
+      "thr": -9,
+      "ratio": 2.5,
+      "rel": 300
+     }
+    ],
+    [
+     "tms",
+     {
+      "depth": 30,
+      "mix": 60
+     }
+    ],
+    [
+     "air",
+     {
+      "air": 20,
+      "mix": 60
+     }
+    ],
+    [
+     "ms",
+     {
+      "wid": 110
+     }
+    ],
+    [
+     "fur",
+     {
+      "thr": -8,
+      "time": 4
+     }
+    ],
+    [
+     "mxz",
+     {
+      "squeeze": 35
+     }
+    ],
+    [
+     "punch",
+     {
+      "punch": 30,
+      "ceil": -0.3
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega Full Rack 12",
+   "type": "Other",
+   "desc": "All 12 units at once with two parallel pairs. Shows how far the rack goes.",
+   "chain": [
+    [
+     "peq",
+     {}
+    ],
+    [
+     "pdr",
+     {}
+    ],
+    {
+     "par": [
+      [
+       "clw",
+       {}
+      ],
+      [
+       "fet",
+       {
+        "in": 14
+       }
+      ]
+     ],
+     "mix": 60
+    },
+    [
+     "cho",
+     {}
+    ],
+    {
+     "par": [
+      [
+       "shm",
+       {}
+      ],
+      [
+       "sdl",
+       {}
+      ]
+     ],
+     "mix": 80
+    },
+    [
+     "air",
+     {}
+    ],
+    [
+     "ms",
+     {}
+    ],
+    [
+     "apu",
+     {}
+    ],
+    [
+     "mxz",
+     {}
+    ],
+    [
+     "punch",
+     {}
+    ]
+   ]
+  },
+  {
+   "name": "Mega Freeze FX",
+   "type": "Synth",
+   "desc": "Grain freeze and shimmer for risers and breakdowns, with a ducker so it stays out of the kick.",
+   "chain": [
+    [
+     "hbl",
+     {
+      "freeze": 1,
+      "dance": 30
+     }
+    ],
+    {
+     "par": [
+      [
+       "shm",
+       {
+        "type": 3,
+        "mix": 50
+       }
+      ],
+      [
+       "sdl",
+       {
+        "dmix": 35
+       }
+      ]
+     ],
+     "mix": 60
+    },
+    [
+     "spc",
+     {
+      "amount": 60
+     }
+    ],
+    [
+     "mxz",
+     {
+      "squeeze": 20
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Mega DJ Scratch Bus",
+   "type": "Mix",
+   "desc": "Scratch deck with EQ, a drive stage and a maximizer for DJ style effects on a track.",
+   "chain": [
+    [
+     "scr",
+     {}
+    ],
+    [
+     "crc",
+     {
+      "tube": 25
+     }
+    ],
+    [
+     "mxz",
+     {
+      "squeeze": 25
+     }
+    ]
+   ]
+  },
+  {
+   "name": "Full Rack Demo",
+   "type": "Other",
+   "desc": "Eight units at once, with two parallel pairs. Shows how far the rack goes.",
+   "chain": [
+    [
+     "paw",
+     {}
+    ],
+    {
+     "par": [
+      [
+       "purr",
+       {
+        "ratio": 3
+       }
+      ],
+      [
+       "fet",
+       {
+        "in": 14
+       }
+      ]
+     ],
+     "mix": 60
+    },
+    [
+     "lap",
+     {
+      "red": 30
+     }
+    ],
+    {
+     "par": [
+      [
+       "fur",
+       {}
+      ],
+      [
+       "apu",
+       {
+        "thr": -10
+       }
+      ]
+     ],
+     "mix": 80
+    },
+    [
+     "punch",
+     {}
+    ],
+    [
+     "paw",
+     {
+      "lb": 0,
+      "hb": 1.5
+     }
+    ]
+   ]
+  }
+ ],
+ "order": [
+  "purr",
+  "fur",
+  "lap",
+  "paw",
+  "fet",
+  "punch",
+  "apu",
+  "clw",
+  "tms",
+  "peq",
+  "pdr",
+  "ptr",
+  "pfz",
+  "ech",
+  "cho",
+  "pha",
+  "fln",
+  "air",
+  "ms",
+  "gan",
+  "mxz",
+  "crc",
+  "fat",
+  "spc",
+  "bas",
+  "shm",
+  "sdl",
+  "hbl",
+  "scr",
+  "stc",
+  "cpy"
+ ]
+}

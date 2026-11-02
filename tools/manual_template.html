@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>CatRack manual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@font-face{font-family:"Barlow Condensed";src:url("../assets/fonts/BarlowCondensed-Medium.ttf");font-weight:400}
+@font-face{font-family:"Barlow Condensed";src:url("../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+@font-face{font-family:"Barlow Condensed";src:url("../assets/fonts/BarlowCondensed-ExtraBoldItalic.ttf");font-weight:800;font-style:italic}
+@font-face{font-family:"JetBrains Mono";src:url("../assets/fonts/JetBrainsMono-Regular.ttf")}
+:root{--bg:#0b0b0d;--card:#16171a;--line:#33363d;--ink:#e8e9ee;--dim:#a9adb8;--teal:#02EBBA;--pink:#FF7BB1}
+@media print{:root{--bg:#fff;--card:#f4f4f6;--line:#c9cbd3;--ink:#16171a;--dim:#4a4d55;--teal:#007a62;--pink:#b0114f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow Condensed","Arial Narrow",Arial,sans-serif;padding:24px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:980px;margin:0 auto}
+h1{font-size:40px;margin:0 0 4px;font-style:italic;letter-spacing:.5px}
+h2{font-size:26px;margin:36px 0 8px;color:var(--teal);letter-spacing:1px;text-transform:uppercase;break-after:avoid}
+h3{font-size:20px;margin:20px 0 4px}
+a{color:var(--pink)}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;display:block;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+th{white-space:nowrap}
+code,kbd{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+pre{font-family:"JetBrains Mono",Consolas,monospace;font-size:11px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:8px 10px;white-space:pre-wrap}
+.note{background:var(--card);border-left:3px solid var(--teal);padding:8px 12px;margin:12px 0}
+.warnbox{background:var(--card);border-left:3px solid var(--pink);padding:8px 12px;margin:12px 0}
+.dim{color:var(--dim)}
+.pg{break-before:page}
+@media print{body{padding:0}tr{break-inside:avoid}img{break-inside:avoid}}
+</style></head><body><main>
+<h1>CatRack</h1>
+<p class="dim">Manual for version @VER@. Studio 87. Free and open source (AGPL-3.0-or-later). Collects nothing, never uses the network.</p>
+<p>A cat-themed tube-style program equalizer in the Pultec tradition: a low boost and a low atten that share one frequency, a high boost with adjustable bandwidth, a high atten, a tube stage and an Output level. The filters and the tube stage are our own implementation, written from public descriptions of this kind of equalizer; no hardware was measured (see "Under the hood").</p>
+<img src="manual/tour.png" alt="The CatRack window with numbered controls">
+<p class="dim">This picture is the real compiled plugin window. The numbers match the tables on the next pages.</p>
+
+<h2>Quick start</h2>
+<ol>
+<li>Put CatRack on a track. The first preset, <b>Start Here</b>, is a gentle general setting.</li>
+<li>Drag the round handles on the response curve, or turn the knobs under it. The thick line is the total; the thin lines are the four sections.</li>
+<li>For the classic low end trick, set <b>Boost</b> and <b>Atten</b> on the same low frequency (try the preset <b>Low Trick 60</b>): a fat bump at the bottom and a clean dip just above it.</li>
+<li>Compare with <b>Bypass</b> (B). Boosting makes things sound better only because they are louder, so match the level with <b>Output</b> before you judge.</li>
+</ol>
+<div class="warnbox"><b>Level:</b> CatRack has no output limiter. Big boosts can push the signal over 0 dBFS; the In and Out meters show it (pink above 0 dB) and the clip lights stay on until you click the meter. Turn <b>Output</b> down or lower the boost.</div>
+
+<h2>Signal flow</h2>
+<p>Input, then the equalizer network (low boost, low atten, high boost, high atten), then the tube stage, then Output. With Tube at 0 the tube stage is completely out of the signal path and the sound is only delayed by the plugin's fixed latency.</p>
+
+<div class="pg"></div>
+<h2>Interface tour: the header</h2>
+<img src="manual/header_b.png" alt="The header bar with numbers">
+<table><tr><th>#</th><th>Control</th><th>What it does</th><th>Range</th><th>Default</th></tr>
+@TABLE_HEADER@
+</table>
+
+<div class="pg"></div>
+<h2>Interface tour: the two displays</h2>
+<img src="manual/displays_b.png" alt="The response curve and the spectrum with numbers">
+<table><tr><th>#</th><th>Display</th><th>What it shows</th><th>Range</th><th></th></tr>
+@TABLE_DISP@
+</table>
+<h3>How to read the response curve</h3>
+<p>Across: frequency, 20 Hz to 20 kHz on a log scale. Up: gain in dB, plus and minus 20 dB. The thick line is the total of the four sections; the four thin lines are the sections: <b>low boost</b> (green), <b>low atten</b> (pink), <b>high boost</b> (yellow) and <b>high atten</b> (blue). A round handle of the same colour sits at each section's frequency. Drag it up or down to change the amount, sideways to pick another frequency from the switch positions, or double-click it to set that section to 0. When the two low handles sit on top of each other, the first move up grabs the boost and the first move down grabs the atten. The curve is calculated from the same filter code that processes the audio.</p>
+<h3>How to read the spectrum</h3>
+<p>Across: frequency, 20 Hz to 20 kHz. Up: level in dBFS, 0 at the top to -90 at the bottom. The grey line is the sound before the equalizer; the coloured fill is the sound after it (after the tube stage too). Small labels name the strongest peaks with note and frequency. The analysis is an FFT of 4096 points with a Hann window on the mono sum, with a fast rise and a slow fall. Hover over either display to read frequency, note and values.</p>
+
+<div class="pg"></div>
+<h2>Interface tour: the knobs</h2>
+<img src="manual/knobs_b.png" alt="The ten controls with numbers">
+<table><tr><th>#</th><th>Control</th><th>What it does</th><th>Range</th><th>Default</th></tr>
+@TABLE_KNOBS@
+</table>
+<p class="dim">Drag a knob up or down, use the mouse wheel or the arrow keys. Hold Shift for fine steps and double-click to reset. The frequency switches also take a click on any number around the dial.</p>
+
+<div class="pg"></div>
+<h2>Interface tour: the meters</h2>
+<img src="manual/meters_b.png" alt="The in and out meters with a number" style="max-width:180px">
+<table><tr><th>#</th><th>Display</th><th>What it shows</th><th>Range</th><th></th></tr>
+@TABLE_METER@
+</table>
+<p>Two peak meters, input on the left and output on the right, with a dB scale from +6 down to -60. Blue is safe (below -12 dB), purple is the warning zone (-12 to 0 dB) and pink is clipping (0 dB and above); the colours are fixed at their dB positions. A thin bar holds the highest peak for about 1.2 seconds, and the small light on top stays on for 4 seconds after a peak reached 0 dB. The peak numbers under the strips show the held peak in dB. Click a meter to clear the lights.</p>
+
+<h2>Presets</h2>
+<p>@NPRESETS@ factory presets are built in. They are starting points, not tuned by ear on real material yet.</p>
+<table><tr><th>Name</th><th>Type</th><th>Settings</th></tr>
+@PRESETS@
+</table>
+<p>Your own presets are plain text files you can back up or share:</p>
+<ul><li>Linux: <code>~/.local/share/Studio 87/CatRack/presets</code></li><li>Windows: <code>%APPDATA%\Studio 87\CatRack\presets</code></li><li>macOS: <code>~/Library/Application Support/Studio 87/CatRack/presets</code></li></ul>
+<p>The preset browser has search, type chips, paging, Load, Export, Rename and Delete for your own presets; Save asks before overwriting. Export and Import use plain text you can paste anywhere. A preset does not change Bypass. The loaded preset name and the plugin settings (look, bubbles, power saving, window size) are saved with the project.</p>
+
+<h2>Keyboard and mouse</h2>
+<table><tr><td><kbd>B</kbd></td><td>Bypass on or off</td></tr><tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Previous or next preset</td></tr><tr><td>Knobs</td><td>Drag up or down, mouse wheel, arrow keys. Hold Shift for fine steps. Double-click to reset.</td></tr><tr><td>Curve handles</td><td>Drag; double-click to set a section to 0.</td></tr><tr><td>Window</td><td>Drag any edge or corner. It keeps its proportions. Double-click the wood on either side to go back to 100%.</td></tr></table>
+<p class="dim">Keys work while the plugin window has keyboard focus; some hosts keep the focus for themselves. Info bubbles appear after about a second of hovering and can be switched off in Settings.</p>
+
+<h2>Install and uninstall</h2>
+<ul>
+<li><b>Windows:</b> run the installer. It puts the VST3 in the common VST3 folder and adds an uninstaller (Settings, Apps). Close your DAW first. Installing a new version over the old one works.</li>
+<li><b>macOS:</b> open the package. The plugin goes to <code>/Library/Audio/Plug-Ins/VST3</code>, and "Uninstall CatRack" goes to Applications.</li>
+<li><b>Linux:</b> for a Flatpak DAW install the Flatpak extension file; for a native DAW unpack the tarball into <code>~/.vst3</code>.</li>
+</ul>
+<div class="warnbox"><b>Why a warning may appear:</b> the installers are not signed with a paid publisher certificate (signing costs money every year; this project is free). Windows SmartScreen and macOS Gatekeeper therefore warn about any unsigned installer. On Windows choose "More info", then "Run anyway". On macOS open System Settings, Privacy and Security, and choose "Open Anyway". You can check the files against SHA256SUMS in the zip, and the whole source is on GitHub.</div>
+<p>After installing, rescan plugins in your host. INSTALL.txt in the zip has the exact steps for every system.</p>
+
+<h2>Under the hood</h2>
+<p><b>Filters.</b> Each section is a standard second-order filter (RBJ cookbook shapes): two low shelves (boost and atten, with their own corner frequencies: boost corner at 2.2 times the switch frequency, atten corner at 3 times), a bell for the high boost whose width is the Width knob (Q 2.2 narrow to 0.3 wide) and a high shelf for the high atten. The maximum gains are +13.5 dB (low boost), -17.5 dB (low atten), +18 dB (high boost) and -16 dB (high atten). The corner frequencies, shelf slopes and bandwidth range are our own choices modelled on the descriptions of this kind of equalizer; they are not measurements of any hardware, and they may be refined in later versions. Your saved projects keep loading.</p>
+<p><b>Tube stage.</b> A smooth tanh shaper with a little bias (for even harmonics), with unity gain for small signals, run at 4 times oversampling with two linear-phase half-band filters, followed by a 2 Hz DC blocker and a slow level match (about 250 ms) that keeps the loudness equal to the input. It only runs while Tube is above 0, and crossfades in over 10 ms. Tube 0 is exactly clean.</p>
+<p><b>Smoothing, latency, safety.</b> Every knob is smoothed (5 ms time constant, coefficients updated every 16 samples), so there is no zipper noise and knobs react within one audio buffer. The latency is fixed at 40 samples (0.83 ms at 48 kHz) whatever the settings, so the tube stage can be switched without shifting the sound against other tracks, and it is reported to the host. Bypass crossfades over 5 ms to the delayed dry sound and is bit exact when settled; neutral settings are bit exact too. NaN and infinity in the input never reach the output. There is no memory allocation, no lock and no file or network access on the audio thread.</p>
+<h3>What was measured (automatic tests in the source, <code>tests/test_core.cpp</code>)</h3>
+<p>These are numbers from the core tests on the build machine; they describe the code, not the sound on your system.</p>
+<pre>@MEASURED@</pre>
+<div class="note"><b>Honest limits.</b> Worst-case aliasing in the tube stage is about -53.6 dB (tube 10, loud sines near 14 to 15 kHz); the same shaper without oversampling gives -12 dB. Not verified: the shapes and frequencies against any real hardware; the installers on real Windows and macOS machines; the Flatpak extension in a real Flatpak DAW; loading the plugin in real hosts beyond the automatic validator; the sound by ear on real material.</div>
+
+<h2>Licence and thanks</h2>
+<p>AGPL-3.0-or-later. Built with JUCE (AGPLv3). Fonts: Barlow Condensed and JetBrains Mono, SIL Open Font Licence 1.1 (texts in the source folder <code>assets/fonts</code>). Source: <a href="https://github.com/SpeakingColors/catrack">github.com/SpeakingColors/catrack</a>. Optional support: <a href="https://ko-fi.com/studio87">ko-fi.com/studio87</a>.</p>
+</main></body></html>

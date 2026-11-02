@@ -1,0 +1,50 @@
+CatRack install, remove and use (works fully offline)
+=====================================================
+
+What you get: one VST3 plugin, CatRack, a passive-style tube equalizer (low boost and atten, high boost with
+bandwidth, high atten, a tube stage and an Output level). Free and open source, collects nothing, never uses the network.
+
+This is a test build (pre-release): it has been built and checked by automatic tests, but it has not been tuned by ear
+or tried on every system yet.
+
+Why your computer may warn you
+  The installers are not signed with a paid publisher certificate. Signing costs money every year and this project is free.
+  So Windows SmartScreen and macOS Gatekeeper show a warning for any unsigned installer. It does not mean anything is
+  wrong with the file; you can check it yourself: the SHA256SUMS file in this zip lists the checksum of every file, and
+  the full source code is on GitHub.
+
+Windows
+  Run windows\CatRack-Setup.exe. It installs the VST3 plugin for your DAW
+  (C:\Program Files\Common Files\VST3, fixed location, all users) and the manual
+  (C:\Program Files\Studio 87\CatRack, the folder the installer asks about).
+  If Windows shows a blue "Windows protected your PC" screen: click "More info", then "Run anyway".
+  Remove: Settings > Apps > CatRack > Uninstall. It asks if you also want your saved presets deleted
+  (default is No, so they stay).
+
+macOS
+  Open macos\CatRack-macOS.pkg. It installs the VST3 plugin, the manual and "Uninstall CatRack" (in Applications).
+  If macOS says it cannot be opened: open System Settings > Privacy & Security, scroll down and choose "Open Anyway".
+  Remove: open "Uninstall CatRack" in the Applications folder. It asks if you also want your saved presets deleted
+  (default is Keep).
+
+Linux, DAW installed as a Flatpak (for example Bitwig, Reaper or Ardour from Flathub)
+  1. Your DAW should use the org.freedesktop.Platform 25.08 runtime (check with: flatpak info <DAW id>, Runtime line).
+  2. Install the file from the linux folder:
+       flatpak install --user linux/CatRack-flatpak-25.08.flatpak
+  3. Restart the DAW and rescan plugins.
+  Remove: flatpak uninstall --user org.freedesktop.LinuxAudio.Plugins.CatRack   (removes the plugin completely)
+
+Linux, DAW installed natively
+  Extract linux/CatRack-linux-vst3.tar.gz into ~/.vst3  (create the folder if needed), then rescan plugins.
+  Remove: delete the CatRack.vst3 folder from ~/.vst3.
+  (Linux has no standard plugin icon, so DAWs show none there. The icon file is inside the tarball as CatRack.png.)
+
+Your saved presets (kept on remove unless you choose to delete them)
+  Windows : %APPDATA%\Studio 87\CatRack\presets
+  macOS   : ~/Library/Application Support/Studio 87/CatRack/presets
+  Linux   : ~/.local/share/Studio 87/CatRack/presets  (a Flatpak DAW keeps its own copy under ~/.var/app/<DAW id>/data/)
+  To delete them yourself, remove the Studio 87/CatRack folder at that place.
+
+Manual: CatRack-manual.pdf (every control, the interface tour and notes on what was measured).
+Checksums: SHA256SUMS.
+Licence: AGPL-3.0-or-later (see LICENSE). Free to use, copy and change.

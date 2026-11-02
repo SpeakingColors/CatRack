@@ -1,0 +1,102 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: catrack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Core DSP tests (no JUCE)
+        run: sh tests/run.sh
+      - name: Core DSP tests again with address and undefined-behaviour sanitizers
+        run: |
+          g++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -Wall -Wextra -o /tmp/catr_san tests/test_core.cpp
+          /tmp/catr_san | tail -n 3
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libfreetype-dev libfontconfig1-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev libgl1-mesa-dev xvfb
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release -j4
+      - name: Download pluginval
+        run: |
+          curl -L -o pluginval.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_Linux.zip
+          unzip -o pluginval.zip
+          chmod +x pluginval
+      - name: pluginval (strictness 5)
+        run: xvfb-run -a ./pluginval --strictness-level 5 --skip-gui-tests build/CatRack_artefacts/Release/VST3/CatRack.vst3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CatRack-linux-vst3
+          path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
+
+  editor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libfreetype-dev libfontconfig1-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev libgl1-mesa-dev xvfb
+      - name: Build the snapshot tool
+        run: |
+          cmake -S . -B build-snap -DCMAKE_BUILD_TYPE=Release -DCATR_BUILD_SNAPSHOT=ON
+          cmake --build build-snap --target CatRSnapshot -j4
+      - name: Self tests (parameter mapping, state round trip, editor create and resize)
+        run: xvfb-run -a build-snap/CatRSnapshot_artefacts/Release/CatRSnapshot --selftest tests/fixtures/state-v1.xml
+      - name: Render the real window
+        run: |
+          mkdir -p shots
+          S=build-snap/CatRSnapshot_artefacts/Release/CatRSnapshot
+          xvfb-run -a $S shots/look-C.png 1.0 C none 240
+          xvfb-run -a $S shots/look-A.png 1.0 A none 240
+          xvfb-run -a $S shots/look-B.png 1.0 B none 240
+          xvfb-run -a $S shots/small.png 0.5 C none 60
+          xvfb-run -a $S shots/tip.png 1.0 C tip 60
+          for d in settings guide about presets save export import; do xvfb-run -a $S shots/dialog-$d.png 1.0 C $d 30; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CatRack-editor-snapshots
+          path: shots
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build
+      - name: Build
+        run: cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CatRack-windows-vst3
+          path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release -j4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CatRack-macos-vst3
+          path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
