@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<STATE structure="CR1:0.3|1.5|2.0+3.4" stateVersion="1" look="B" preset="My chain">
+<CATRACK structure="CR1:0.3|1.5|2.0+3.4" stateVersion="1" look="B" preset="My chain">
   <PARAM id="u2p0" value="0.6"/>
   <PARAM id="u1mute" value="1.0"/>
   <PARAM id="smix2" value="40.0"/>
   <PARAM id="inTrim" value="3.0"/>
   <PARAM id="outTrim" value="-2.0"/>
   <PARAM id="bypass" value="1.0"/>
-</STATE>
+</CATRACK>
