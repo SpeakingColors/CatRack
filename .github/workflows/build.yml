@@ -48,6 +48,8 @@ jobs:
 
   editor:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -69,11 +71,19 @@ jobs:
           xvfb-run -a $S shots/look-B.png 1.0 B none 240
           xvfb-run -a $S shots/small.png 0.5 C none 60
           xvfb-run -a $S shots/tip.png 1.0 C tip 60
-          for d in settings guide about presets save export import; do xvfb-run -a $S shots/dialog-$d.png 1.0 C $d 30; done
+          for d in settings guide about presets save export import add clear; do xvfb-run -a $S shots/dialog-$d.png 1.0 C $d 30; done
       - uses: actions/upload-artifact@v4
         with:
           name: CatRack-editor-snapshots
           path: shots
+      - name: Push the pictures to the snapshots branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          d=$(mktemp -d); cp shots/*.png "$d"/
+          git checkout --orphan snapshots; git rm -rf . >/dev/null 2>&1 || true
+          cp "$d"/*.png .; git add *.png; git commit -m "Editor snapshots for $GITHUB_SHA"
+          git push -f origin snapshots
 
   windows:
     runs-on: windows-latest
