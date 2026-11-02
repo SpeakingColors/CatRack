@@ -1,8 +1,8 @@
 CatRack install, remove and use (works fully offline)
 =====================================================
 
-What you get: one VST3 plugin, CatRack, a passive-style tube equalizer (low boost and atten, high boost with
-bandwidth, high atten, a tube stage and an Output level). Free and open source, collects nothing, never uses the network.
+What you get: one VST3 plugin, CatRack, a rack of up to 12 effect units (compressors,
+equalizers, saturators and creative effects) with parallel pairs, presets and meters. Free and open source, collects nothing, never uses the network.
 
 This is a test build (pre-release): it has been built and checked by automatic tests, but it has not been tuned by ear
 or tried on every system yet.
