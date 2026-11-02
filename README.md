@@ -1,20 +1,18 @@
 # CatRack
 
-A free, open source, cat-themed all-in-one channel strip (VST3, Linux first): a rack of units drawn from our effect plugins, for when you want one plugin that does the whole chain.
+A free, open source, cat-themed rack plugin (VST3): up to 12 effect units from our plugin suite in one window, in any order, with parallel pairs, bypass, solo and mute per unit, dB meters, and chain presets.
 
-<p align="center"><img src="docs/screenshot.png" width="900" alt="CatRack design mockup"></p>
-<p align="center"><sub>The interactive design mockup (screenshot). The plugin window will follow it exactly.</sub></p>
+<p align="center"><img src="docs/screenshot.png" width="900" alt="CatRack, rendered by the real plugin editor"></p>
+<p align="center"><sub>The real plugin window, rendered offscreen by the compiled editor in CI. More pictures are in <code>docs/tour/</code>.</sub></p>
 
 ## Status
-Design mockup only. The interactive mockup in `docs/mockup/` runs a WebAudio preview of the planned behaviour. The plugin itself is not built yet; the approved mockup will be ported natively to JUCE (VST3, Linux first). No manual yet: it ships with the plugin.
+Test build (v0.1.0, pre-release). 20 of the 31 units shown in the design mockup are built in; the rest are listed in [ROADMAP.md](ROADMAP.md). 16 factory chains. The units run as built-in code (the pure C++ cores of our plugins); CatRack never loads other plugin files. Not yet listened to by ear or tried in real DAWs. Downloads are on the [Releases page](https://github.com/SpeakingColors/CatRack/releases).
 
-## Try the mockup
-Open `docs/mockup/CatRack.html` in a browser. Nothing is sent anywhere; it works offline (fonts load from Google Fonts when online, with a fallback).
+## Use
+Press **+ Add unit**, pick a unit, tweak its six controls in the panel on the right, drag units by the grip to reorder, drop one on the middle of another to run them side by side. Press **B** to bypass. Every control has a hover info bubble. The window resizes from every edge and corner; double-click the wood to go back to 100%.
 
-## Controls in the mockup
-IN trim, OUT trim, Low Boost, High Boost, High Cut, Input, Ratio, Output, Threshold, Makeup, Low Cut, Bandwidth, Low Freq
-
-Every control has a hover info bubble (66 in total).
+## Tests
+`sh tests/run.sh` runs the core tests without JUCE (latency equals the sum of the rows, stability on every unit, state round trip). CI also builds on Windows, macOS and Linux, runs pluginval and renders the real editor.
 
 ## Privacy
 Collects nothing. No network access.
