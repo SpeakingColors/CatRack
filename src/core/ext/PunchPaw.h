@@ -124,6 +124,7 @@ struct Params
     bool manual = false;           // manual attack and release instead of auto
     float atkMs = 10.0f;           // 0.1..100
     float relMs = 150.0f;          // 10..2000
+    float lookMs = 0.0f;           // 0..5: how far ahead of the audio the detector listens (rack addition)
 };
 
 class Compressor
@@ -131,7 +132,13 @@ class Compressor
 public:
     static constexpr int kM = 32;                 // latency in samples
     static constexpr int kL = 4 * kM + 1;         // FIR length at 4x
-    static constexpr int kLatency = kM;
+    static constexpr int kLatency = kM;           // latency of the ceiling stage alone
+    static constexpr int kXR = 2048;              // input history ring for the lookahead (power of two)
+    static constexpr float kLookMaxMs = 5.0f;     // the audio is always delayed by this much, so the latency never changes
+    static int lookMaxSamples (double fs) { return std::min (kXR - 8, (int) std::lround (fs * kLookMaxMs * 0.001)); }
+    // Total latency in samples at the host rate: lookahead delay (fixed at the maximum) plus the ceiling stage.
+    static int latencyFor (double fs) { return kM + lookMaxSamples (fs); }
+    int latencySamples() const { return kM + lmax; }
     static constexpr int kRing = 64;              // history ring for dry and wet (power of two, > kM + taps)
     static constexpr int kCRing = 256;            // oversampled correction ring (power of two, > kL + 4)
 
@@ -140,6 +147,7 @@ public:
     void prepare (double sampleRate)
     {
         fs = (float) sampleRate;
+        lmax = lookMaxSamples (sampleRate);
         kr = 1.0f - std::exp (-1.0f / (0.008f * fs));       // 8 ms RMS window
         kvu = 1.0f - std::exp (-1.0f / (0.065f * fs));      // meter ballistics
         ks = 1.0f - std::exp (-1.0f / (0.005f * fs));       // 5 ms parameter smoothing
@@ -155,6 +163,8 @@ public:
         ms = 0.0; cur = 0.0f; hx[0] = hx[1] = hy[0] = hy[1] = 0.0f;
         for (auto& c : ring) c.fill (0.0f);
         for (auto& c : dry) c.fill (0.0f);
+        for (auto& c : xr) c.fill (0.0f);
+        xw = 0;
         for (auto& c : cring) c.fill (0.0f);
         wr = 0; cw = 0; hang = 0;
         vuI = vuO = 0.0f; grNow_ = 0.0f; atkNow = 15.0f;
@@ -200,12 +210,21 @@ public:
             if (nch == 1) x[1] = x[0];
             ip = std::max (ip, std::max (std::fabs (x[0]), nch == 2 ? std::fabs (x[1]) : 0.0f));
 
+            // lookahead: the audio is delayed by lmax samples, the detector sees the signal (lmax - look) samples
+            // late, so it is `look` samples ahead of the audio and the total delay stays constant
+            const int lk = std::min (lmax, (int) std::lround (clampf (tgt.lookMs, 0.0f, kLookMaxMs) * 0.001f * fs));
+            xr[0][xw & (kXR - 1)] = x[0]; xr[1][xw & (kXR - 1)] = x[1];
+            const int di2 = (xw - (lmax - lk)) & (kXR - 1), da = (xw - lmax) & (kXR - 1);
+            const float det0 = xr[0][di2], det1 = xr[1][di2];
+            const float xa[2] = { xr[0][da], xr[1][da] };
+            ++xw;
+
             // detector: sidechain high-pass, then true RMS of both channels together
-            float s0 = x[0], s1 = x[1];
+            float s0 = det0, s1 = det1;
             if (hpA > 0.0f)
             {
-                float y = hpA * (hy[0] + x[0] - hx[0]); hx[0] = x[0]; hy[0] = y; s0 = y;
-                y = hpA * (hy[1] + x[1] - hx[1]); hx[1] = x[1]; hy[1] = y; s1 = y;
+                float y = hpA * (hy[0] + det0 - hx[0]); hx[0] = det0; hy[0] = y; s0 = y;
+                y = hpA * (hy[1] + det1 - hx[1]); hx[1] = det1; hy[1] = y; s1 = y;
             }
             ms += ((double) (s0 * s0 + s1 * s1) * 0.5 - ms) * (double) kr;
             if (ms < 1.0e-20) ms = 0.0;
@@ -234,7 +253,7 @@ public:
             float o[2] = { 0, 0 };
             for (int c = 0; c < nch; ++c)
             {
-                const float d = x[c];
+                const float d = xa[c];
                 const float w = d * g;
                 float y = cu.mix >= 0.9999f ? w : d + (w - d) * cu.mix;
                 if (! std::isfinite (y)) { softReset(); y = 0.0f; }
@@ -354,6 +373,7 @@ private:
     std::array<float, kL> h {};
     std::array<std::array<float, kRing>, 2> ring {}, dry {};
     std::array<std::array<float, kCRing>, 2> cring {};
-    int wr = 0, cw = 0;
+    int wr = 0, cw = 0, xw = 0, lmax = 240;
+    std::array<std::array<float, kXR>, 2> xr {};
 };
 } // namespace pp

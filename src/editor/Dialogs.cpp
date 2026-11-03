@@ -384,6 +384,7 @@ public:
         const String k = abQuery.toLowerCase();
         for (int i = 0; i < catr::kNumUnits; ++i)
         {
+            if (! catr::hosted (i)) continue;   // Cat Spacer, Stretch Cat and Copycat are standalone plugins, not rack units
             const auto& u = catr::unitTable()[i];
             const String hay = (String::fromUTF8 (u.name) + " " + u.kind + " " + u.blurb + " " + u.cat).toLowerCase();
             if (k.isNotEmpty() ? hay.contains (k) : (abCat == "All" || abCat == u.cat)) shown.push_back (i);

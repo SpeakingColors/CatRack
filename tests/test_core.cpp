@@ -122,7 +122,7 @@ static void testLatencyMeasured()
     r2.process (a.data(), b.data(), 4096, c2);
     int n = 0; for (size_t i = 0; i < a.size(); ++i) if (std::fabs (a[i]) > 0.0008f) ++n;
     std::printf ("  pair latency %d, samples above threshold %d\n", g2.totalLat, n);
-    CHECK (g2.totalLat == pp::Compressor::kLatency, "a pair reports the larger lane latency");
+    CHECK (g2.totalLat == pp::Compressor::latencyFor (fs), "a pair reports the larger lane latency");
     CHECK (n >= 1 && n <= 3 && std::abs (peakIndex (a) - 200 - g2.totalLat) <= 2, "both lanes of a pair arrive at the same time (one clean click, no echo)");
 }
 
@@ -398,6 +398,30 @@ static void testBatchB()
     }
 }
 
+static void testPunchLookahead()
+{
+    // a loud step after silence: with lookahead the gain is already down when the step reaches the output
+    const double fs = 48000;
+    auto run = [&] (float look)
+    {
+        pp::Compressor c; pp::Params p;
+        p.thrDb = -30.0f; p.slope = 0.05f; p.ceilDb = 0.0f; p.manual = true; p.atkMs = 1.0f; p.relMs = 100.0f; p.lookMs = look;
+        c.prepare (fs); c.setParams (p); c.snapParams();
+        std::vector<float> l (4800, 0.0f), r (4800, 0.0f);
+        for (int i = 1000; i < 4800; ++i) { l[i] = r[i] = 0.9f * std::sin (0.1f * (float) i); }
+        c.process (l.data(), r.data(), 4800, false);
+        const int lat = c.latencySamples();
+        // peak in the first 2 ms after the step arrives at the output
+        float pk = 0.0f;
+        for (int i = 1000 + lat; i < 1000 + lat + 96; ++i) pk = std::max (pk, std::fabs (l[i]));
+        return std::make_pair (pk, lat);
+    };
+    const auto a = run (0.0f), b = run (5.0f);
+    std::printf ("  lookahead peak off %.3f on %.3f, latency %d / %d\n", a.first, b.first, a.second, b.second);
+    CHECK (a.second == b.second, "lookahead setting does not change the reported latency");
+    CHECK (b.first < a.first * 0.8f, "lookahead lets the unit pull a sudden step down before it arrives");
+}
+
 int main()
 {
     std::printf ("CatRack core tests\n");
@@ -410,6 +434,7 @@ int main()
     testMeters();
     testBatchA();
     testBatchB();
+    testPunchLookahead();
     std::printf ("%d checks, %d failed\n", checks, fails);
     return fails ? 1 : 0;
 }

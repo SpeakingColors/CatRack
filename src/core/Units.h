@@ -168,14 +168,14 @@ struct PunchUnit : IUnit
     pp::Compressor c; pp::Params p;
     void prepare (double fs, int) override { c.prepare (fs); c.setParams (p); }
     void reset() override { c.reset(); }
-    // punch, ceiling, release, lookahead (fixed in the core, no effect yet), soft clip, mix
+    // punch, ceiling, release, lookahead (the detector listens this many ms ahead of the audio), soft clip, mix
     void setParams (const float* v) override
     {
         p.thrDb = clampf (v[1] - v[0] * 0.12f - v[4] * 0.05f, -40.0f, 0.0f); p.slope = 0.05f; p.outDb = 0.0f; p.hpHz = 0.0f;
-        p.mix = v[5] / 100.0f; p.ceilDb = v[1]; p.soft = v[4] > 0.5f; p.manual = true; p.atkMs = 1.0f; p.relMs = v[2]; c.setParams (p);
+        p.mix = v[5] / 100.0f; p.ceilDb = v[1]; p.soft = v[4] > 0.5f; p.manual = true; p.atkMs = 1.0f; p.relMs = v[2]; p.lookMs = v[3]; c.setParams (p);
     }
     void process (float* l, float* r, int n) override { c.process (l, r, n, false); }
-    int latency() const override { return pp::Compressor::kLatency; }
+    int latency() const override { return c.latencySamples(); }
     float grDb() const override { return std::fabs (c.grNow()); }
 };
 
