@@ -16,7 +16,7 @@ static PSlot makeSlot (int type, const var& over)
 {
     PSlot s; s.type = type;
     const auto& d = catr::unitTable()[type];
-    for (int k = 0; k < 6; ++k) s.p[k] = k < d.nParams ? d.p[k].def : 0.0f;
+    for (int k = 0; k < catr::kMaxParams; ++k) s.p[k] = k < d.nParams ? d.p[k].def : 0.0f;
     if (auto* o = over.getDynamicObject())
         for (int k = 0; k < d.nParams; ++k)
             if (o->hasProperty (d.p[k].id))
@@ -47,13 +47,13 @@ const std::vector<Preset>& factory()
                         for (auto& a : *par)
                         {
                             const int t = typeOfKey (a[0].toString());
-                            if (t < 0 || t >= catr::kBuiltUnits) ok = false; else st.slots.push_back (makeSlot (t, a[1]));
+                            if (t < 0 || ! catr::hosted (t)) ok = false; else st.slots.push_back (makeSlot (t, a[1]));
                         }
                     }
                     else
                     {
                         const int t = typeOfKey (c["u"].toString());
-                        if (t < 0 || t >= catr::kBuiltUnits) ok = false; else st.slots.push_back (makeSlot (t, c["o"]));
+                        if (t < 0 || ! catr::hosted (t)) ok = false; else st.slots.push_back (makeSlot (t, c["o"]));
                     }
                     if (! st.slots.empty()) p.stages.push_back (st);
                 }
@@ -108,7 +108,7 @@ bool valid (const var& o)
         for (auto& s : *slots)
         {
             const int t = typeOfKey (s["t"].toString());
-            if (t < 0 || t >= catr::kBuiltUnits) return false;   // a unit this version does not host: refuse
+            if (t < 0 || ! catr::hosted (t)) return false;   // a unit this version does not host: refuse
             auto* pa = s["p"].getArray();
             if (pa == nullptr || pa->size() != catr::unitTable()[t].nParams) return false;
             for (auto& v : *pa)
@@ -142,7 +142,7 @@ Preset fromVar (const var& o)
                 for (auto& s : *slots)
                 {
                     const int ty = typeOfKey (s["t"].toString());
-                    if (ty < 0 || ty >= catr::kBuiltUnits) continue;
+                    if (ty < 0 || ! catr::hosted (ty)) continue;
                     PSlot ps = makeSlot (ty, var());
                     ps.on = (bool) s["on"]; ps.solo = (bool) s["solo"]; ps.mute = (bool) s["mute"];
                     ps.lane = jlimit (-24.0f, 6.0f, (float) (double) s["lane"]);

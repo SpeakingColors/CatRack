@@ -6,6 +6,7 @@
 #include "../src/core/Rack.h"
 #include <cstdio>
 #include <random>
+#include <string>
 
 using namespace catr;
 static int fails = 0, checks = 0;
@@ -38,8 +39,9 @@ static void testUnitsStable()
     std::mt19937 rng (7);
     std::uniform_real_distribution<float> U (0.0f, 1.0f);
     for (double fs : { 44100.0, 48000.0, 96000.0, 192000.0 })
-        for (int t = 0; t < kBuiltUnits; ++t)
+        for (int t = 0; t < kNumUnits; ++t)
         {
+            if (! hosted (t)) continue;
             auto u = makeUnit (t);
             u->prepare (fs, kChunk);
             const auto& d = unitTable()[t];
@@ -241,6 +243,92 @@ static void testMeters()
     CHECK (rack.inPk[0].load() > 0.8f && rack.outPk[0].load() > 0.1f, "input and output peaks are captured");
 }
 
+// ---- units added from the other plugins (batch tests) ----------------------------------------------------------------
+static int typeOfKey (const char* key) { for (int t = 0; t < kNumUnits; ++t) if (std::string (unitTable()[t].key) == key) return t; return -1; }
+static int paramOf (int t, const char* id) { const auto& d = unitTable()[t]; for (int k = 0; k < d.nParams; ++k) if (std::string (d.p[k].id) == id) return k; return -1; }
+// run n blocks of a stereo sine through a unit with the given control values; returns the last block
+static void runUnit (IUnit& u, const float* v, int blocks, float amp, std::vector<float>& l, std::vector<float>& r, bool silent = false)
+{
+    l.assign (kChunk, 0.0f); r.assign (kChunk, 0.0f);
+    static double ph = 0;
+    for (int b = 0; b < blocks; ++b)
+    {
+        for (int i = 0; i < kChunk; ++i) { l[i] = silent ? 0.0f : amp * (float) std::sin (ph); r[i] = l[i]; ph += 2 * kPi * 440.0 / 48000.0; }
+        u.setParams (v); u.process (l.data(), r.data(), kChunk);
+    }
+}
+static void testHostedBatch (std::initializer_list<const char*> keys)
+{
+    for (const char* key : keys)
+    {
+        const int t = typeOfKey (key); char m[200];
+        CHECK (t >= 0 && hosted (t), key);
+        if (t < 0) continue;
+        const auto& d = unitTable()[t];
+        // 1. mix at 0 leaves the sound alone (units that have a mix control)
+        int mi = paramOf (t, "mix"); if (mi < 0) mi = paramOf (t, "dmix");
+        if (mi >= 0)
+        {
+            auto u = makeUnit (t); u->prepare (48000.0, kChunk);
+            float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+            v[mi] = 0.0f;
+            std::vector<float> l, r; runUnit (*u, v, 400, 0.5f, l, r);
+            double maxd = 0; int zero = 0;      // the input was a sine with left equal to right: both must still be that sine
+            for (int i = 0; i < kChunk; ++i) { if (std::fabs (l[i]) < 1e-6f) ++zero; maxd = std::max (maxd, (double) std::fabs (l[i] - r[i])); }
+            std::snprintf (m, sizeof m, "%s: mix 0 passes the sound (not silent, channels equal)", d.name);
+            CHECK (maxd < 1e-3 && zero < kChunk / 2, m);
+        }
+        // 2. default settings make sound, finite, bounded
+        {
+            auto u = makeUnit (t); u->prepare (44100.0, kChunk);
+            float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+            std::vector<float> l, r; runUnit (*u, v, 300, 0.3f, l, r);
+            float pk = 0; bool fin = true;
+            for (int i = 0; i < kChunk; ++i) { pk = std::max (pk, std::fabs (l[i])); fin = fin && std::isfinite (l[i]) && std::isfinite (r[i]); }
+            std::snprintf (m, sizeof m, "%s: defaults give a finite, audible, bounded signal (peak %.3f)", d.name, pk);
+            CHECK (fin && pk > 0.01f && pk < 4.0f, m);
+        }
+    }
+}
+static void testBatchA()
+{
+    testHostedBatch ({ "shm", "sdl", "hbl", "scr" });
+    // Shimmer Reverb has a tail: a click, then silence, still rings half a second later
+    {
+        const int t = typeOfKey ("shm"); auto u = makeUnit (t); u->prepare (48000.0, kChunk);
+        const auto& d = unitTable()[t]; float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+        std::vector<float> l (kChunk, 0.0f), r (kChunk, 0.0f); l[0] = r[0] = 0.8f; u->setParams (v); u->process (l.data(), r.data(), kChunk);
+        double e = 0; for (int b = 0; b < 100; ++b) { std::fill (l.begin(), l.end(), 0.0f); std::fill (r.begin(), r.end(), 0.0f); u->setParams (v); u->process (l.data(), r.data(), kChunk); if (b >= 90) for (float x : l) e += (double) x * x; }
+        CHECK (e > 1e-9, "Shimmer Reverb still rings 0.5 s after a click");
+    }
+    // Shimmer Delay: a click comes back after the delay time
+    {
+        const int t = typeOfKey ("sdl"); auto u = makeUnit (t); u->prepare (48000.0, kChunk);
+        const auto& d = unitTable()[t]; float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+        v[paramOf (t, "dtime")] = 100.0f; v[paramOf (t, "dmix")] = 100.0f; v[paramOf (t, "dshift")] = 0.0f; v[paramOf (t, "dshim")] = 0.0f;
+        std::vector<float> l (kChunk), r (kChunk); double back = 0; int n = 0;
+        for (int b = 0; b < 100; ++b) { std::fill (l.begin(), l.end(), 0.0f); std::fill (r.begin(), r.end(), 0.0f); u->setParams (v); u->process (l.data(), r.data(), kChunk); }   // let the time knob settle
+        for (int b = 0; b < 60; ++b)
+        {
+            std::fill (l.begin(), l.end(), 0.0f); std::fill (r.begin(), r.end(), 0.0f); if (b == 0) l[0] = r[0] = 0.9f;
+            u->setParams (v); u->process (l.data(), r.data(), kChunk);
+            for (int i = 0; i < kChunk; ++i, ++n) if (n > 4000 && n < 6000) back = std::max (back, (double) std::fabs (l[i]));   // 100 ms is 4800 samples at 48 kHz
+        }
+        CHECK (back > 0.05, "Shimmer Delay: the repeat arrives about 100 ms after the click");
+    }
+    // Hairball: freeze keeps playing after the input stops
+    {
+        const int t = typeOfKey ("hbl"); auto u = makeUnit (t); u->prepare (48000.0, kChunk);
+        const auto& d = unitTable()[t]; float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+        v[paramOf (t, "liveLen")] = 0.5f;
+        std::vector<float> l, r; runUnit (*u, v, 400, 0.5f, l, r);          // the half second buffer is full
+        v[paramOf (t, "freeze")] = 1.0f; runUnit (*u, v, 20, 0.5f, l, r);
+        runUnit (*u, v, 60, 0.0f, l, r, true);
+        double e = 0; for (float x : l) e += (double) x * x;
+        CHECK (e > 1e-6, "Hairball: Freeze keeps the sound going after the input is silent");
+    }
+}
+
 int main()
 {
     std::printf ("CatRack core tests\n");
@@ -251,6 +339,7 @@ int main()
     testResponsiveness();
     testColourStages();
     testMeters();
+    testBatchA();
     std::printf ("%d checks, %d failed\n", checks, fails);
     return fails ? 1 : 0;
 }

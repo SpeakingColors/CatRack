@@ -15,6 +15,7 @@ inline float linToDb (float x) { return 20.0f * std::log10 (std::max (x, 1.0e-9f
 inline float flushf (float x) { return std::fabs (x) < 1.0e-20f ? 0.0f : x; }
 inline float finitef (float x) { return std::isfinite (x) ? x : 0.0f; }
 inline float clampf (float v, float lo, float hi) { return v < lo ? lo : (v > hi ? hi : v); }
+inline int clampi (int v, int lo, int hi) { return v < lo ? lo : (v > hi ? hi : v); }
 
 // One pole parameter smoother. advance (n) moves it n samples in one step.
 struct Smooth

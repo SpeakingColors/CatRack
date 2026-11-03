@@ -68,8 +68,9 @@ static int selfTest (const juce::File& fixture)
     // every hosted unit type can be put in a slot, and the reported latency is the sum of the rows
     {
         bool all = true, latOk = true;
-        for (int t = 0; t < catr::kBuiltUnits; ++t)
+        for (int t = 0; t < catr::kNumUnits; ++t)
         {
+            if (! catr::hosted (t)) continue;
             catr::Structure s; s.slotType[0] = t; s.nStages = 1; s.st[0].n = 1; s.st[0].slot[0] = 0;
             a.commitStructure (s, true);
             all = all && a.slotType (0) == t && a.structure().unitCount() == 1;

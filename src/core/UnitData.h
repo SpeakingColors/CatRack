@@ -3,8 +3,7 @@
 #include <cstdint>
 namespace catr {
 constexpr int kNumUnits = 31;
-constexpr int kBuiltUnits = 20;
-constexpr int kMaxParams = 6;
+constexpr int kMaxParams = 18;
 enum Viz { VizGr = 0, VizEq = 1, VizWet = 2 };
 struct ParamDef { const char* id; const char* label; const char* shortLabel; const char* longLabel; float mn, mx, def; const char* unit; int dec; const char* tip; bool logScale; int nNames; const char* names[12]; const char* sn[12]; };
 struct UnitDef { const char* key; const char* name; const char* code; const char* kind; const char* cat; const char* src; const char* blurb; uint32_t color; int viz; bool analyser; int nParams; ParamDef p[18]; };
@@ -279,4 +278,7 @@ inline const UnitDef* unitTable()
     };
     return t;
 }
+constexpr bool kHostedTable[kNumUnits] = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, true, true, true, true, false, false };
+inline bool hosted(int t) { return t >= 0 && t < kNumUnits && kHostedTable[t]; }
+constexpr int kBuiltUnits = 24;   // how many are hosted
 } // namespace catr

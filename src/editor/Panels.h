@@ -267,17 +267,33 @@ public:
         const int n = u->nParams;
         const int ks = n > 6 ? 40 : 52;
         const float colW = w / 3.0f;
-        for (int i = 0; i < n; ++i)
+        constexpr int PG = 9;                                   // as in the mockup: nine knobs a page
+        const int npg = (n + PG - 1) / PG;
+        if (slot != pageSlot || type != pageType) { page = 0; pageSlot = slot; pageType = type; }
+        page = jlimit (0, jmax (0, npg - 1), page);
+        const int first = page * PG, cnt = jmin (PG, n - first);
+        for (int j = 0; j < cnt; ++j)
         {
+            const int i = first + j;
             auto* k = new KnobWidget (ctx, KnobWidget::Detail, ks);
             knobs.add (k); addAndMakeVisible (k);
             k->bind (slotBinding (host.proc(), slot, i), col);
             k->onEdited = [this] { host.edited(); };
-            const int cx = i % 3, cr = i / 3;
+            const int cx = j % 3, cr = j / 3;
             k->setBounds (roundToInt (x0 + (float) cx * colW), roundToInt (y + (float) cr * (15.0f + (float) ks + 12.0f + 4.0f)), roundToInt (colW), 15 + ks + 12);
         }
-        const int rowsN = (n + 2) / 3;
+        const int rowsN = (cnt + 2) / 3;
         y += (float) rowsN * (15.0f + (float) ks + 12.0f) + (float) (rowsN - 1) * 4.0f + 7.0f;
+        if (npg > 1)
+        {
+            auto* pg = new SegPair (ctx, "Controls 1 of " + String (npg), "Controls 2 of " + String (npg));
+            kids.add (pg); addAndMakeVisible (pg);
+            pg->setBounds (roundToInt (x0), roundToInt (y), roundToInt (w), 24);
+            pg->selectedIdx = page;
+            pg->tips[0] = pg->tips[1] = "This unit has more controls than fit at once. Switch between the pages.";
+            pg->onPick = [this] (int i) { page = i; Component::SafePointer<Component> sp (this); MessageManager::callAsync ([this, sp] { if (sp != nullptr) rebuild(); }); };
+            y += 24.0f + 7.0f;
+        }
         capRect = { x0, y, w, 13.0f };
         y += 13.0f + 7.0f;
         dispRect = { x0, y, 270.0f, n > 6 ? 52.0f : 66.0f };
@@ -414,7 +430,7 @@ public:
 
 private:
     RackHost& host;
-    int slot = -1, row = -1, lane = -1, type = 0;
+    int slot = -1, row = -1, lane = -1, type = 0, page = 0, pageSlot = -1, pageType = -1;
     const catr::UnitDef* u = nullptr;
     Colour col;
     catr::Structure s;

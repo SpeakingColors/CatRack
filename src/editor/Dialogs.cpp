@@ -428,7 +428,7 @@ public:
             const auto& u = catr::unitTable()[shown[n]];
             auto r = itemRect ((int) n);
             if (r.getBottom() < gridR.getY() || r.getY() > gridR.getBottom()) continue;
-            const bool ok = shown[n] < catr::kBuiltUnits && ! full;
+            const bool ok = catr::hosted (shown[n]) && ! full;
             const float a = ok ? 1.0f : 0.4f;
             const bool hot = (int) n == hover && ok;
             auto rf = r.toFloat();
@@ -436,7 +436,7 @@ public:
             g.setColour ((hot ? theme::selb : t.line).withMultipliedAlpha (a)); g.drawRoundedRectangle (rf.reduced (0.5f), 5.0f, 1.0f);
             { Graphics::ScopedSaveState s2 (g); g.reduceClipRegion (r.withWidth (3)); g.setColour (Colour (u.color).withMultipliedAlpha (a)); g.fillRoundedRectangle (rf, 5.0f); }
             g.setColour (Colour (u.color).withMultipliedAlpha (a)); g.fillEllipse (rf.getX() + 13.0f, rf.getY() + 15.0f, 8.0f, 8.0f);
-            const String src = shown[n] < catr::kBuiltUnits ? String::fromUTF8 (u.src) : String ("Planned");
+            const String src = catr::hosted (shown[n]) ? String::fromUTF8 (u.src) : String ("Planned");
             drawText (g, String::fromUTF8 (u.name), { rf.getX() + 29.0f, rf.getY() + 6.0f, rf.getWidth() - 140.0f, 20.0f }, theme::font (theme::FontKind::brand, 16.0f), t.ink.withMultipliedAlpha (a), Justification::centredLeft);
             drawText (g, src.toUpperCase(), { rf.getRight() - 130.0f, rf.getY() + 6.0f, 120.0f, 20.0f }, theme::font (theme::FontKind::regular, 11.0f), t.dim.withMultipliedAlpha (a), Justification::centredRight, 1.0f);
             String d = String::fromUTF8 (u.blurb);
@@ -462,7 +462,7 @@ public:
         const int i = indexAt (e.getPosition());
         if (i < 0) return;
         const int t = shown[(size_t) i];
-        if (t >= catr::kBuiltUnits) { host.toast (String::fromUTF8 (catr::unitTable()[t].name) + " is planned for a later version"); return; }
+        if (! catr::hosted (t)) { host.toast (String::fromUTF8 (catr::unitTable()[t].name) + " is planned for a later version"); return; }
         if (host.unitCount() >= catr::kMaxUnits) return;
         modal.close();
         host.addUnit (t);

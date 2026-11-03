@@ -30,7 +30,7 @@ AudioProcessorValueTreeState::ParameterLayout CatRackProcessor::createLayout()
     for (int s = 0; s < catr::kMaxUnits; ++s)
     {
         auto grp = std::make_unique<AudioProcessorParameterGroup> ("slot" + String (s), "Slot " + String (s + 1), " | ");
-        for (int k = 0; k < 6; ++k) grp->addChild (std::make_unique<SlotParam> (*this, s, k));
+        for (int k = 0; k < catr::kMaxPd; ++k) grp->addChild (std::make_unique<SlotParam> (*this, s, k));
         grp->addChild (std::make_unique<AudioParameterBool> (ParameterID { slotId (s, "on"), v }, "Slot " + String (s + 1) + " on", true));
         grp->addChild (std::make_unique<AudioParameterBool> (ParameterID { slotId (s, "solo"), v }, "Slot " + String (s + 1) + " solo", false));
         grp->addChild (std::make_unique<AudioParameterBool> (ParameterID { slotId (s, "mute"), v }, "Slot " + String (s + 1) + " mute", false));
@@ -60,7 +60,7 @@ CatRackProcessor::CatRackProcessor()
 {
     for (int s = 0; s < catr::kMaxUnits; ++s)
     {
-        for (int k = 0; k < 6; ++k)
+        for (int k = 0; k < catr::kMaxPd; ++k)
         {
             slotP[(size_t) s][(size_t) k] = apvts.getParameter ("u" + String (s) + "p" + String (k));
             rawP[(size_t) s][(size_t) k] = apvts.getRawParameterValue ("u" + String (s) + "p" + String (k));
@@ -146,7 +146,7 @@ void CatRackProcessor::resetSlotControls (int slot)
     if (t >= 0)
     {
         const auto& d = catr::unitTable()[t];
-        for (int k = 0; k < 6; ++k)
+        for (int k = 0; k < catr::kMaxPd; ++k)
             slotP[(size_t) slot][(size_t) k]->setValueNotifyingHost (k < d.nParams ? catr::toNorm (d.p[k], d.p[k].def) : 0.5f);
     }
     apvts.getParameter (slotId (slot, "on"))->setValueNotifyingHost (1.0f);
@@ -224,9 +224,9 @@ void CatRackProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
         sc.lane = rawLane[(size_t) s]->load();
         ctl.stageMix[s] = rawMix[(size_t) s]->load();
         const int t = (int) ((packed >> (s * 5)) & 31u);
-        if (t >= catr::kBuiltUnits) continue;
+        if (! catr::hosted (t)) continue;
         const auto& d = catr::unitTable()[t];
-        for (int k = 0; k < d.nParams && k < 6; ++k) sc.p[k] = catr::fromNorm (d.p[k], rawP[(size_t) s][(size_t) k]->load());
+        for (int k = 0; k < d.nParams && k < catr::kMaxPd; ++k) sc.p[k] = catr::fromNorm (d.p[k], rawP[(size_t) s][(size_t) k]->load());
     }
     ctl.inDb = rawIn->load(); ctl.outDb = rawOut->load(); ctl.bypass = rawBypass->load() > 0.5f;
 

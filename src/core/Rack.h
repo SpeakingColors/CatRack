@@ -16,7 +16,7 @@ namespace catr
 {
 constexpr int kMaxUnits = 12;
 constexpr int kChunk = 256;          // the rack works in blocks of at most this many samples
-constexpr int kMaxPd = 6;
+constexpr int kMaxPd = kMaxParams;   // 18: the biggest unit has 17 controls
 
 // ---- control value mapping (the mockup's own rules) ----------------------------------------------------------------
 inline float stepOf (const ParamDef& d) { return d.nNames > 0 ? 1.0f : (d.dec > 0 ? std::pow (10.0f, (float) -d.dec) : 1.0f); }
@@ -83,7 +83,7 @@ struct Structure
                 if (! readInt (slot) || i >= n || text[i] != '.') return false;
                 ++i;
                 if (! readInt (type)) return false;
-                if (slot < 0 || slot >= kMaxUnits || type < 0 || type >= kBuiltUnits || r.slotType[slot] >= 0 || g.n >= 2) return false;
+                if (slot < 0 || slot >= kMaxUnits || type < 0 || ! hosted (type) || r.slotType[slot] >= 0 || g.n >= 2) return false;
                 r.slotType[slot] = type; g.slot[g.n++] = slot; ++used;
                 if (i < n && text[i] == '+') { ++i; continue; }
                 break;

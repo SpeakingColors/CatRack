@@ -110,8 +110,8 @@ private:
     std::atomic<uint64_t> typesPacked { ~(uint64_t) 0 };
     std::atomic<int> structVer { 0 };
 
-    std::array<std::array<juce::RangedAudioParameter*, 6>, catr::kMaxUnits> slotP {};
-    std::array<std::array<std::atomic<float>*, 6>, catr::kMaxUnits> rawP {};
+    std::array<std::array<juce::RangedAudioParameter*, catr::kMaxPd>, catr::kMaxUnits> slotP {};
+    std::array<std::array<std::atomic<float>*, catr::kMaxPd>, catr::kMaxUnits> rawP {};
     std::array<std::atomic<float>*, catr::kMaxUnits> rawOn {}, rawSolo {}, rawMute {}, rawLane {}, rawMix {};
     std::atomic<float>* rawIn = nullptr; std::atomic<float>* rawOut = nullptr; std::atomic<float>* rawBypass = nullptr;
     catr::Ctl ctl;

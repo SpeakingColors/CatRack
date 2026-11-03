@@ -7,16 +7,20 @@
 #include "ext/Apurrr2500.h"
 #include "ext/FetlinePounce.h"
 #include "ext/Furchild.h"
+#include "ext/HairballCore.h"
 #include "ext/LapCat2A.h"
 #include "ext/Pawltec.h"
 #include "ext/PunchPaw.h"
 #include "ext/Purrrstressor.h"
+#include "ext/ScfxEngine.h"
+#include "ext/ShimmerReverb.h"
 #include <memory>
 
 namespace catr
 {
 enum UnitType { U_PURR = 0, U_FUR, U_LAP, U_PAW, U_FET, U_PUNCH, U_APU, U_CLW, U_TMS, U_PEQ, U_PDR, U_PTR, U_PFZ,
-                U_ECH, U_CHO, U_PHA, U_FLN, U_AIR, U_MS, U_GAN };
+                U_ECH, U_CHO, U_PHA, U_FLN, U_AIR, U_MS, U_GAN,
+                U_MXZ, U_CRC, U_FAT, U_SPC, U_BAS, U_SHM, U_SDL, U_HBL, U_SCR, U_STC, U_CPY };
 
 struct IUnit
 {
@@ -579,6 +583,103 @@ struct GanUnit : IUnit
     }
 };
 
+// ---- Hairball (grain freeze, FX mode) --------------------------------------------------------------------------------
+struct HbUnit : IUnit
+{
+    hb::Engine eng; hb::Params P;
+    void prepare (double sr, int) override { eng.prepare (sr); P.setDefaults(); P[hb::pMode] = 1.0f; eng.setParams (P); }
+    void reset() override { eng.reset(); }
+    void setParams (const float* v) override
+    {
+        P[hb::pMode] = 1.0f;
+        P[hb::pFreeze] = v[0]; P[hb::pHold] = v[1]; P[hb::pCaptureOffset] = v[2]; P[hb::pLiveLen] = v[3]; P[hb::pGrainLen] = v[4];
+        P[hb::pSpacing] = v[5]; P[hb::pWaveSpacing] = v[6]; P[hb::pPitch] = v[7]; P[hb::pDance] = v[8]; P[hb::pRiseOn] = v[9];
+        P[hb::pRiseTime] = v[10]; P[hb::pRisePitch] = v[11]; P[hb::pWidth] = v[12]; P[hb::pDrive] = v[13]; P[hb::pTransistor] = v[14];
+        P[hb::pFuzz] = v[15]; P[hb::pMix] = v[16]; P[hb::pOut] = v[17];
+        eng.setParams (P);
+    }
+    void process (float* l, float* r, int n) override { eng.process (l, r, l, r, n); }
+};
+
+// ---- Shimmer Reverb (five reverbs) ------------------------------------------------------------------------------------
+struct ShimRevUnit : IUnit
+{
+    wm::engine::ReverbUnit rev; wm::engine::ReverbSettings rs; Smooth mix;
+    void prepare (double sr, int) override { rev.prepare ((float) sr); mix.setup (sr, 15.0); mix.snap (0.35f); }
+    void reset() override { rev.reset(); mix.snap (mix.t); }
+    void setParams (const float* v) override
+    {
+        using wm::engine::ReverbType;
+        static const ReverbType map[5] = { ReverbType::Plate, ReverbType::Hall, ReverbType::Plate, ReverbType::Hall, ReverbType::Velvet };
+        const int ty = clampi ((int) (v[3] + 0.5f), 0, 4);
+        rs.type = map[ty]; rs.shimmer = ty == 2 || ty == 3; rs.lexBlend = 0.0f; rs.level = 1.0f;
+        rs.p.decay = v[0] * 0.01f; rs.shimmerAmount = v[1] * 0.01f; mix.set (v[2] * 0.01f);
+        rs.p.size = v[4]; rs.p.preDelayMs = v[5]; rs.p.dampHz = v[6]; rs.shimmerSemis = v[7]; rs.p.modDepth = v[8] * 0.01f;
+        rs.p.color = v[9] * 0.01f; rs.shimmer2Semis = v[10]; rs.shimmer2Amount = v[11] * 0.01f; rs.wetHpHz = v[12]; rs.wetLpHz = v[13];
+    }
+    void process (float* l, float* r, int n) override
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            rs.mix = mix.next();
+            float ol, orr; rev.process (l[i], r[i], ol, orr, rs);
+            if (! std::isfinite (ol) || ! std::isfinite (orr) || std::fabs (ol) > 50.0f || std::fabs (orr) > 50.0f) { rev.reset(); ol = orr = 0.0f; }
+            l[i] = ol; r[i] = orr;
+        }
+    }
+};
+
+// ---- Shimmer Delay -----------------------------------------------------------------------------------------------------
+struct ShimDelUnit : IUnit
+{
+    wm::engine::ShimmerDelay del; wm::engine::ShimmerDelayParams dp; Smooth time, mix, fb;
+    void prepare (double sr, int) override { del.prepare ((float) sr); time.setup (sr, 80.0); mix.setup (sr, 15.0); fb.setup (sr, 15.0); time.snap (450.0f); mix.snap (0.4f); fb.snap (0.55f); }
+    void reset() override { del.reset(); time.snap (time.t); mix.snap (mix.t); fb.snap (fb.t); }
+    void setParams (const float* v) override
+    {
+        time.set (v[0]); fb.set (v[1] * 0.01f); mix.set (v[2] * 0.01f);
+        dp.shiftSemis = v[3]; dp.shimmerAmount = v[4] * 0.01f; dp.dampHz = v[5];
+    }
+    void process (float* l, float* r, int n) override
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            dp.timeMs = time.next(); dp.feedback = fb.next(); dp.mix = mix.next();
+            float ol, orr; del.process (l[i], r[i], ol, orr, dp);
+            if (! std::isfinite (ol) || ! std::isfinite (orr) || std::fabs (ol) > 50.0f || std::fabs (orr) > 50.0f) { del.reset(); ol = orr = 0.0f; }
+            l[i] = ol; r[i] = orr;
+        }
+    }
+};
+
+// ---- Scratch Cat FX (scratch deck on the live input, EQ, colour, one effect) --------------------------------------------
+struct ScrUnit : IUnit
+{
+    scfx::Engine eng; scfx::FxParams fp; bool lastBrake = false, lastBack = false;
+    void prepare (double sr, int) override
+    {
+        eng.prepare (sr);
+        float z[1024] {}, o[1024] {};
+        eng.process (fp, 1024, z, z, o, o);          // sizes the engine's work buffers now, not on the audio thread
+        eng.prepare (sr);
+        fp.fxOn[0] = true; fp.chainMix = 1.0f;
+    }
+    void reset() override { eng.deck.goLive(); }
+    void setParams (const float* v) override
+    {
+        const bool touch = v[3] > 0.5f, brake = v[1] > 0.5f, back = v[2] > 0.5f;
+        if (brake && ! lastBrake) eng.brake();
+        if (back && ! lastBack) eng.backspin();
+        if (! brake && ! back && ! touch && lastBrake) eng.goLive();
+        lastBrake = brake; lastBack = back;
+        eng.touch (touch, (double) v[0]);
+        fp.eqLo = v[4]; fp.eqMid = v[5]; fp.eqHi = v[6]; fp.colour = v[7] * 0.01f; fp.trimDb = v[8];
+        fp.fxType[0] = scfx::FxFilter + clampi ((int) (v[9] + 0.5f), 0, 4); fp.fxOn[0] = true;
+        fp.fxP1[0] = v[10] * 0.01f; fp.fxP2[0] = v[11] * 0.01f; fp.chainMix = 1.0f; fp.masterDb = v[12];
+    }
+    void process (float* l, float* r, int n) override { eng.process (fp, n, l, r, l, r); }
+};
+
 inline std::unique_ptr<IUnit> makeUnit (int t)
 {
     std::unique_ptr<IUnit> u;
@@ -604,6 +705,10 @@ inline std::unique_ptr<IUnit> makeUnit (int t)
         case U_AIR: u = std::make_unique<AirUnit>(); break;
         case U_MS: u = std::make_unique<MsUnit>(); break;
         case U_GAN: u = std::make_unique<GanUnit>(); break;
+        case U_SHM: u = std::make_unique<ShimRevUnit>(); break;
+        case U_SDL: u = std::make_unique<ShimDelUnit>(); break;
+        case U_HBL: u = std::make_unique<HbUnit>(); break;
+        case U_SCR: u = std::make_unique<ScrUnit>(); break;
         default: return nullptr;
     }
     u->type = t;

@@ -10,7 +10,7 @@ struct PSlot
     int type = 0;
     bool on = true, solo = false, mute = false;
     float lane = -6.0f;
-    float p[6] {};
+    float p[catr::kMaxParams] {};
 };
 struct PStage
 {
