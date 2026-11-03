@@ -278,7 +278,7 @@ inline const UnitDef* unitTable()
     };
     return t;
 }
-constexpr bool kHostedTable[kNumUnits] = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, true, true, true, true, false, false };
+constexpr bool kHostedTable[kNumUnits] = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, false, false };
 inline bool hosted(int t) { return t >= 0 && t < kNumUnits && kHostedTable[t]; }
-constexpr int kBuiltUnits = 24;   // how many are hosted
+constexpr int kBuiltUnits = 28;   // how many are hosted
 } // namespace catr

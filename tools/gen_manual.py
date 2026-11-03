@@ -6,17 +6,19 @@ import json, html, subprocess, sys
 
 VER = sys.argv[1] if len(sys.argv) > 1 else '0.1.0'
 d = json.load(open('docs/mockup/data.json'))
-BUILT = 20
+import re
+hosted_flags = re.search(r'kHostedTable\[kNumUnits\] = \{([^}]*)\}', open('src/core/UnitData.h').read()).group(1).replace(' ', '').split(',')
 e = html.escape
 order = d['order']
 names = {k: d['units'][k]['name'] for k in order}
-built = order[:BUILT]
+built = [k for k, h in zip(order, hosted_flags) if h == 'true']
+BUILT = len(built)
 
 areas = [
     ('Signal path strip', 'IN and OUT trim knobs and one chip per row, with an arrow between rows that shows the level after each row. A parallel pair shows both units in one box.'),
     ('+ Add unit, Clear', 'Open the unit browser (search and six categories) or remove every unit.'),
     ('Rack rows', 'One card per unit: grip to drag, name, ON, Solo and Mute, a small display of what the unit does and its main controls. Click a card to select it.'),
-    ('Unit panel', 'The selected unit in detail: six knobs, the big display, Earlier / Later to move the row, In series / Beside above to make or break a parallel pair, and Remove.'),
+    ('Unit panel', 'The selected unit in detail: its knobs (nine to a page, with a page switch for units that have more), the big display, Earlier / Later to move the row, In series / Beside above to make or break a parallel pair, and Remove.'),
     ('Meters', 'Input pair and output pair, left and right channel, in dB from +6 to -48, with peak hold, clip lights and peak readouts. Click to clear.'),
     ('Header', 'Cat logo, preset bar (previous, name, next, Save), Bypass, Guide, Settings and About & Support.'),
     ('Wood cheeks', 'Decoration. Double-click either one to reset the window to 100%.'),

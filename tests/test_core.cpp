@@ -329,6 +329,75 @@ static void testBatchA()
     }
 }
 
+// rms of the left channel of a 440 Hz or given-frequency sine after the unit has settled; ctl lets the caller change controls
+static double settledRms (int t, double fs, float amp, double hz, void (*tweak)(float*, const UnitDef&), int blocks = 300, float* peakOut = nullptr)
+{
+    auto u = makeUnit (t); u->prepare (fs, kChunk); const auto& d = unitTable()[t];
+    float v[kMaxPd] {}; for (int k = 0; k < d.nParams; ++k) v[k] = d.p[k].def;
+    if (tweak) tweak (v, d);
+    std::vector<float> l (kChunk), r (kChunk); double ph = 0, e = 0; int cnt = 0; float pk = 0;
+    for (int b = 0; b < blocks; ++b)
+    {
+        for (int i = 0; i < kChunk; ++i) { l[i] = amp * (float) std::sin (ph); r[i] = l[i]; ph += 2 * kPi * hz / fs; }
+        u->setParams (v); u->process (l.data(), r.data(), kChunk);
+        if (b >= blocks - 40) for (int i = 0; i < kChunk; ++i) { e += (double) l[i] * l[i]; ++cnt; pk = std::max (pk, std::fabs (l[i])); }
+    }
+    if (peakOut) *peakOut = pk;
+    return std::sqrt (e / std::max (1, cnt));
+}
+static void setIdx (float* v, const UnitDef& d, const char* id, float x) { for (int k = 0; k < d.nParams; ++k) if (std::string (d.p[k].id) == id) v[k] = x; }
+static void testBatchB()
+{
+    testHostedBatch ({ "mxz", "crc", "fat", "bas" });
+    char m[200];
+    // Meowximizer: the ceiling holds on loud, hot material, and the latency is reported
+    {
+        const int t = typeOfKey ("mxz"); float pk = 0;
+        settledRms (t, 48000.0, 1.8f, 220.0, [] (float* v, const UnitDef& d) { setIdx (v, d, "push", 12.0f); setIdx (v, d, "squeeze", 80.0f); }, 400, &pk);
+        std::snprintf (m, sizeof m, "Meowximizer: peak %.3f stays under the -0.3 dB ceiling (0.966)", pk);
+        CHECK (pk <= 0.967f, m);
+        auto u = makeUnit (t); u->prepare (48000.0, kChunk);
+        CHECK (u->latency() > 100 && u->latency() < 400, "Meowximizer reports its lookahead and oversampling latency");
+    }
+    // Meowbass: more harmonic level means more energy above the bass range
+    {
+        const int t = typeOfKey ("bas");
+        const double lo = settledRms (t, 48000.0, 0.5f, 55.0, [] (float* v, const UnitDef& d) { setIdx (v, d, "harm", -36.0f); setIdx (v, d, "orig", -48.0f); setIdx (v, d, "dyn", 0.0f); });
+        const double hi = settledRms (t, 48000.0, 0.5f, 55.0, [] (float* v, const UnitDef& d) { setIdx (v, d, "harm", 6.0f); setIdx (v, d, "orig", -48.0f); setIdx (v, d, "dyn", 0.0f); });
+        std::snprintf (m, sizeof m, "Meowbass: harmonics knob raises the output (%.4f to %.4f)", lo, hi);
+        CHECK (hi > lo * 3.0, m);
+    }
+    // Fat Cat keeps dynamics: a 14 dB quieter input comes out about 14 dB quieter (within 3 dB)
+    {
+        const int t = typeOfKey ("fat");
+        const double a = settledRms (t, 48000.0, 0.5f, 300.0, nullptr), b = settledRms (t, 48000.0, 0.1f, 300.0, nullptr);
+        const double dIn = 20.0 * std::log10 (0.5 / 0.1), dOut = 20.0 * std::log10 (a / b);
+        std::snprintf (m, sizeof m, "Fat Cat: level difference in %.1f dB, out %.1f dB (dynamics kept)", dIn, dOut);
+        CHECK (std::fabs (dOut - dIn) < 3.0, m);
+    }
+    // Cat Crusher: automatic make-up keeps the level when the compressor amount goes from 0 to 100 percent
+    {
+        const int t = typeOfKey ("crc");
+        auto z = [] (float* v, const UnitDef& d) { setIdx (v, d, "comp", 0.0f); setIdx (v, d, "tube", 0.0f); };
+        auto f = [] (float* v, const UnitDef& d) { setIdx (v, d, "comp", 100.0f); setIdx (v, d, "tube", 0.0f); };
+        const double a = settledRms (t, 48000.0, 0.3f, 300.0, z, 600), b = settledRms (t, 48000.0, 0.3f, 300.0, f, 600);
+        std::snprintf (m, sizeof m, "Cat Crusher: level with compressor 0 and 100 percent differs by %.1f dB (auto make-up)", 20.0 * std::log10 (b / a));
+        CHECK (std::fabs (20.0 * std::log10 (b / a)) < 6.0, m);
+        // the ten types differ from each other at the same drive
+        double r[10]; bool distinct = true;
+        for (int ty = 0; ty < 10; ++ty)
+        {
+            static int cur; cur = ty;
+            r[ty] = settledRms (t, 48000.0, 0.4f, 300.0, [] (float* v, const UnitDef& d) { setIdx (v, d, "type", (float) cur); setIdx (v, d, "tube", 60.0f); setIdx (v, d, "comp", 0.0f); }, 200);
+        }
+        int same = 0;   // Tube and Soft Sat are both tanh shapes (Tube adds a small bias for even harmonics), so their level is alike by design
+        for (int a1 = 0; a1 < 10; ++a1) for (int b1 = a1 + 1; b1 < 10; ++b1) if (std::fabs (r[a1] - r[b1]) < 1e-4) ++same;
+        distinct = same <= 1;
+        if (! distinct) for (int q = 0; q < 10; ++q) std::printf ("  type %d rms %.5f\n", q, r[q]);
+        CHECK (distinct, "Cat Crusher: the ten distortion types differ in level (Tube and Soft Sat are alike by design)");
+    }
+}
+
 int main()
 {
     std::printf ("CatRack core tests\n");
@@ -340,6 +409,7 @@ int main()
     testColourStages();
     testMeters();
     testBatchA();
+    testBatchB();
     std::printf ("%d checks, %d failed\n", checks, fails);
     return fails ? 1 : 0;
 }

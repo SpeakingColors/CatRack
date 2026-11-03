@@ -250,6 +250,12 @@ public:
         seenVer = proc_.structureVersion();
         tick (1.0f / 60.0f);
         syncName();
+        if (! (bool) proc_.getSetting ("started", false))      // a brand new instance opens with the Start Here chain, as the mockup does
+        {
+            proc_.setSetting ("started", true);
+            if (! proc_.restoredFromHost() && proc_.structure().unitCount() == 0)
+                if (const Preset* sh = presetStore.find ("Start Here")) loadPreset (*sh);
+        }
         startTimerHz (ctx.power ? 16 : 60);
     }
     ~Face() override { stopTimer(); removeMouseListener (this); }
@@ -569,7 +575,10 @@ private:
         if (all.empty()) return;
         int i = -1;
         for (size_t k = 0; k < all.size(); ++k) if (all[k].name == presetName()) i = (int) k;
-        i = i < 0 ? 0 : (i + d + (int) all.size()) % (int) all.size();
+        if (i < 0) i = lastStepIdx;                           // name not found (edited or renamed): carry on from the last preset we stepped to
+        const int n = (int) all.size();
+        i = i < 0 ? (d > 0 ? 0 : n - 1) : (i + d + n) % n;
+        lastStepIdx = i;
         loadPreset (all[(size_t) i]);
     }
 
@@ -640,7 +649,7 @@ private:
         const float free = xb - Backdrop::brandEnd() - 4.0f * 10.0f - presetW, sp = free * 0.5f;
         const float px = Backdrop::brandEnd() + 10.0f + sp + 10.0f;
         pPrev = addButton ({}, { roundToInt (px), 10, 35, 25 }, layout::tipPrev); pPrev->glyph = 1;
-        pName = addButton (presetName(), { roundToInt (px + 39.34f), 9, 210, 27 }, "Open the preset browser: 16 ready-made chains plus your own. Double-click to rename your own preset.", 16.0f, theme::FontKind::semi);
+        pName = addButton (presetName(), { roundToInt (px + 39.34f), 9, 210, 27 }, "Open the preset browser: the ready-made chains plus your own. Double-click to rename your own preset.", 16.0f, theme::FontKind::semi);
         pNext = addButton ({}, { roundToInt (px + 39.34f + 214.0f), 10, 35, 25 }, layout::tipNext); pNext->glyph = 2;
         pSave = addButton ("Save", { roundToInt (px + 39.34f + 214.0f + 39.34f), 10, 47, 25 }, layout::tipSave);
         bBypass = addButton ("Bypass", { 820, 10, 59, 25 }, layout::tipBypass);
@@ -740,6 +749,7 @@ private:
     float inDb = -90.0f, histAcc = 0.0f;
     int sel = -1, seenVer = -1;
     bool dirtyFlag = false;
+    int lastStepIdx = -1;
 };
 
 // =====================================================================================================

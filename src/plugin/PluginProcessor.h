@@ -100,12 +100,14 @@ public:
     void setSetting (const char* key, const juce::var& v);
 
     int reportedLatency() const { return getLatencySamples(); }
+    bool restoredFromHost() const { return restored; }     // the host gave this instance a saved state
 
 private:
     static juce::String slotId (int slot, const char* tail) { return "u" + juce::String (slot) + tail; }
     juce::AudioProcessorValueTreeState::ParameterLayout createLayout();
     void loadStructureFromState();
 
+    bool restored = false;
     juce::CriticalSection structLock;
     std::atomic<uint64_t> typesPacked { ~(uint64_t) 0 };
     std::atomic<int> structVer { 0 };

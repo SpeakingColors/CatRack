@@ -11,6 +11,7 @@
 #include "ext/LapCat2A.h"
 #include "ext/Pawltec.h"
 #include "ext/PunchPaw.h"
+#include "ext/RackPorts.h"
 #include "ext/Purrrstressor.h"
 #include "ext/ScfxEngine.h"
 #include "ext/ShimmerReverb.h"
@@ -680,6 +681,65 @@ struct ScrUnit : IUnit
     void process (float* l, float* r, int n) override { eng.process (fp, n, l, r, l, r); }
 };
 
+// ---- Meowximizer ---------------------------------------------------------------------------------------------------------
+struct MxzUnit : IUnit
+{
+    mx::Core core; mx::Params P; int lat = 0;
+    void prepare (double sr, int) override { core.prepare (sr); lat = core.latency(); }
+    void reset() override { core.reset(); }
+    int latency() const override { return lat; }
+    float grDb() const override { return std::max (0.0f, -(core.bandGainDb[0] + core.bandGainDb[1] + core.bandGainDb[2]) / 3.0f) + core.optoGrDb; }
+    void setParams (const float* v) override
+    {
+        P.squeeze = v[0]; P.air = v[1]; P.ceil = v[2]; P.contour = v[3]; P.bass = v[4]; P.process = v[5]; P.mode = (int) (v[6] + 0.5f);
+        P.warm = v[7]; P.clip = v[8]; P.push = v[9]; P.opto = v[10]; P.mix = v[11]; P.out = v[12]; P.lcmode = (int) (v[13] + 0.5f);
+        P.airchar = (int) (v[14] + 0.5f); P.wchar = (int) (v[15] + 0.5f); P.clipPos = (int) (v[16] + 0.5f); P.nasty = false;
+    }
+    void process (float* l, float* r, int n) override { float* io[2] = { l, r }; core.process (io, 2, n, P); }
+};
+
+// ---- Meowbass --------------------------------------------------------------------------------------------------------------
+struct BasUnit : IUnit
+{
+    rp::MeowBassCore core; rp::BassParams P;
+    void prepare (double sr, int) override { core.prepare (sr); }
+    void reset() override { core.reset(); }
+    void setParams (const float* v) override
+    {
+        P.freq = v[0]; P.harm = v[1]; P.dyn = v[2]; P.orig = v[3]; P.in = v[4]; P.out = v[5]; P.resp = v[6]; P.odd = v[7]; P.hdrive = v[8];
+        P.hfilt = (int) (v[9] + 0.5f); P.hq = v[10] > 0.5f;
+    }
+    void process (float* l, float* r, int n) override { core.process (l, r, n, P); }
+};
+
+// ---- Fat Cat ---------------------------------------------------------------------------------------------------------------
+struct FatUnit : IUnit
+{
+    rp::FatCatCore core; rp::FatParams P;
+    void prepare (double sr, int) override { core.prepare (sr); }
+    void reset() override { core.reset(); }
+    void setParams (const float* v) override
+    {
+        P.drive = v[0]; P.color = v[1]; P.out = v[2]; P.xs = v[3]; P.grit = v[4]; P.fuzz = v[5]; P.turbo = v[6]; P.mix = v[7]; P.purr = v[8] > 0.5f;
+    }
+    void process (float* l, float* r, int n) override { core.process (l, r, n, P); }
+};
+
+// ---- Cat Crusher -----------------------------------------------------------------------------------------------------------
+struct CrcUnit : IUnit
+{
+    rp::CatCrusherCore core; rp::CrushParams P;
+    void prepare (double sr, int) override { core.prepare (sr); }
+    void reset() override { core.reset(); }
+    float grDb() const override { return core.grDb(); }
+    void setParams (const float* v) override
+    {
+        P.tube = v[0]; P.comp = v[1]; P.vol = v[2]; P.mech = v[3]; P.cut = v[4]; P.res = v[5]; P.type = clampi ((int) (v[6] + 0.5f), 0, 9); P.mix = v[7];
+        P.phat = v[8] > 0.5f; P.don = v[9] > 0.5f; P.ftype = clampi ((int) (v[10] + 0.5f), 0, 2); P.fon = v[11] > 0.5f; P.con = v[12] > 0.5f;
+    }
+    void process (float* l, float* r, int n) override { core.process (l, r, n, P); }
+};
+
 inline std::unique_ptr<IUnit> makeUnit (int t)
 {
     std::unique_ptr<IUnit> u;
@@ -709,6 +769,10 @@ inline std::unique_ptr<IUnit> makeUnit (int t)
         case U_SDL: u = std::make_unique<ShimDelUnit>(); break;
         case U_HBL: u = std::make_unique<HbUnit>(); break;
         case U_SCR: u = std::make_unique<ScrUnit>(); break;
+        case U_MXZ: u = std::make_unique<MxzUnit>(); break;
+        case U_BAS: u = std::make_unique<BasUnit>(); break;
+        case U_FAT: u = std::make_unique<FatUnit>(); break;
+        case U_CRC: u = std::make_unique<CrcUnit>(); break;
         default: return nullptr;
     }
     u->type = t;

@@ -270,6 +270,7 @@ void CatRackProcessor::setStateInformation (const void* data, int size)
         {
             apvts.replaceState (ValueTree::fromXml (*xml)); // unknown keys are ignored by APVTS; older states keep loading
             loadStructureFromState();
+            restored = true;
         }
 }
 
