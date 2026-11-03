@@ -2,7 +2,7 @@
 
 This zip holds the installers for Windows (.exe) and macOS (.pkg), the Linux Flatpak extension and a plain .vst3 tarball, the PDF manual, INSTALL.txt, LICENSE and SHA256SUMS. Everything works offline.
 
-**What is in this version:** 20 of the 31 units shown in the design are built in (the others are listed in ROADMAP.md and appear greyed out as Planned). 16 factory chains. The units run as built-in code; CatRack never loads other plugin files.
+**What is in this version:** 28 of the 31 units shown in the design are built in (Cat Spacer, Stretch Cat and Copycat are not, see ROADMAP.md; they appear greyed out as Planned). 23 factory chains. New since 0.1.0: Meowximizer, Cat Crusher, Fat Cat, Meowbass, Shimmer Reverb, Shimmer Delay, Hairball and Scratch Cat FX, units with more than nine controls get a page switch, a new instance opens with the Start Here chain. The units run as built-in code; CatRack never loads other plugin files.
 
 **What is checked:** the DSP core has automatic tests (latency equals the sum of the rows, stability on every unit, state round trip), the plugin builds on Windows, macOS and Linux, passes the pluginval validator on Linux, and the window pictures are rendered by the real compiled editor.
 
