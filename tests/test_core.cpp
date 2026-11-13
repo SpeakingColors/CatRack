@@ -224,8 +224,9 @@ static void testColourStages()
             if (std::fabs (f - 9100.0) > 200.0 && std::fabs (f - 18200.0) > 200.0) alias += p;
         }
         const double adb = 10 * std::log10 (alias / tot + 1e-30);
-        std::printf ("  %s at full drive, 9.1 kHz sine: aliased and other energy %.1f dB below the total (first order ADAA with 2x oversampling)\n", d.name, adb);
+        std::printf ("  %s at full drive, 9.1 kHz sine: aliased and other energy %.1f dB below the total (first order ADAA with 4x oversampling)\n", d.name, adb);
         resultAlias[t] = adb;
+        CHECK (adb < -60.0, "Purr colour stage at full drive keeps aliased energy below -60 dB (ADAA with 4x oversampling)");
     }
 }
 

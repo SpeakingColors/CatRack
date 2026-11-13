@@ -336,8 +336,7 @@ struct PeqUnit : IUnit
 struct DriveUnit : IUnit
 {
     int kind = 0;
-    static constexpr int kTaps = 41, kOsLat = (kTaps - 1) / 2;   // 2x oversampling: up and down each delay 20 samples at 2x = 20 at the host rate in total
-    pawl::detail::Up2<kTaps> up[2]; pawl::detail::Down2<kTaps> dn[2]; DelayLine dryD[2];
+    hb::Oversampler4 os[2];   // 4x oversampling, zero latency (the polyphase half-band filters of Hairball)
     AdaaTanh ad[2]; Biquad tone[2]; Biquad dc[2]; Smooth drv, aux, outG, mix; double fs = 48000;
     float inMs = 0, outMs = 0, mkS = 1.0f, rmsC = 0.9999f, mkC = 0.999f, mkNow = 1.0f;
     explicit DriveUnit (int k) : kind (k) {}
@@ -345,12 +344,10 @@ struct DriveUnit : IUnit
     {
         fs = sr; for (auto* s : { &drv, &aux, &outG, &mix }) s->setup (sr, 10.0); drv.snap (0); aux.snap (50); outG.snap (0); mix.snap (1);
         rmsC = (float) std::exp (-1.0 / (0.25 * sr)); mkC = (float) std::exp (-1.0 / (0.1 * sr));
-        const auto taps = pawl::detail::halfband<kTaps> (9.0);
-        for (int c = 0; c < 2; ++c) { up[c].init (taps); dn[c].init (taps); dryD[c].init (kOsLat + 8); }
         reset(); for (auto& d : dc) d.highpass (sr, 15.0);
     }
-    int latency() const override { return kOsLat; }
-    void reset() override { for (int c = 0; c < 2; ++c) { ad[c].reset(); tone[c].reset(); dc[c].reset(); up[c].reset(); dn[c].reset(); dryD[c].reset(); } inMs = outMs = 0; mkS = 1.0f; mkNow = 1.0f; }
+    int latency() const override { return 0; }
+    void reset() override { for (int c = 0; c < 2; ++c) { ad[c].reset(); tone[c].reset(); dc[c].reset(); os[c].reset(); } inMs = outMs = 0; mkS = 1.0f; mkNow = 1.0f; }
     void setParams (const float* v) override { drv.set (v[0]); aux.set (v[1]); outG.set (v[2]); mix.set (v[3] / 100.0f); }
     void process (float* l, float* r, int n) override
     {
@@ -358,7 +355,7 @@ struct DriveUnit : IUnit
         for (int i = 0; i < n; ++i)
         {
             const float a = drv.next(), au = aux.next(), og = dbToLin (outG.next()), m = mix.next();
-            if (off && a <= 1.0e-4f) { dryD[0].push (l[i]); dryD[1].push (r[i]); l[i] = dryD[0].readInt (kOsLat + 1) * og; r[i] = dryD[1].readInt (kOsLat + 1) * og; up[0].reset(); up[1].reset(); dn[0].reset(); dn[1].reset(); continue; }
+            if (off && a <= 1.0e-4f) { l[i] *= og; r[i] *= og; os[0].reset(); os[1].reset(); ad[0].reset(); ad[1].reset(); continue; }
             const float a01 = clampf (a / 100.0f, 0.0f, 1.0f);
             double g, bias = 0.0; float cut = 20000.0f;
             if (kind == 0) { g = 1.0 + 9.0 * a01; cut = 800.0f * std::pow (2.0f, au / 100.0f * 4.6f); }
@@ -379,12 +376,9 @@ struct DriveUnit : IUnit
             for (int c = 0; c < 2; ++c)
             {
                 const float xraw = *io[c];
-                dryD[c].push (xraw);
-                xi[c] = dryD[c].readInt (kOsLat + 1);              // dry path, delayed like the oversampled path
-                double h0, h1;
-                up[c].push ((double) xraw, h0, h1);
-                const double u0 = ad[c].process ((float) h0, g, bias), u1 = ad[c].process ((float) h1, g, bias);
-                float f = (float) dn[c].push (u0, u1) * mkS;
+                xi[c] = xraw;                                       // dry path: the oversampler has no latency
+                auto& adc = ad[c];
+                float f = os[c].run (xraw, [&adc, g, bias] (float v) { return adc.process (v, g, bias); }) * mkS;   // ADAA tanh at 4x
                 if (cut < 19000.0f) f = tone[c].process (f);
                 if (bias > 0.0) f = dc[c].process (f);
                 fo[c] = finitef (f);
