@@ -10,11 +10,14 @@ concurrency:
   group: catrack-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   core-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Core DSP tests (no JUCE)
         run: sh tests/run.sh
       - name: Core DSP tests again with address and undefined-behaviour sanitizers
@@ -25,7 +28,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -41,7 +44,7 @@ jobs:
           chmod +x pluginval
       - name: pluginval (strictness 5)
         run: xvfb-run -a ./pluginval --strictness-level 5 --skip-gui-tests build/CatRack_artefacts/Release/VST3/CatRack.vst3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: CatRack-linux-vst3
           path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
@@ -51,7 +54,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -72,7 +75,7 @@ jobs:
           xvfb-run -a $S shots/small.png 0.5 C none 60
           xvfb-run -a $S shots/tip.png 1.0 C tip 60
           for d in settings guide about presets save export import add clear; do xvfb-run -a $S shots/dialog-$d.png 1.0 C $d 30; done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: CatRack-editor-snapshots
           path: shots
@@ -88,12 +91,12 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Configure
         run: cmake -S . -B build
       - name: Build
         run: cmake --build build --config Release
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: CatRack-windows-vst3
           path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
@@ -101,12 +104,12 @@ jobs:
   macos:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release -j4
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: CatRack-macos-vst3
           path: build/CatRack_artefacts/Release/VST3/CatRack.vst3
