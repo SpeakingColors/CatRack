@@ -1,5 +1,7 @@
 # CatRack
 
+<p align="center"><a href="https://ko-fi.com/studio87"><img src="https://raw.githubusercontent.com/SpeakingColors/.github/main/assets/kofi-banner.svg" alt="Support Studio 87 on Ko-fi" width="440"></a></p>
+
 A free, open source, cat-themed rack plugin (VST3): up to 12 effect units from our plugin suite in one window, in any order, with parallel pairs, bypass, solo and mute per unit, dB meters, and chain presets.
 
 <p align="center"><img src="docs/screenshot.png" width="900" alt="CatRack, rendered by the real plugin editor"></p>
