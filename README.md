@@ -16,9 +16,6 @@ Press **+ Add unit**, pick a unit, tweak its six controls in the panel on the ri
 ## Tests
 `sh tests/run.sh` runs the core tests without JUCE (latency equals the sum of the rows, stability on every unit, state round trip). CI also builds on Windows, macOS and Linux, runs pluginval and renders the real editor.
 
-## Privacy
-Collects nothing. No network access.
-
 ## Support
 <p align="center">
   <a href="https://ko-fi.com/studio87"><img src="https://img.shields.io/badge/Support_Studio_87-on_Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white" alt="Support Studio 87 on Ko-fi"></a>
