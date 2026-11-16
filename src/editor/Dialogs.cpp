@@ -1,4 +1,5 @@
 #include "Dialogs.h"
+#include "Studio87Link.h"
 #include "Views.h"
 
 namespace ui
@@ -17,6 +18,7 @@ public:
         TextLayout tl; tl.createLayout (build(), (float) w);
         return (int) std::ceil (tl.getHeight()) + 2;
     }
+    void setSegs (std::vector<Seg> s) { segs = std::move (s); repaint(); }
     void paint (Graphics& g) override { build().draw (g, getLocalBounds().toFloat()); }
 private:
     AttributedString build() const
@@ -329,7 +331,17 @@ void Modal::openAbout()
     rel->onClick = [] (const ModifierKeys&) { URL ("https://github.com/SpeakingColors/CatRack/releases").launchInDefaultBrowser(); };
     auto* kofi = p->make<PButton> (c, "Ko-fi studio87");
     kofi->onClick = [] (const ModifierKeys&) { URL ("https://ko-fi.com/studio87").launchInDefaultBrowser(); };
-    p->row ({ gh, rel, kofi }, { 90, 90, 130 }, 28);
+    // Studio 87 Gear Updater link: asks the OS to open studio87://open?product=CatRack. No network call by the plugin; nothing is sent.
+    auto* upd = p->make<PButton> (c, studio87link::buttonText());
+    upd->tip = studio87link::tipText();
+    auto* updMsg = p->make<TextBlock> (c, std::vector<Seg> { { String(), false, false, true } }, 13.0f);
+    upd->onClick = [updMsg] (const ModifierKeys&)
+    {
+        if (! URL (String (studio87link::updaterUrl ("CatRack"))).launchInDefaultBrowser())
+            updMsg->setSegs ({ { studio87link::fallbackMessage(), false, false, true } });
+    };
+    p->row ({ gh, rel, kofi, upd }, { 90, 90, 130, 240 }, 28);
+    p->row ({ updMsg }, { 0 }, 20);
     p->textRow ({ { "Support is entirely optional. Nothing is locked.", false, false, true } });
     p->fit();
     show (std::move (p));

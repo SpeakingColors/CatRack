@@ -1,0 +1,977 @@
+<title>CatRack Mockup</title>
+<meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,700;1,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout concept: one fixed 1200 x 640 stage scaled as a piece. Wood cheeks left and right.
+   Middle: header, then rack column (routing strip, toolbar, unit rows), unit panel, in/out meters. */
+:root{
+  --bg:#0b0b0d; --plate:#16171a; --plate2:#1e2024; --line:#33363d; --ink:#f4f5f7; --dim:#a9adb8;
+  --title:#e8e9ee; --accent:#02EBBA; --disp:#06080a; --grid:#1b2523;
+  --g:#02EBBA; --y:#FFD100; --o:#F57F01; --r:#FF1383; --b:#6CC9F5; --p:#A43DFF;
+  --sel:#241238; --selb:#CD92FE; --pink:#FF7BB1; --gr:#FF7BB1;
+  --font-ui:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  --font-num:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+  color-scheme:dark;
+}
+:root[data-look="A"]{--bg:#161638;--plate:#1c1c4a;--plate2:#2C2C62;--line:#33403f;--ink:#e8e6e1;--dim:#a8a49e;--title:#E1CBF4;--accent:#FFA600;--disp:#05060d;--y:#FFA600}
+:root[data-look="B"]{--bg:#0b0b0d;--plate:#15161a;--plate2:#1c1d22;--line:#2b2d34;--ink:#f4f5f7;--dim:#a9adb8;--title:#E1CBF4;--accent:#A43DFF;--disp:#06080a}
+html,body{background:var(--bg);margin:0}
+#stage,#stage *{box-sizing:border-box}
+body{color:var(--ink);font-family:var(--font-ui);padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+#app{background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+#frame{position:relative;flex:none}
+#stage{position:absolute;left:0;top:0;width:1200px;height:640px;transform-origin:0 0;display:flex;background:#000;user-select:none;-webkit-user-select:none}
+.cheek{width:52px;flex:none;position:relative;cursor:default}
+.cheek canvas{width:100%;height:100%;display:block}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--plate);position:relative}
+.hdr{height:46px;flex:none;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--plate2)}
+.brand{display:flex;align-items:center;gap:8px}
+.brand .name{font-style:italic;font-weight:800;font-size:26px;letter-spacing:.5px;color:#fff;line-height:1}
+.brand .s87{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.sp{flex:1}
+button,select,input{font-family:var(--font-ui)}
+.btn{background:var(--plate);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:3px 10px;font-size:14px;letter-spacing:.5px;cursor:pointer;line-height:1.2;white-space:nowrap}
+.btn:hover{border-color:var(--dim)}
+.btn:focus-visible,.knob:focus-visible,.chip:focus-visible,.rh:focus-visible,.card:focus-visible,.tgl:focus-visible{outline:2px solid var(--selb);outline-offset:2px}
+.btn.on{background:var(--sel);border-color:var(--selb);color:#E1CBF4}
+.btn[disabled]{opacity:.4;cursor:default}
+.presetbar{display:flex;align-items:center;gap:4px}
+.presetbar .pname{width:210px;text-align:center;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.body{flex:1;display:grid;grid-template-columns:716px 288px 92px;min-height:0;overflow:hidden}
+/* rack column */
+.rackcol{display:flex;flex-direction:column;gap:4px;padding:6px;min-width:0;min-height:0}
+.strip{height:84px;flex:none;border:1px solid var(--line);border-radius:6px;background:var(--plate2);display:flex;align-items:center;gap:4px;padding:6px 8px 0 8px;position:relative}
+.strip .cap{position:absolute;left:10px;top:2px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--title);white-space:nowrap}
+.strip .cap2{position:absolute;right:10px;top:2px;font-size:11px;letter-spacing:1px;color:var(--dim);white-space:nowrap}
+.flow{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:0;height:100%;padding-top:6px}
+.arr{width:9px;flex:none;text-align:center;color:var(--accent);font-size:13px;line-height:1}
+.stg{display:flex;flex-direction:column;gap:3px;align-items:center;flex:none}
+.stg.pr{border:1px solid var(--line);border-radius:7px;padding:3px 4px 2px;background:var(--disp);position:relative}
+.stg .pm{font-family:var(--font-num);font-size:9px;color:var(--dim);white-space:nowrap}
+.chip{display:flex;align-items:center;gap:4px;width:42px;height:22px;padding:0 4px;border:1px solid var(--line);border-radius:4px;background:var(--plate);color:var(--ink);font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;line-height:1}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--uc);flex:none}
+.chip.sel{border-color:var(--selb);background:var(--sel)}
+.chip.off{opacity:.4}
+.chip.solo{box-shadow:0 0 0 1px var(--y)}
+.chip.mute{box-shadow:0 0 0 1px var(--r)}
+.endk{display:flex;flex-direction:column;align-items:center;width:44px;flex:none;padding-top:6px}
+.tb{height:28px;flex:none;display:flex;align-items:center;gap:6px}
+.tb .cnt{font-size:13px;color:var(--dim);letter-spacing:1px;white-space:nowrap}
+.tb .rig{display:flex;align-items:center;gap:6px;border:1px dashed var(--line);border-radius:4px;padding:1px 6px;height:26px}
+.tb .rig span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.tb select{background:var(--disp);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-size:14px;height:22px}
+.rows{flex:1;min-height:0;display:flex;flex-direction:column;gap:3px;position:relative}
+.rrow{display:flex;gap:6px;height:var(--rh,52px);flex:none}
+.rph{height:30px;flex:none;border:1px dashed var(--line);border-radius:5px;background:transparent;color:var(--dim);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rph:hover,.rph:focus-visible{border-color:var(--selb);color:var(--ink)}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:26px 20px;color:var(--dim);font-size:16px;text-align:center;line-height:1.3}
+.card{flex:1;min-width:0;height:var(--rh,52px);display:flex;align-items:center;gap:4px;padding:0 4px 0 0;background:var(--plate2);border:1px solid var(--line);border-left:3px solid var(--uc);border-radius:5px;position:relative}
+.card.sel{border-color:var(--selb);border-left-color:var(--uc);background:var(--sel)}
+.card.off .nm,.card.off .mk,.card.off .grw{opacity:.45}
+.card.dragging{opacity:.3}
+.grip{width:12px;align-self:stretch;flex:none;cursor:grab;background:radial-gradient(circle,var(--dim) 1px,transparent 1.5px) 0 0/6px 6px;background-position:3px 6px;opacity:.7;margin:4px 0}
+.nm{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;cursor:pointer;line-height:1.05}
+.nm b{font-style:italic;font-weight:700;font-size:15px;white-space:nowrap;letter-spacing:.3px}
+.nm i{font-style:normal;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);white-space:nowrap;margin-top:2px}
+.card.m .nm b{color:var(--pink);text-decoration:line-through}
+.mks{display:flex;gap:0;flex:none}
+.card:not(.pr) .mks{gap:8px}
+.mk{display:flex;flex-direction:column;align-items:center;width:32px}
+.card:not(.pr) .mk{width:40px}
+.mk .ml{font-family:var(--font-num);font-size:9px;color:var(--dim);height:11px;line-height:11px;white-space:nowrap;margin-top:1px;letter-spacing:-.3px}
+.grw{flex:none;display:block;margin:0 2px}
+.btns{display:flex;gap:2px;flex:none}
+.tgl{height:22px;min-width:20px;padding:0 3px;border:1px solid var(--line);border-radius:3px;background:var(--plate);color:var(--dim);font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;line-height:1}
+.tgl.on{color:#06080a;border-color:transparent}
+.tgl.t-on.on{background:var(--g)}
+.tgl.t-s.on{background:var(--y)}
+.tgl.t-m.on{background:var(--r);color:#fff}
+.dropline{position:absolute;left:0;right:0;height:3px;background:var(--selb);border-radius:2px;pointer-events:none;box-shadow:0 0 8px var(--selb)}
+.droppar{position:absolute;border:2px dashed var(--selb);border-radius:6px;background:rgba(205,146,254,.12);pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:#E1CBF4;letter-spacing:1px;text-transform:uppercase}
+.ghost{position:absolute;z-index:40;pointer-events:none;background:var(--sel);border:1px solid var(--selb);border-radius:5px;padding:4px 10px;font-style:italic;font-weight:700;font-size:15px;opacity:.92}
+/* unit panel */
+.detail{border-left:1px solid var(--line);background:var(--plate2);padding:8px;display:flex;flex-direction:column;gap:7px;min-width:0;min-height:0}
+.dh{display:flex;align-items:center;gap:8px}
+.dh i{width:10px;height:10px;border-radius:50%;background:var(--uc);flex:none}
+.dh b{font-style:italic;font-weight:800;font-size:22px;line-height:1;white-space:nowrap}
+.dh small{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:2px;white-space:nowrap}
+.drow{display:flex;gap:4px;align-items:center}
+.drow .sp{flex:1}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 0}
+.kc{display:flex;flex-direction:column;align-items:center;min-width:0}
+.kc .kl{font-size:13px;letter-spacing:1.5px;color:var(--title);font-weight:700;text-transform:uppercase;height:15px;white-space:nowrap;line-height:15px}
+.kc .kv{font-family:var(--font-num);font-size:11px;color:var(--dim);height:14px;white-space:nowrap;margin-top:-2px}
+.kc .kv b{color:var(--ink);font-weight:600}
+.dcap{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--title);gap:6px}
+.dcap span:last-child{font-family:var(--font-num);color:var(--ink);letter-spacing:0;text-transform:none;font-size:11px;white-space:nowrap}
+.dcv{display:block;border:1px solid var(--line);border-radius:3px;background:var(--disp)}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;flex:1}
+.seg button{flex:1;background:var(--plate);color:var(--ink);border:0;padding:3px 4px;font-size:13px;cursor:pointer;line-height:1.2;white-space:nowrap}
+.seg button.on{background:var(--sel);color:#E1CBF4}
+.seg button[disabled]{opacity:.4;cursor:default}
+.lanes{display:flex;justify-content:space-around;min-height:78px}
+.hintp{font-size:13px;color:var(--dim);line-height:1.25;margin:0}
+.sect{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--title)}
+/* knob */
+.knob{cursor:ns-resize;touch-action:none;border-radius:50%;display:block;flex:none}
+.knob svg{display:block;width:100%;height:100%}
+.knob .kb{fill:#2b2d33;stroke:#000;stroke-width:3}
+.knob .kb2{fill:#3b3e46}
+.knob .kt{fill:none;stroke:#000;stroke-width:7;stroke-linecap:round;opacity:.55}
+.knob .kva{fill:none;stroke:var(--kc,var(--accent));stroke-width:7;stroke-linecap:round}
+.knob .kp{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+/* meters */
+.meters{border-left:1px solid var(--line);background:var(--plate2);display:flex;flex-direction:column;align-items:center;padding:8px 4px 6px;gap:3px}
+.meters .cap{width:84px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:1.5px;color:var(--title);text-transform:uppercase}
+.meters .cap span{width:30px;text-align:center}
+.meters canvas{display:block;cursor:pointer}
+.meters .pk{width:84px;display:flex;justify-content:space-between;font-family:var(--font-num);font-size:10px;color:var(--dim)}
+.meters .pk span{width:30px;text-align:center;white-space:nowrap}
+.foot{height:26px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:12px;color:var(--dim);letter-spacing:1px;border-top:1px solid var(--line);background:var(--plate2)}
+.bypassed .rackcol .rows,.bypassed .detail .kgrid{filter:saturate(.3)}
+/* overlays */
+#modal{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:30}
+#modal[hidden]{display:none}
+.dlg{width:760px;max-height:580px;background:var(--plate);border:1px solid var(--selb);border-radius:8px;display:flex;flex-direction:column;box-shadow:0 10px 40px #000}
+.dlg h2{margin:0;padding:10px 16px;font-size:20px;letter-spacing:1px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;color:var(--title)}
+.dlg .dbody{padding:12px 16px;overflow:hidden;font-size:15px;line-height:1.35;min-height:0}
+.dlg .dfoot{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+.dlg label{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dlg input[type=text],.dlg input:not([type]),.dlg select,.dlg textarea{background:var(--disp);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px;font-size:15px}
+.dlg textarea{width:100%;height:230px;font-family:var(--font-num);font-size:12px}
+.dlg kbd{font-family:var(--font-num);font-size:12px;border:1px solid var(--line);border-radius:3px;padding:0 5px;background:var(--disp)}
+.dlg table{border-collapse:collapse;width:100%}
+.dlg td{padding:3px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.dlg p{margin:6px 0}
+.dlg a.btn{text-decoration:none;display:inline-block}
+.pb{display:grid;grid-template-columns:300px 1fr;gap:14px;height:380px}
+.pb .lcol{display:flex;flex-direction:column;gap:6px;min-height:0}
+.pb .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:4px;overflow-y:auto;scrollbar-width:none;background:var(--disp);flex:1;min-height:0}
+.pb .item{padding:4px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);font-size:15px;flex:none;align-items:center}
+.pb .item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb .item.sel{background:var(--sel);color:#E1CBF4}
+.pb .item small{color:var(--dim);font-size:11px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.pb .rcol{display:flex;flex-direction:column;gap:8px;min-width:0}
+.pb h3{margin:0;font-size:22px;font-style:italic}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip2{background:var(--disp);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:1px 9px;font-size:13px;cursor:pointer}
+.chip2.on{background:var(--sel);border-color:var(--selb);color:#E1CBF4}
+.chain{font-family:var(--font-num);font-size:12px;color:var(--dim);line-height:1.5;border:1px solid var(--line);border-radius:4px;padding:6px 8px;background:var(--disp)}
+.warn{color:var(--r)}
+#tip{position:absolute;max-width:300px;background:#000;border:1px solid var(--selb);color:var(--ink);padding:6px 9px;border-radius:5px;font-size:14px;line-height:1.25;z-index:50;pointer-events:none}
+#tip[hidden]{display:none}
+#toast{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);background:#000;border:1px solid var(--selb);padding:5px 14px;border-radius:5px;font-size:15px;z-index:60;white-space:nowrap}
+#toast[hidden]{display:none}
+#addmenu{position:absolute;z-index:35;background:var(--plate);border:1px solid var(--selb);border-radius:6px;padding:4px;width:290px;box-shadow:0 8px 28px #000}
+#addmenu[hidden]{display:none}
+#addmenu button{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;color:var(--ink);padding:5px 8px;border-radius:4px;cursor:pointer;font-size:15px;text-align:left}
+#addmenu button:hover,#addmenu button:focus-visible{background:var(--sel)}
+#addmenu button i{width:9px;height:9px;border-radius:50%;background:var(--uc);flex:none}
+#addmenu button small{margin-left:auto;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
+.rh{position:absolute;z-index:20;background:transparent}
+.rh.n{left:12px;right:12px;top:-4px;height:8px;cursor:ns-resize}.rh.s{left:12px;right:12px;bottom:-4px;height:8px;cursor:ns-resize}
+.rh.e{top:12px;bottom:12px;right:-4px;width:8px;cursor:ew-resize}.rh.w{top:12px;bottom:12px;left:-4px;width:8px;cursor:ew-resize}
+.rh.ne{right:-5px;top:-5px;width:14px;height:14px;cursor:nesw-resize}.rh.sw{left:-5px;bottom:-5px;width:14px;height:14px;cursor:nesw-resize}
+.rh.nw{left:-5px;top:-5px;width:14px;height:14px;cursor:nwse-resize}.rh.se{right:-5px;bottom:-5px;width:14px;height:14px;cursor:nwse-resize}
+.zoomrow{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--dim);flex-wrap:wrap;justify-content:center}
+.zoomrow .btn{padding:1px 8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>.rows.cp .nm i{display:none}.rows.cp .mk .ml{height:9px;line-height:9px;margin-top:0}.rows.cp .nm b{font-size:14px}.rows.cp .grip{margin:3px 0}
+.dh small.sel{color:var(--accent);margin:0 0 1px}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;height:330px;overflow-y:auto;scrollbar-width:none;align-content:start}.agrid::-webkit-scrollbar{display:none}
+.aitem{display:grid;grid-template-columns:10px 1fr;grid-template-rows:auto auto;column-gap:8px;row-gap:1px;text-align:left;padding:6px 10px;background:var(--plate2);border:1px solid var(--line);border-left:3px solid var(--uc);border-radius:5px;color:var(--ink);cursor:pointer;height:64px;align-content:center}
+.aitem:hover,.aitem:focus-visible{border-color:var(--selb);border-left-color:var(--uc);background:var(--sel)}.aitem[disabled]{opacity:.4;cursor:default}
+.aitem i{width:8px;height:8px;border-radius:50%;background:var(--uc);align-self:center;grid-row:1}
+.aitem .an{display:flex;justify-content:space-between;gap:8px;grid-column:2;min-width:0}.aitem .an b{font-style:italic;font-size:16px;white-space:nowrap}.aitem .an em{font-style:normal;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.aitem .ad{grid-column:2;font-size:13px;line-height:1.15;color:var(--dim);min-width:0}
+</style>
+<style>.pb .list::-webkit-scrollbar{display:none}</style>
+
+<div id="app">
+  <div id="frame">
+    <div id="stage">
+      <div class="cheek" id="cheekL" data-tip="Double-click the wood to reset the window to 100%."><canvas></canvas></div>
+      <div class="main" id="main">
+        <header class="hdr">
+          <div class="brand">
+            <svg width="34" height="34" viewBox="0 0 64 64" aria-label="Cat head logo"><path d="M8 6 L24 22 H40 L56 6 L60 36 Q60 58 32 60 Q4 58 4 36 Z" fill="#FF7BB1"/><path d="M12 14 L21 23 H14 Z M52 14 L43 23 H50 Z" fill="#FBBDD0"/><ellipse cx="22" cy="36" rx="4" ry="5" fill="#16171a"/><ellipse cx="42" cy="36" rx="4" ry="5" fill="#16171a"/><path d="M29 44 H35 L32 48 Z" fill="#16171a"/><path d="M32 48 Q28 53 24 50 M32 48 Q36 53 40 50" stroke="#16171a" stroke-width="2" fill="none"/><path d="M2 40 H14 M2 46 H14 M62 40 H50 M62 46 H50" stroke="#FBBDD0" stroke-width="1.6"/></svg>
+            <span class="name">CatRack</span><span class="s87">Studio 87</span>
+          </div>
+          <div class="sp"></div>
+          <div class="presetbar">
+            <button class="btn" id="pPrev" data-tip="Previous chain preset.">&#9664;</button>
+            <button class="btn pname" id="pName" data-tip="Open the preset browser: 25 ready-made chains plus your own. Double-click to rename your own preset.">Start Here</button>
+            <button class="btn" id="pNext" data-tip="Next chain preset.">&#9654;</button>
+            <button class="btn" id="pSave" data-tip="Save this whole chain as your own preset. Asks before overwriting.">Save</button>
+          </div>
+          <div class="sp"></div>
+          <button class="btn" id="bBypass" aria-pressed="false" data-tip="Bypass: hear the dry signal to compare with the processed sound (key B). The meters keep moving.">Bypass</button>
+          <button class="btn" id="bGuide" data-tip="Short guide and keyboard shortcuts.">Guide</button>
+          <button class="btn" id="bSettings" data-tip="Info bubbles, power saving, colour look.">Settings</button>
+          <button class="btn" id="bAbout" data-tip="About CatRack, support and where your files live.">About &amp; Support</button>
+        </header>
+        <div class="body">
+          <section class="rackcol">
+            <div class="strip" id="strip"></div>
+            <div class="tb">
+              <button class="btn" id="bAdd" data-tip="Open the unit browser.">+ Add unit</button>
+              <button class="btn" id="bClear" data-tip="Remove every unit from the rack.">Clear</button>
+              <span class="cnt" id="cnt"></span>
+              <span class="sp"></span>
+              <div class="rig" data-tip="Preview rig: a made-up test signal that moves the meters. It is not part of the plugin; in your DAW the real track audio is used.">
+                <span>Preview rig</span>
+                <button class="btn" id="bPlay" data-tip="Start or pause the test signal (Space).">Pause</button>
+                <select id="selSrc" aria-label="Test signal" data-tip="Pick the kind of test signal."><option value="drums">Drums</option><option value="vocal">Vocal</option><option value="mix">Full mix</option><option value="bass">Bass</option></select>
+              </div>
+            </div>
+            <div class="rows" id="rows"></div>
+          </section>
+          <section class="detail" id="detail"></section>
+          <aside class="meters">
+            <div class="cap"><span>In</span><span>Out</span></div>
+            <canvas id="cvMeter" width="168" height="1000" style="width:84px;height:500px" data-tip="Input meter (left pair) and output meter (right pair) in dB, left and right channel. Blue is safe, purple is loud, pink is at or over 0 dB. Click to clear the peaks."></canvas>
+            <div class="pk"><span id="pkIn">-&infin;</span><span id="pkOut">-&infin;</span></div>
+          </aside>
+        </div>
+        <footer class="foot"><span>Studio 87 &middot; CatRack v0.1.2 design mockup</span><span id="winsz">1200 &times; 640</span></footer>
+      </div>
+      <div class="cheek" id="cheekR" data-tip="Double-click the wood to reset the window to 100%."><canvas></canvas></div>
+      <div id="addmenu" hidden></div>
+      <div id="modal" hidden></div>
+      <div id="tip" hidden></div>
+      <div id="toast" hidden></div>
+    </div>
+    <div class="rh n" data-h="n" data-tip="Drag to resize."></div><div class="rh s" data-h="s"></div><div class="rh e" data-h="e"></div><div class="rh w" data-h="w"></div>
+    <div class="rh ne" data-h="ne"></div><div class="rh nw" data-h="nw"></div><div class="rh se" data-h="se"></div><div class="rh sw" data-h="sw"></div>
+  </div>
+  <div class="zoomrow"><button class="btn" id="zMinus" aria-label="Smaller">&minus;</button><button class="btn" id="zPct">100%</button><button class="btn" id="zPlus" aria-label="Larger">+</button><span>Drag any edge or corner to resize. Double-click the wood to reset.</span></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lin=d=>Math.pow(10,d/20),dbOf=x=>20*Math.log10(Math.max(x,1e-6));
+const root=document.documentElement,app=$('#app'),frame=$('#frame'),stage=$('#stage'),modal=$('#modal');
+
+/* ============ Wood (PurrOne wood: three colours, vertical grain) ============ */
+function mul32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawWood(cv,seed,edgeRight){const w=cv.width=104,h=cv.height=1280,g=cv.getContext('2d'),r=mul32(seed);
+ g.fillStyle='#3d2210';g.fillRect(0,0,w,h);
+ for(let x=0;x<w;x++){const a=r();g.fillStyle='rgba(123,74,38,'+(.40*(.4+.6*a))+')';g.fillRect(x,0,1,h);
+  if(r()<.35){g.fillStyle='rgba(90,52,25,'+(.75*r())+')';const y0=r()*h;g.fillRect(x,y0,1,h*(.2+.6*r()))}
+  if(r()<.12){g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x,0,1,h)}}
+ g.fillStyle='#000';g.fillRect(edgeRight?0:w-3,0,3,h)}
+drawWood($('#cheekL canvas'),11,true);drawWood($('#cheekR canvas'),29,false);
+
+/* ============ Units ============ */
+function P(id,l,s,min,max,def,u,d,tip,x){return Object.assign({id,l,s,min,max,def,u:u||'',d:d||0,tip},x||{})}
+const MIXTIP='Dry/Wet: blends the untouched signal with the processed signal. Below 100 percent is parallel processing.';
+const UNITS={
+purr:{name:'Purrrstressor',code:'PUR',kind:'Compressor',color:'#02EBBA',blurb:'Punchy compressor with a wide ratio range. Good on drums, bass and vocals.',params:[
+ P('in','Input','IN',-12,12,0,' dB',1,'Input: how hard the signal drives the compressor. Turn it up for more squeeze.'),
+ P('ratio','Ratio','RATIO',1.5,20,4,':1',1,'Ratio: how firmly loud parts are pushed down. 2:1 is gentle, 10:1 and above is a hard squeeze.'),
+ P('out','Output','OUT',-12,12,0,' dB',1,'Output: the level leaving the unit. Use it to match the loudness with the unit switched off.'),
+ P('atk','Attack','ATK',0.1,30,3,' ms',1,'Attack: how fast the unit grabs a loud hit. Slower lets the start of a drum through.',{log:1}),
+ P('rel','Release','REL',50,2000,300,' ms',0,'Release: how fast the unit lets go after a loud part. Short is lively, long is smooth.',{log:1}),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP)]},
+fur:{name:'Furchild',code:'FUR',kind:'Tube limiter',color:'#FFA600',blurb:'Smooth tube limiter that squeezes gently and adds warmth. Great on mixes and pads.',params:[
+ P('in','Input','IN',-12,12,0,' dB',1,'Input: how hard the signal pushes into the tubes. More input means more limiting and more colour.'),
+ P('thr','Threshold','THR',-30,0,-14,' dB',1,'Threshold: the level where limiting starts. Lower means more of the signal is squeezed.'),
+ P('out','Output','OUT',-12,12,0,' dB',1,'Output: the level leaving the unit.'),
+ P('time','Time','TIME',1,6,3,'',0,'Time: how fast the unit recovers. 1 is quick, 6 is slow and smooth.',{names:['','T1','T2','T3','T4','T5','T6']}),
+ P('warm','Warmth','WARM',0,100,20,' %',0,'Warmth: how much tube colour is added. Turn it up for a thicker, rounder sound.'),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP)]},
+lap:{name:'LapCat2A',code:'LAP',kind:'Optical leveler',color:'#6CC9F5',blurb:'Slow, musical leveler. Evens out vocals and bass without grabbing hard.',params:[
+ P('red','Reduce','REDUCE',0,100,45,' %',0,'Reduce: how much leveling you ask for. Turn it up to calm louder parts more.'),
+ P('gain','Gain','GAIN',0,20,6,' dB',1,'Gain: makes the sound louder again after it has been leveled.'),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP),
+ P('mode','Mode','MODE',0,1,0,'',0,'Mode: Compress is soft and gentle. Limit is firmer and catches peaks harder.',{names:['Compress','Limit'],sn:['Comp','Limit']}),
+ P('emph','Emphasis','EMPH',0,100,0,' %',0,'Emphasis: makes the leveler react more to the top end. Helps tame bright, hissy sounds.'),
+ P('warm','Warmth','WARM',0,100,25,' %',0,'Warmth: adds a little tube-style colour after the leveler.')]},
+paw:{name:'Pawltec',code:'PAW',kind:'Tube EQ',color:'#CD92FE',blurb:'Passive tube EQ. Adds weight, air and shine, and boost and cut together for full bass without mud.',params:[
+ P('lb','Low Boost','LOW',0,12,3,' dB',1,'Low Boost: adds bass at the Low Freq setting.'),
+ P('hb','High Boost','HIGH',0,12,2,' dB',1,'High Boost: adds air and sparkle around 8 kHz.'),
+ P('hc','High Cut','CUT',0,12,0,' dB',1,'High Cut: gently turns the top end down. Smooths harsh or brittle sounds.'),
+ P('lc','Low Cut','LCUT',0,12,1.5,' dB',1,'Low Cut: turns the low end down just above the boost. Using both gives full bass without mud.'),
+ P('bw','Bandwidth','BW',0,100,50,' %',0,'Bandwidth: how wide the high boost is. Low is focused, high is broad.'),
+ P('lf','Low Freq','LFREQ',0,3,2,'',0,'Low Freq: the bass frequency the low controls work at.',{names:['20 Hz','30 Hz','60 Hz','100 Hz'],sn:['20','30','60','100']})]},
+fet:{name:'FetlinePounce',code:'FET',kind:'Fast limiter',color:'#FF1383',blurb:'Fast, aggressive limiter. Adds bite and energy to drums, bass and kicks.',params:[
+ P('in','Input','IN',0,30,12,' dB',1,'Input: how hard the signal is pushed into the limiter. More input means more squeeze and more bite.'),
+ P('out','Output','OUT',-20,0,-6,' dB',1,'Output: the level leaving the unit.'),
+ P('ratio','Ratio','RATIO',4,20,8,':1',0,'Ratio: how firmly loud parts are pushed down. 20:1 is a hard limit.'),
+ P('atk','Attack','ATK',20,800,100,' µs',0,'Attack: how fast the unit reacts, in millionths of a second. Slow lets the click of a drum through.',{log:1}),
+ P('rel','Release','REL',50,1100,300,' ms',0,'Release: how fast the unit lets go. Short is pumping and lively.',{log:1}),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP)]},
+punch:{name:'PunchPaw',code:'PNC',kind:'Drum limiter',color:'#FFD100',blurb:'Transparent limiter for kicks, drums and the final level. Keeps peaks under the ceiling.',params:[
+ P('punch','Punch','PUNCH',0,100,50,' %',0,'Punch: how much the unit squeezes the loud hits. Higher is denser and louder.'),
+ P('ceil','Ceiling','CEIL',-12,0,-1,' dB',1,'Ceiling: the loudest level that can leave the unit.'),
+ P('rel','Release','REL',10,500,80,' ms',0,'Release: how fast the unit lets go. Short keeps drums snappy.',{log:1}),
+ P('look','Lookahead','LOOK',0,5,1,' ms',1,'Lookahead: lets the unit see peaks a moment early so nothing gets past. Adds a tiny delay.'),
+ P('clip','Soft Clip','CLIP',0,100,20,' %',0,'Soft Clip: rounds off the very top of the peaks for more loudness.'),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP)]},
+apu:{name:'Apurrr2500',code:'APU',kind:'Bus compressor',color:'#F57F01',blurb:'Glue compressor for groups and the mix bus. Ties sounds together.',params:[
+ P('thr','Threshold','THR',-30,10,-12,' dB',1,'Threshold: the level where compression starts. Lower means more of the signal is squeezed.'),
+ P('ratio','Ratio','RATIO',1.5,10,4,':1',1,'Ratio: how firmly loud parts are pushed down. 2:1 gives gentle glue.'),
+ P('mk','Makeup','MKUP',0,20,3,' dB',1,'Makeup: makes the sound louder again after it has been squeezed.'),
+ P('atk','Attack','ATK',0.1,30,10,' ms',1,'Attack: how fast the unit grabs a loud hit. Slower lets drums keep their punch.',{log:1}),
+ P('rel','Release','REL',100,1200,400,' ms',0,'Release: how fast the unit lets go. Match it to the tempo for a groove.',{log:1}),
+ P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP)]}
+};
+const ORDER=['purr','fur','lap','paw','fet','punch','apu'];
+const MX=()=>P('mix','Dry/Wet','MIX',0,100,100,' %',0,MIXTIP);
+const WET=()=>P('mix','Wet','WET',0,100,30,' %',0,'Wet: how much of the effect is mixed in with the original sound.');
+const OUTP=()=>P('out','Output','OUT',-12,12,0,' dB',1,'Output: the level leaving the unit.');
+const DRV=(t)=>P('drv','Drive','DRIVE',0,100,t||30,' %',0,'Drive: how hard the sound is pushed. More drive means more thickness and grit.');
+const TONE=()=>P('tone','Tone','TONE',0,100,50,' %',0,'Tone: darker when turned down, brighter when turned up.');
+const ONE=(o)=>Object.assign({},o);
+const NEWU={
+clw:{name:'Clawpressor',code:'CLW',kind:'Compressor',color:'#FE27D6',cat:'Dynamics',src:'Studio 87 plugin',vz:'gr',blurb:'Everyday compressor with a firm, clear grip. A good first choice for vocals, synths and drums.',params:[
+ P('thr','Threshold','THR',-40,0,-18,' dB',1,'Threshold: the level where compression starts. Lower means more of the signal is squeezed.'),
+ P('ratio','Ratio','RATIO',1.5,20,4,':1',1,'Ratio: how firmly loud parts are pushed down.'),
+ P('mk','Makeup','MKUP',0,24,4,' dB',1,'Makeup: makes the sound louder again after it has been squeezed.'),
+ P('atk','Attack','ATK',0.1,100,10,' ms',1,'Attack: how fast the unit grabs a loud hit.',{log:1}),
+ P('rel','Release','REL',10,1500,200,' ms',0,'Release: how fast the unit lets go after a loud part.',{log:1}),MX()],
+ cp:p=>({g:0,thr:p.thr,ratio:p.ratio,knee:6,atk:p.atk/1000,rel:p.rel/1000,mk:p.mk,mix:p.mix/100})},
+tms:{name:'Trance Master',code:'TMS',kind:'4-band squeezer',color:'#774BF9',cat:'Dynamics',src:'from JPurrr-8000',vz:'gr',blurb:'Four-band multiband compressor and limiter with a big, bright squeeze. One Depth knob does most of the work.',params:[
+ P('depth','Depth','DEPTH',0,100,60,' %',0,'Depth: how hard all four bands are squeezed. Up for a big, dense sound.'),
+ P('time','Time','TIME',0,100,40,' %',0,'Time: how fast the bands let go. Low is quick and lively, high is slow and smooth.'),
+ P('lo','Low band','LOW',-12,12,0,' dB',1,'Low band: level of the bass band after squeezing.'),
+ P('hi','High band','HIGH',-12,12,0,' dB',1,'High band: level of the top band after squeezing.'),
+ P('ceil','Ceiling','CEIL',-6,0,-0.3,' dB',1,'Ceiling: the loudest level that can leave the unit.'),MX()],
+ cp:p=>({g:0,thr:-10-p.depth*.2,ratio:2+p.depth*.08,knee:12,atk:.004,rel:.04+p.time*.004,mk:p.depth*.05,mix:p.mix/100})},
+peq:{name:'Parametric EQ',code:'PEQ',kind:'3-band EQ',color:'#BDF9EB',cat:'EQ',src:'from WhiskerMix',vz:'eq',blurb:'Simple three-band EQ: bass shelf, a movable middle band and a treble shelf.',params:[
+ P('lg','Low','LOW',-12,12,0,' dB',1,'Low: boost or cut the bass below about 120 Hz.'),
+ P('mg','Mid','MID',-12,12,0,' dB',1,'Mid: boost or cut around the Mid Freq.'),
+ P('hg','High','HIGH',-12,12,0,' dB',1,'High: boost or cut the treble above about 6 kHz.'),
+ P('mf','Mid Freq','FREQ',100,8000,1000,' Hz',0,'Mid Freq: the pitch the middle band works at.',{log:1}),
+ P('q','Width','WIDTH',0.3,4,1,'',1,'Width: how wide the middle band is. Low is broad, high is narrow.'),OUTP()]},
+pdr:{name:'Purr Drive',code:'PDR',kind:'Clean drive',color:'#FFD100',cat:'Saturation',src:'from WhiskerMix',vz:'wet',blurb:'First of the three Purr colour stages: a smooth, symmetric drive.',params:[DRV(30),TONE(),OUTP(),MX()],gn:p=>-p.drv*.03+p.out},
+ptr:{name:'Purr Trans',code:'PTR',kind:'Transistor drive',color:'#FFA600',cat:'Saturation',src:'from WhiskerMix',vz:'wet',blurb:'Second Purr colour stage: warm, lopsided drive with extra low-end weight.',params:[DRV(30),
+ P('warm','Warmth','WARM',0,100,50,' %',0,'Warmth: adds even harmonics and low-end weight.'),OUTP(),MX()],gn:p=>-p.drv*.03+p.out},
+pfz:{name:'Purr Fuzz',code:'PFZ',kind:'Fuzz',color:'#FE006D',cat:'Saturation',src:'from WhiskerMix',vz:'wet',blurb:'Third Purr colour stage: thick fuzz with an octave-up edge when pushed.',params:[DRV(30),TONE(),OUTP(),MX()],gn:p=>-p.drv*.03+p.out},
+ech:{name:'Echo',code:'ECH',kind:'Delay',color:'#02EBBA',cat:'Space',src:'from WhiskerMix',vz:'wet',blurb:'Stereo echo with feedback and a tone control. Good for dub and lead tails.',params:[
+ P('time','Time','TIME',10,1000,375,' ms',0,'Time: the gap between echoes.',{log:1}),
+ P('fb','Feedback','FDBK',0,95,35,' %',0,'Feedback: how many repeats you hear.'),TONE(),
+ P('sp','Spread','SPREAD',0,100,50,' %',0,'Spread: bounces the echoes between left and right.'),
+ P('lc','Low Cut','LCUT',20,600,100,' Hz',0,'Low Cut: removes bass from the repeats.',{log:1}),WET()],gn:p=>0},
+cho:{name:'Chorus',code:'CHO',kind:'Chorus',color:'#A43DFF',cat:'Creative',src:'from WhiskerMix',vz:'wet',blurb:'Thickens and widens a sound with slow detuned copies.',params:[
+ P('rate','Rate','RATE',0.1,5,0.8,' Hz',1,'Rate: how fast the sound sways.',{log:1}),
+ P('depth','Depth','DEPTH',0,100,50,' %',0,'Depth: how far the copies drift in pitch.'),
+ P('del','Delay','DELAY',1,30,12,' ms',0,'Delay: the base delay of the copies.'),
+ P('wid','Width','WIDTH',0,100,80,' %',0,'Width: how wide the copies spread.'),WET()],gn:p=>0},
+pha:{name:'Phaser',code:'PHA',kind:'Phaser',color:'#E900AE',cat:'Creative',src:'from WhiskerMix',vz:'wet',blurb:'Sweeping, swirling notches that move through the sound.',params:[
+ P('rate','Rate','RATE',0.05,8,0.5,' Hz',2,'Rate: how fast the sweep moves.',{log:1}),
+ P('depth','Depth','DEPTH',0,100,60,' %',0,'Depth: how far the sweep travels.'),
+ P('fb','Feedback','FDBK',0,95,40,' %',0,'Feedback: makes the swirl sharper.'),
+ P('cen','Centre','CENTRE',200,4000,800,' Hz',0,'Centre: the middle pitch of the sweep.',{log:1}),WET()],gn:p=>0},
+fln:{name:'Flanger',code:'FLN',kind:'Flanger',color:'#4F10FD',cat:'Creative',src:'from WhiskerMix',vz:'wet',blurb:'Jet-like sweep from a very short, moving delay.',params:[
+ P('rate','Rate','RATE',0.05,8,0.3,' Hz',2,'Rate: how fast the sweep moves.',{log:1}),
+ P('depth','Depth','DEPTH',0,100,60,' %',0,'Depth: how far the sweep travels.'),
+ P('fb','Feedback','FDBK',-95,95,30,' %',0,'Feedback: makes the jet sound sharper. Negative values sound hollow.'),
+ P('del','Delay','DELAY',0.1,10,2,' ms',1,'Delay: the base delay of the sweep.',{log:1}),WET()],gn:p=>0},
+air:{name:'Air Exciter',code:'AIR',kind:'Top-end sparkle',color:'#E1CBF4',cat:'Creative',src:'from Meowximizer',vz:'wet',blurb:'Adds shine and openness to the top end without making it harsh.',params:[
+ P('air','Air','AIR',0,100,30,' %',0,'Air: how much sparkle is added.'),
+ P('freq','From','FROM',2000,12000,6000,' Hz',0,'From: the pitch where the sparkle starts.',{log:1}),
+ P('sm','Smooth','SMOOTH',0,100,50,' %',0,'Smooth: rounds off any harshness.'),OUTP(),MX()],gn:p=>p.out},
+ms:{name:'Mid Side',code:'MS',kind:'Stereo width',color:'#9bd7ff',cat:'Utility',src:'from WhiskerMix',vz:'wet',blurb:'Splits the sound into middle and sides so you can make it wider or narrower.',params:[
+ P('wid','Width','WIDTH',0,200,100,' %',0,'Width: 0 is mono, 100 is unchanged, 200 is extra wide.'),
+ P('mid','Mid','MID',-12,12,0,' dB',1,'Mid: level of the centre of the sound.'),
+ P('side','Side','SIDE',-12,12,0,' dB',1,'Side: level of the left and right edges.')],gn:p=>0},
+gan:{name:'Gain',code:'GAN',kind:'Level and pan',color:'#D9EBE9',cat:'Utility',src:'Studio 87 plugin',vz:'wet',blurb:'Plain volume, pan and mono switch. Useful to match levels between units.',params:[
+ P('gain','Gain','GAIN',-24,24,0,' dB',1,'Gain: turns the level up or down.'),
+ P('pan','Pan','PAN',-100,100,0,'',0,'Pan: moves the sound left or right. 0 is centre.'),
+ P('mono','Mono','MONO',0,1,0,'',0,'Mono: Stereo leaves the sound alone. Mono sums left and right.',{names:['Stereo','Mono'],sn:['Ster','Mono']})],gn:p=>p.gain}
+};
+Object.assign(UNITS,NEWU);
+const REAL={mxz:{name:"Meowximizer",code:"MXZ",kind:"Maximizer",color:"#FF9000",cat:"Dynamics",src:"Studio 87 plugin",vz:"gr",real:1,blurb:"Three phase-aligned bands with bass harmonics, a lift for the highs, an air exciter, a squeeze, light clipping and a limiter with a ceiling.",params:[
+ P("squeeze","Squeeze","SQUEEZE",0.0,100.0,30.0," %",0,"Squeeze: how much each of the three bands is evened out, pressing loud parts down and lifting quiet ones up. More = denser.",{"kl": "Squeeze"}),
+ P("air","Air","AIR",0.0,100.0,25.0," %",0,"Air: a smooth high shelf at 9 kHz (up to +4.5 dB) for sheen, plus an exciter that adds new harmonics above 5 kHz for brilliance and excitement. The exciter runs 2x oversampled, so it stays smooth."),
+ P("ceil","Ceiling","CEIL",-12.0,0.0,-0.3," dB",1,"Ceiling: the output limiter never lets the signal go above this level.",{"kl": "Ceiling"}),
+ P("contour","Lo contour","CONTOUR",0.0,10.0,3.0,"",1,"Low contour: a gentle low shelf for weight and warmth in the bottom end.",{"kl": "Lo contour"}),
+ P("bass","Bass harmonics","BASS H",0.0,100.0,25.0," %",0,"Bass harmonics: adds overtones to the bass so it stays audible on small speakers.",{"kl": "Bass harm"}),
+ P("process","Process","PROCESS",0.0,10.0,5.0,"",1,"Process: the sonic-maximizer effect. Delays the lows and mids a tiny bit behind the highs and lifts the highs when the mids are quiet, for clarity and punch."),
+ P("mode","Squeeze mode","STYLE",0,10,0,'',0,"Squeeze style: each style is a different chain. Gentle keeps dynamics natural. OTT presses the loud down and lifts the quiet up hard. Dance Master is a controlled multiband compressor with soft knee, auto release and a limiter on each band. Glue is mild and sticky. Slow Smooth is slow and smooth, like an opto. Punchy lets the attack through. Tight Lock clamps hard and fast. Lift brings up quiet parts. Hardstyle Lock is fast and firm with extra low-end control. Highs Tamer holds back harsh highs on leads (good after a reverb). Thick Supersaw is a slow, soft squeeze that pairs with the Opto knob to fatten supersaw leads.",{"names": ["Gentle", "OTT style", "Dance Master", "Glue", "Slow Smooth", "Punchy", "Tight Lock", "Lift", "Hard Lock", "Highs Tamer", "Thick Saw"], "sn": ["Gentl", "OTT s", "Dance", "Glue", "Slow ", "Punch", "Tight", "Lift", "Hard ", "Highs", "Thick"], "kl": "Squeeze mode"}),
+ P("warm","Warm","WARM",0.0,100.0,20.0," %",0,"Warm: saturation on the whole signal. Rounds peaks and adds body. With a Warm character other than tanh it adds disto, transistor or fuzz grit when pushed."),
+ P("clip","Clip","CLIP",0.0,100.0,0.0," %",0,"Light peak clipper: pushes the signal up to 9 dB harder into a smooth clipper at the Ceiling, then the limiter. Shaves the peaks so the whole thing can sit much louder."),
+ P("push","Push","PUSH",0.0,18.0,0.0," dB",1,"Push: raises the level going into the squeeze and the limiter for more loudness."),
+ P("opto","Opto","OPTO",0.0,100.0,0.0," %",0,"Opto: extra optical-style leveller on top of whatever the squeeze style already uses. Slow, smooth, program-dependent compression that thickens leads and bass. 0 = only what the style brings."),
+ P("mix","Mix","MIX",0.0,100.0,100.0," %",0,"Mix: dry/wet blend for parallel processing."),
+ P("out","Output","OUT",-12.0,12.0,0.0," dB",1,"Output: final level. Match it with the bypassed level when comparing.",{"kl": "Output"}),
+ P("lcmode","Loudness match","LOUDM",0,2,0,'',0,"Loudness match: a slow level follower lifts the processed sound back up to the level that went in, so heavy squeeze or opto settings never lose volume or loudness. Auto switches it on as the Opto amount grows. It only ever lifts, and never past the Ceiling.",{"names": ["Auto", "Off", "On"], "sn": ["Auto", "Off", "On"], "kl": "Loud match"}),
+ P("airchar","Air exciter","AIRSH",0,1,0,'',0,"The shaper that makes the Air harmonics. The stack version gets gritty and fuzzy when Air is pushed high.",{"names": ["Shipped", "PurrOne stack"], "sn": ["Shipp", "PurrO"], "kl": "Air shaper"}),
+ P("wchar","Warm character","WARMTY",0,4,0,'',0,"What the Warm knob does. Shipped is the plain tanh. The others are the PurrOne colour stages, oversampled 2x. Stack grows from drive to transistor to fuzz as you push Warm.",{"names": ["Shipped", "Drive", "Transistor", "Fuzz", "Stack"], "sn": ["Shipp", "Drive", "Trans", "Fuzz", "Stack"], "kl": "Warm type"}),
+ P("clipPos","Clipper position","CLIPPOS",0,1,1,'',0,"Where the Clip stage sits. Post (before the limiter) keeps the squeeze natural and is what mastering clippers do. Pre clips the input before everything.",{"names": ["Pre", "Post"], "sn": ["Pre", "Post"], "kl": "Clip place"})],cp:p=>({g:0,thr:-4-p.squeeze*.14-p.push*.3,ratio:20,knee:3,atk:.001,rel:.12,mk:-p.ceil+p.squeeze*.03+p.push*.2,mix:p.mix/100})},
+crc:{name:"Cat Crusher",code:"CRU",kind:"Drive, filter, compressor",color:"#FF7BB1",cat:"Saturation",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Compressor into a choice of ten distortion types, a crunchy Mech stage and a multimode filter. Also works as a parallel crush.",params:[
+ P("tube","Drive","DRIVE",0.0,100.0,30.0," %",0,"Drive: how hard the selected distortion type is pushed. Higher = more saturation and harmonics.",{"kl": "Drive"}),
+ P("comp","Comp amount","COMP",0.0,100.0,30.0," %",0,"Compressor amount: lowers the threshold and raises the ratio together. Make-up gain is automatic, so the level stays the same at any amount and only the density changes.",{"kl": "Comp amount"}),
+ P("vol","Volume","VOL",-24.0,12.0,0.0," dB",0,"Volume: final output level. Match it to the bypassed level when comparing.",{"kl": "Volume"}),
+ P("mech","Mech","MECH",0.0,100.0,0.0," %",0,"Mech: harder, more aggressive digital-style crunch (folds and clips the wave). 0 = off."),
+ P("cut","Cutoff","CUTOFF",40.0,20000.0,20000.0," Hz",0,"Cutoff: frequency of the 24 dB filter (low-pass, high-pass or band-pass). As a low-pass it rolls off the harsh highs that distortion creates.",{"log": 1}),
+ P("res","Res","RES",0.0,100.0,10.0," %",0,"Resonance: boosts the frequencies right at the cutoff for a vocal or squelchy edge."),
+ P("type","Type","TYPE",0,9,0,'',0,"Distortion type. Tube: warm even harmonics. Soft Sat: smooth and symmetric, great on buses. Transistor: console-style, punchy and forward. Tape: gentle and rounded. Diode: edgy and asymmetric. Hard Clip: tight, loud and aggressive. Fuzz: thick, gated and woolly. Distort: hard-clipped, gritty distortion pedal style. Overdrive: smooth, mid-forward tube-pedal style. Rectifier: adds a bright octave-ish edge.",{"names": ["Tube", "Soft Sat", "Transistor", "Tape", "Diode", "Hard Clip", "Fuzz", "Distort", "Overdrive", "Rectifier"], "sn": ["Tube", "Soft ", "Trans", "Tape", "Diode", "Hard ", "Fuzz", "Disto", "Overd", "Recti"], "kl": "Type"}),
+ P("mix","Mix","MIX",0.0,100.0,100.0," %",0,"Mix: dry/wet blend. Lower values keep the original punch (parallel crush)."),
+ P("phat","Phat mode","PHAT",0,1,0,'',0,"Phat mode: adds low-end weight before the compressor, a slower release and a soft ceiling. Great on kicks and bass.",{"names": ["Off", "On"], "sn": ["Off", "On"], "kl": "Phat mode"}),
+ P("don","Distortion","DIST",0,1,1,'',0,"Distortion on/off.",{"names": ["Off", "On"], "sn": ["Off", "On"], "kl": "Distortion"}),
+ P("ftype","Filter type","FILT T",0,2,0,'',0,"Filter type: Low-pass keeps the lows and cuts the highs, High-pass keeps the highs and cuts the lows, Band-pass keeps only a band around the cutoff.",{"names": ["Low-pass", "High-pass", "Band-pass"], "sn": ["Low-p", "High-", "Band-"], "kl": "Filter type"}),
+ P("fon","Filter","FILTER",0,1,1,'',0,"Filter on/off.",{"names": ["Off", "On"], "sn": ["Off", "On"]}),
+ P("con","Compressor","COMP ON",0,1,1,'',0,"Compressor on/off.",{"names": ["Off", "On"], "sn": ["Off", "On"], "kl": "Comp on"})],gn:p=>-p.tube*.03+p.vol},
+fat:{name:"Fat Cat",code:"FAT",kind:"Saturator",color:"#F57F01",cat:"Saturation",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Thickens sound with a drive, transistor, grit and fuzz chain, a colour control and a stereo turbo for width.",params:[
+ P("drive","Drive","DRIVE",0.0,100.0,40.0," %",0,"Drive: how hard the sound is saturated. Even at 0 % a very light touch of warmth stays on by design. Dynamics are kept at any input level. With the PurrOne stack character this is the opamp-style tanh stage; above 80 % it stacks a second stage."),
+ P("color","Color","COLOR",0.0,100.0,0.0," %",0,"Color: emphasises one band of the sound before it is saturated. Low = bass and warmth, high = bite and air."),
+ P("out","Output","OUT",-24.0,12.0,0.0," dB",0,"Output: final level. Use it to match the loudness of the original when comparing.",{"kl": "Output"}),
+ P("xs","Transistor","TRANS",0.0,100.0,0.0," %",0,"Transistor: asymmetric soft clip with even harmonics, warm and thick, not buzzy. Adds on top of Drive in Shipped, and is the middle stage of the PurrOne stack.",{"kl": "Transistor"}),
+ P("grit","Grit","GRIT",0.0,100.0,0.0," %",0,"Grit: lopsided fuzz-style clip, above 80 % it adds a smooth octave-up growl. Adds on top of Drive in Shipped, and is the last stage of the PurrOne stack."),
+ P("fuzz","Fuzz","FUZZ",0.0,100.0,0.0," %",0,"Fuzz: adds clipped high frequencies (above about 1.5 kHz) for a buzzy, raw top end."),
+ P("turbo","Stereo Turbo","TURBO",0.0,100.0,0.0," %",0,"Stereo Turbo: delays the right channel by a few milliseconds for width. Check the mix in mono, too much can thin it out.",{"kl": "Stereo Turbo"}),
+ P("mix","Mix","MIX",0.0,100.0,100.0," %",0,"Mix: blend between the original (dry) and the saturated (wet) sound."),
+ P("schar","Drive character","CHAR",0,1,0,'',0,"Shipped is the plain saturation (Transistor and Grit can be added on top). The PurrOne stack is the three-stage colour shaper from the PurrOne synth: opamp drive, console-style transistor and fuzz, nastier above 80 %, smooth (no digital fizz), with a fizz low-pass that closes as it gets nastier.",{"names": ["Shipped", "PurrOne stack"], "sn": ["Shipp", "PurrO"], "kl": "Drive char."})],gn:p=>-p.drive*.03+p.out},
+spc:{name:"Cat Spacer",code:"SPC",kind:"Spectral ducker",color:"#01FCDC",cat:"Dynamics",src:"Studio 87 plugin",vz:"gr",real:1,blurb:"Carves gaps in this sound where the sidechain is loud, in 64 bands, so a lead and a vocal or kick can share the mix. Needs a sidechain; with none connected it uses the main signal.",params:[
+ P("amount","Amount","AMOUNT",0.0,100.0,50.0," %",0,"Amount: 0 = no ducking at all. Low settings carve only the bands where the sidechain is loud (transparent space). Towards 100 it turns into a full-on pump that ducks everything with each hit. Gradual in between."),
+ P("attack","Attack","ATK",1.0,300.0,20.0," ms",0,"Attack: how fast the ducking engages when the sidechain gets loud.",{"log": 1, "kl": "Attack"}),
+ P("release","Release","REL",10.0,2000.0,160.0," ms",0,"Release: how long the ducking takes to let go after the sidechain stops. Short = tight, long = the big breathing pump.",{"log": 1, "kl": "Release"}),
+ P("lo","Low cut","LOWCUT",20.0,20000.0,20.0," Hz",0,"Low cut: sidechain content below this frequency does not trigger any ducking (stops a kick from carving the whole mix, for example).",{"log": 1, "kl": "Low cut"}),
+ P("hi","High cut","HIGHCUT",20.0,20000.0,20000.0," Hz",0,"High cut: sidechain content above this frequency does not trigger any ducking.",{"log": 1, "kl": "High cut"}),
+ P("range","Max cut","MAXCUT",3.0,36.0,24.0," dB",0,"Max cut: the deepest reduction any band can get at 100 % amount.",{"kl": "Max cut"}),
+ P("floor","Floor","FLOOR",10.0,70.0,50.0," dB",0,"Floor: how far below the loudest sidechain band a band can be and still cause ducking. Lower = only the strongest bands duck, higher = more bands duck."),
+ P("mode","Stereo mode","STEREO",0,1,0,'',0,"Stereo mode: L/R ducks left and right, M/S ducks mid and side.",{"names": ["L/R", "M/S"], "sn": ["L/R", "M/S"], "kl": "Stereo mode"}),
+ P("freeze","Freeze","FREEZE",0,1,0,'',0,"Freeze: holds the current sidechain curve so it keeps carving the same gaps (a static EQ taken from the sidechain).",{"names": ["Off", "On"], "sn": ["Off", "On"]}),
+ P("pan","Pan","PAN",-100.0,100.0,0.0,"",0,"Pan: moves the effect toward one side. Left of centre applies less to the right channel, right of centre applies less to the left (or to side instead of mid in M/S)."),
+ P("mix","Mix","MIX",0.0,100.0,100.0," %",0,"Mix: dry/wet blend of the ducked signal."),
+ P("latency","Latency","LATENCY",0,3,1,'',0,"Latency: the delay this plugin adds (the host compensates). Ultra 256 is about 6 ms, Low 512 about 11 ms, Normal 1024 about 21 ms, High 2048 about 43 ms. Shorter = tighter timing but less precise at low frequencies; longer = cleaner and more exact in the bass.",{"names": ["Ultra 256", "Low 512", "Normal 1024", "High 2048"], "sn": ["Ultra", "Low 5", "Norma", "High "]}),
+ P("audition","Audition","AUDIT",0,1,0,'',0,"Audition: listen to the sidechain as the plugin hears it (after low and high cut). Useful for setting the cuts.",{"names": ["Off", "On"], "sn": ["Off", "On"], "kl": "Audition"}),
+ P("cmode","Colour","COLOUR",0,3,0,'',0,"Where Drive, Transistor and Fuzz act. Sound: dirties the audio you hear, level kept. Sidechain: only colours what the ducker listens to (Audition shows it). Both: does both. Not ducked: colours only what the sidechain never touches, below the Low cut and above the High cut (needs those set inside 20 Hz to 20 kHz).",{"names": ["Sound", "Sidechain", "Both", "Not ducked"], "sn": ["Sound", "Sidec", "Both", "Not d"]}),
+ P("sdrive","Drive","DRIVE",0.0,150.0,0.0," %",0,"Drive (PurrOne opamp tanh). Colour: sound dirties the audio you hear with automatic gain staging so it never gets quieter. Colour: sidechain colours what the ducker listens to: more harmonics means more bands duck, so the cut gets wider."),
+ P("sxs","Transistor","TRANS",0.0,150.0,0.0," %",0,"Transistor (PurrOne, asymmetric, even harmonics). On the sound: warm, thick even harmonics with the level kept. On the sidechain: the ducker also reacts one octave up from the fundamental.",{"kl": "Transistor"}),
+ P("sfuzz","Fuzz","FUZZ",0.0,150.0,0.0," %",0,"Fuzz (PurrOne lopsided clip with octave-up growl). On the sound: nasty fuzz with the level kept. On the sidechain: spreads the sidechain energy across the spectrum, so a bass or kick carves holes far up (and the result gets quieter).")],cp:p=>({g:0,thr:-34+(70-p.floor)*.7,ratio:1+p.amount*.1+p.range*.1,knee:10,atk:p.attack/1000,rel:p.release/1000,mk:0,mix:p.mix/100})},
+bas:{name:"Meowbass",code:"BAS",kind:"Bass enhancer",color:"#009572",cat:"Creative",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Splits the bass with a phase-aligned crossover, builds harmonics from it so it is heard on small speakers, shapes its dynamics and adds it back.",params:[
+ P("freq","Bass range","RANGE",30.0,200.0,80.0," Hz",0,"Bass range: the frequency below which the bass is picked up to make harmonics. Set it near the lowest note you want to feel (kick or bass fundamental, often 50 to 100 Hz).",{"log": 1, "kl": "Bass range"}),
+ P("harm","Harmonics","HARM",-36.0,18.0,-12.0," dB",0,"Harmonics: level of the added overtones that make small speakers suggest deep bass. Start low and raise until the bass feels bigger. Range -36 to +18 dB: from subtle to obvious.",{"kl": "Harmonics"}),
+ P("dyn","Dynamics","DYN",-100.0,100.0,-40.0," %",0,"Dynamics: how the harmonics follow the bass level. 0 = off (neutral). Negative = evens out quiet and loud notes (-100 = most even, quiet notes are boosted). Positive = the harmonics follow the level more and more, so loud notes get far more harmonics than quiet ones (+100 = drastic). Tailor it from subtle to extreme either way.",{"kl": "Dynamics"}),
+ P("orig","Original bass","ORIG",-48.0,6.0,0.0," dB",0,"Original bass: level of the untouched low end. Pull it down to free headroom and let the harmonics carry the bass.",{"kl": "Original bass"}),
+ P("in","Input","IN",-12.0,12.0,0.0," dB",1,"Input: level into the effect. Raise it for more harmonics from a quiet source.",{"kl": "Input"}),
+ P("out","Output","OUT",-12.0,12.0,0.0," dB",1,"Output: final level. Match it with the bypassed level when comparing.",{"kl": "Output"}),
+ P("resp","Dyn response","RESP",1.0,1000.0,40.0," ms",0,"Dynamics response: how fast the harmonics follow the bass level (works together with Dynamics; at Dynamics 0 it does nothing). Short = every hit snaps the harmonics (punchy, tight); long = the harmonics glide over whole notes (smooth, slow swell). With Dynamics up, the difference is big.",{"log": 1, "kl": "Dyn response"}),
+ P("decay","Even/Odd","EVENODD",0.0,1.0,0.5,"",2,"Even/Odd: character of the harmonics. Even = warm and round (rectifier style), Odd = harder and more edgy (clipper style).",{"kl": "Even/Odd"}),
+ P("hdrive","Drive","DRIVE",0.0,100.0,30.0," %",0,"Harmonic drive: how hard the bass is pushed into the harmonic generator. Low = clean and subtle, high = thick, obvious and colourful. Works together with Even/Odd."),
+ P("hfilt","Harmonic filter","FILTER",0,2,0,'',0,"Harmonic filter: Smooth is balanced, Wide lets more upper harmonics through (brighter), Tight keeps only the lowest ones (cleaner).",{"names": ["Smooth", "Wide", "Tight"], "sn": ["Smoot", "Wide", "Tight"], "kl": "Harm filter"}),
+ P("quality","Quality","QUALITY",0,1,1,'',0,"Quality: High runs the harmonic generator and its filters at twice the sample rate, so hard-driven settings stay clean (less aliasing). It adds no delay and costs very little CPU. Normal is the plain 1x path.",{"names": ["Normal", "High (2x)"], "sn": ["Norma", "High "]})],gn:p=>p.out+p.in*0},
+shm:{name:"Shimmer Reverb",code:"REV",kind:"Reverb",color:"#C0A9FE",cat:"Space",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Five reverbs in one: plate, hall, shimmer plate, shimmer hall and velvet. From the shimmerstuff plugin.",params:[
+ P("decay","Decay","DECAY",0.0,100.0,60.0," %",0,"Decay: how long the tail rings.",{"kl": "Decay"}),
+ P("shimmer","Shimmer amount","SHIM",0.0,100.0,50.0," %",0,"Shimmer amount: how much pitched-up glow is added to the tail.",{"kl": "Shimmer"}),
+ P("mix","Reverb mix","MIX",0.0,100.0,35.0," %",0,"Reverb mix: how much reverb is blended with the original.",{"kl": "Mix"}),
+ P('type','Reverb type','TYPE',0,4,3,'',0,'Reverb type: Plate, Hall, Shimmer Plate, Shimmer Hall or Velvet. The shimmer types add a pitched-up glow to the tail.',{"names": ["Plate", "Hall", "Shim Plate", "Shim Hall", "Velvet"], "sn": ["Plate", "Hall", "ShPl", "ShHl", "Velv"], "kl": "Type"}),
+ P("size","Size","SIZE",0.5,1.6,1.0," x",2,"Size: how big the room feels.",{"kl": "Size"}),
+ P("predelay","Pre-delay","PRE",0.0,250.0,20.0," ms",0,"Pre-delay: a gap before the reverb starts, so the dry sound stays clear.",{"kl": "Pre-delay"}),
+ P("damp","Damping","DAMP",500.0,16000.0,6000.0," Hz",0,"Damping: the reverb tail loses highs above this pitch.",{"log": 1, "kl": "Damping"}),
+ P("shift","Shimmer pitch","PITCH",-12.0,12.0,12.0," st",1,"Shimmer pitch: how many semitones the glow is shifted. 12 is an octave up.",{"kl": "Shim pitch"}),
+ P("mod","Modulation","MOD",0.0,100.0,50.0," %",0,"Modulation: slow movement inside the reverb that keeps the tail alive.",{"kl": "Modulation"}),
+ P("color","Velvet colour","COLOUR",-100.0,100.0,0.0," %",0,"Velvet colour: darker when negative, brighter when positive. Used by the Velvet type.",{"kl": "Vel colour"}),
+ P("shift2","Shimmer 2 pitch","PITCH2",-12.0,12.0,7.0," st",1,"Shimmer 2 pitch: pitch of the second shimmer voice.",{"kl": "Shim 2 pitch"}),
+ P("shimmer2","Shimmer 2 amount","SHIM2",0.0,100.0,0.0," %",0,"Shimmer 2 amount: level of the second shimmer voice.",{"kl": "Shim 2 amt"}),
+ P("hp","Wet high-pass","WET HP",20.0,2000.0,20.0," Hz",0,"Wet high-pass: removes bass from the reverb so the mix stays clean.",{"log": 1, "kl": "Wet HP"}),
+ P("lp","Wet low-pass","WET LP",1000.0,20000.0,20000.0," Hz",0,"Wet low-pass: removes the top end of the reverb.",{"log": 1, "kl": "Wet LP"})],gn:p=>0},
+sdl:{name:"Shimmer Delay",code:"SDL",kind:"Delay",color:"#9bd7ff",cat:"Space",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Delay whose repeats can shift in pitch and shimmer. From the shimmerstuff plugin.",params:[
+ P("dtime","Delay time","TIME",20.0,2000.0,450.0," ms",0,"Delay time: the gap between repeats.",{"log": 1, "kl": "Time"}),
+ P("dfb","Delay feedback","FDBK",0.0,95.0,55.00000000000001," %",0,"Delay feedback: how many repeats you hear.",{"kl": "Feedback"}),
+ P("dmix","Delay mix","MIX",0.0,100.0,40.0," %",0,"Delay mix: how much delay is blended with the original.",{"kl": "Mix"}),
+ P("dshift","Delay shift","SHIFT",-12.0,12.0,12.0," st",1,"Delay shift: pitch change of the repeats in semitones.",{"kl": "Shift"}),
+ P("dshim","Delay shimmer","SHIM",0.0,100.0,100.0," %",0,"Delay shimmer: how much shimmer glow the repeats get.",{"kl": "Shimmer"}),
+ P("ddamp","Delay damping","DAMP",500.0,16000.0,5000.0," Hz",0,"Delay damping: the repeats lose highs above this pitch.",{"log": 1, "kl": "Damping"})],gn:p=>0},
+hbl:{name:"Hairball",code:"HBL",kind:"Grain freeze (FX mode)",color:"#FE91E8",cat:"Creative",src:"Studio 87 plugin",vz:"wet",real:1,blurb:"Freezes, holds and shreds what plays into tiny grains, and can build a riser from it. The FX mode of Hairball.",params:[
+ P("freeze","Freeze","FREEZE",0.0,1.0,0.0,'',0,"FX mode: stop recording and keep looping what is in the buffer. Grains then play only the frozen audio.",{"names": ["Off", "On"], "sn": ["Off", "On"]}),
+ P("hold","Hold","HOLD",0.0,1.0,0.0,'',0,"Holds the playing position still, like Wave Spacing at 0 for a moment. Automate it for stutters and stalls.",{"names": ["Off", "On"], "sn": ["Off", "On"]}),
+ P("capOff","Lag","LAG",0.0,2000.0,120.0," ms",0,"FX mode, not frozen: how far behind the live audio the grains read."),
+ P("liveLen","Capture","CAPTURE",0.5,8.0,4.0," s",1,"How many seconds of the incoming audio Hairball keeps ready to freeze (FX mode)."),
+ P("grainLen","Hold len","HOLDLEN",2.0,800.0,80.0," ms",0,"Length each grain plays before the next one takes over.",{"log": 1, "kl": "Hold len"}),
+ P("spacing","Gr. spacing","SPACING",25.0,400.0,100.0," %",0,"Gap between grains. 100 percent places them end to end with a clean crossfade. Lower means more overlap and a thicker sound, higher means gaps.",{"kl": "Gr. spacing"}),
+ P("waveSpacing","Wave spacing","WAVE SP",-300.0,300.0,100.0," %",0,"How fast the playing position moves through the sound. 100 is normal, 0 freezes, negative plays the grains backwards in order, 300 is three times faster.",{"kl": "Wave spacing"}),
+ P("pitch","Pitch","PITCH",-48.0,48.0,0.0," st",0,"Pitch in semitones. Grains are read faster or slower; the position still moves at Wave spacing."),
+ P("dance","Dance","DANCE",0.0,100.0,0.0," %",0,"Glue compressor on everything above 150 Hz, bass left alone. Pumps and holds the sound together for dance music."),
+ P("riseOn","Riser","RISER",0.0,1.0,0.0,'',0,"Starts the riser. In Instrument mode every note starts it. Turn it off and it eases back.",{"names": ["Off", "On"], "sn": ["Off", "On"]}),
+ P("riseTime","Riser time","RISE T",0.1,32.0,4.0," s",0,"How long the riser takes to reach its end.",{"log": 1, "kl": "Riser time"}),
+ P("risePitch","Riser pitch up","RISE ST",0.0,60.0,24.0," st",0,"How many semitones the riser lifts the pitch.",{"kl": "Pitch up"}),
+ P("width","Width","WIDTH",0.0,200.0,100.0," %",0,"Mid/side width. 100 is unchanged, 0 is mono, 200 is double the side signal."),
+ P("drive","Drive","DRIVE",0.0,100,0.0," %",0,"Symmetric analog clip. Odd harmonics, loud and bright. Above 100 percent needs Nasty range."),
+ P("transistor","Transistor","TRANS",0.0,100,0.0," %",0,"console-style asymmetric stage. Even harmonics, warm and thick. Above 100 percent needs Nasty range.",{"kl": "Transistor"}),
+ P("fuzz","Fuzz","FUZZ",0.0,100,0.0," %",0,"Lopsided hard fuzz. Above 80 percent it turns nasty on purpose. Above 100 percent needs Nasty range."),
+ P("mix","Dry/wet","MIX",0.0,100.0,100.0," %",0,"Blend between the untouched input and Hairball. At 0 the input passes bit for bit.",{"kl": "Dry/wet"}),
+ P("out","Output","OUT",-24.0,12.0,0.0," dB",0,"Output level.",{"kl": "Output"})],gn:p=>p.out}};
+Object.assign(UNITS,REAL);
+const MORE={
+scr:{name:'Scratch Cat FX',code:'SCR',kind:'Scratch deck and FX',color:'#F5A66E',cat:'Creative',src:'Studio 87 plugin',vz:'wet',real:1,blurb:'Scratch, brake and backspin the sound from your track, with EQ, colour and an effect slot. From the Scratch Cat FX plugin.',params:[
+ P('speed','Platter speed','SPEED',-4,4,0,' x',1,'Platter speed: how fast the platter turns. 0 holds the sound still, negative plays it backwards.',{kl:'Speed'}),
+ P('brake','Brake','BRAKE',0,1,0,'',0,'Brake: slows the sound down to a stop like a turntable.',{names:['Off','On'],sn:['Off','On']}),
+ P('backspin','Backspin','BKSPIN',0,1,0,'',0,'Backspin: spins the sound backwards fast, then returns.',{names:['Off','On'],sn:['Off','On'],kl:'Backspin'}),
+ P('touch','Hand on platter','HAND',0,1,0,'',0,'Hand on platter: holds the platter like a DJ hand so you can scratch.',{names:['Off','On'],sn:['Off','On'],kl:'Hand'}),
+ P('lo','Low','LOW',-24,12,0,' dB',1,'Low: bass level of the deck EQ.'),
+ P('mid','Mid','MID',-24,12,0,' dB',1,'Mid: middle level of the deck EQ.'),
+ P('hi','High','HIGH',-24,12,0,' dB',1,'High: treble level of the deck EQ.'),
+ P('colour','Colour','COLOUR',-100,100,0,' %',0,'Colour: a filter sweep. Negative cuts the highs, positive cuts the lows.'),
+ P('trim','Trim','TRIM',-12,12,0,' dB',1,'Trim: input level of the deck.'),
+ P('fx1t','FX 1 type','FX 1',0,4,0,'',0,'FX 1 type: Filter, Echo, Reverb, Flanger or Crush.',{names:['Filter','Echo','Reverb','Flanger','Crush'],sn:['Filt','Echo','Verb','Flan','Crush'],kl:'FX 1 type'}),
+ P('fx1p1','FX 1 amount','FXAMT',0,100,25,' %',0,'FX 1 amount: the main control of the chosen effect.',{kl:'FX amount'}),
+ P('fx1p2','FX 1 dry/wet','FXMIX',0,100,100,' %',0,'FX 1 dry/wet: how much of the effect is mixed in.',{kl:'FX mix'}),
+ P('master','Master','MASTER',-24,6,0,' dB',1,'Master: final level.')],gn:p=>p.trim+p.master},
+stc:{name:'Stretch Cat',code:'STC',kind:'Time stretch and pitch',color:'#FFEF5E',cat:'Creative',src:'Studio 87 plugin',vz:'wet',real:1,blurb:'Changes the speed without changing the pitch, or the pitch without changing the speed. Today it is a sampler plugin; use in the rack is planned.',params:[
+ P('mode','Stretch mode','MODE',0,5,4,'',0,'Stretch mode: Beats for drums, Tones for single notes, Texture for pads, Re-Pitch for tape style, Complex for full mixes, Formant+ for voices.',{names:['Beats','Tones','Texture','Re-Pitch','Complex','Formant+'],sn:['Beats','Tones','Textu','RePit','Compl','Form+'],kl:'Mode'}),
+ P('speed','Speed','SPEED',0.25,4,1,' x',2,'Speed: playback speed without changing the pitch. 1 is normal.',{log:1}),
+ P('tr','Transpose','TRANSP',-24,24,0,' st',0,'Transpose: pitch in semitones without changing the speed.',{kl:'Transpose'}),
+ P('fine','Fine (cents)','FINE',-100,100,0,' ct',0,'Fine: fine tune in cents.',{kl:'Fine'}),
+ P('grain','Grain','GRAIN',0,100,50,' %',0,'Grain: size of the grains the stretch engine uses.'),
+ P('trans','Transients','TRANS',0,100,50,' %',0,'Transients: how well the hits keep their snap.',{kl:'Transients'}),
+ P('smooth','Smooth','SMOOTH',0,100,70,' %',0,'Smooth: how smoothly the grains blend together.'),
+ P('tape','Speed and pitch linked','LINK',0,1,0,'',0,'Speed and pitch linked: when on, speed and pitch move together like tape.',{names:['Off','On'],sn:['Off','On'],kl:'Linked'}),
+ P('gain','Gain','GAIN',-24,12,0,' dB',1,'Gain: output level.')],gn:p=>p.gain},
+cpy:{name:'Copycat',code:'CPY',kind:'Sound analyser',color:'#FFD1A1',cat:'Utility',src:'Studio 87 plugin',vz:'wet',real:1,ana:1,blurb:'Listens and tells you the note, key, chord, tempo, oscillator shape, voices, filter and envelope so you can rebuild the sound. The audio passes through unchanged.',params:[
+ P('listen','Listen level','LISTEN',-60,0,-40,' dB',0,'Listen level: how loud the sound must be before it is analysed. (Mockup control.)',{kl:'Listen level'}),
+ P('cap','Capture 2 s','CAPTURE',0,1,0,'',0,'Capture 2 s: grabs the last two seconds to analyse. (Mockup control.)',{names:['Idle','Capture'],sn:['Idle','Capt'],kl:'Capture'}),
+ P('auto','Auto capture','AUTO',0,1,1,'',0,'Auto capture: analyses by itself when a new sound arrives. (Mockup control.)',{names:['Off','On'],sn:['Off','On'],kl:'Auto capture'})],gn:p=>0}
+};
+Object.assign(UNITS,MORE);
+const ANA={drums:['none','none','none','126.0 BPM','noise','1','-'],vocal:['A3','A minor','Am','none','sine-ish','1','-'],mix:['F#2','F# minor','F#m7','126.0 BPM','mixed','many','-'],bass:['E1','E minor','Em','126.0 BPM','saw','3','+4 ct']};
+
+const CATS={purr:'Dynamics',fur:'Dynamics',lap:'Dynamics',paw:'EQ',fet:'Dynamics',punch:'Dynamics',apu:'Dynamics'};
+ORDER.forEach(k=>{if(CATS[k]){UNITS[k].cat=CATS[k];UNITS[k].src='Classic-style';UNITS[k].vz=k==='paw'?'eq':'gr'}});
+const CATLIST=['Dynamics','EQ','Saturation','Space','Creative','Utility'];
+const CATNAME={Saturation:'Saturation and distortion',Space:'Space (reverb, delay)'};
+
+
+const LANEPD={id:'lane',l:'This lane',min:-24,max:6,def:-6,u:' dB',d:1,tip:'Lane level: how loud this unit is in the parallel pair. The two lanes are added together.'};
+const OTHERPD={id:'lane2',l:'Other lane',min:-24,max:6,def:-6,u:' dB',d:1,tip:'Other lane: the level of the unit running beside this one.'};
+const PAIRMIXPD={id:'pmix',l:'Dry/Wet',min:0,max:100,def:100,u:' %',d:0,tip:'Pair Dry/Wet: blends the untouched signal with the two lanes added together. Below 100 percent keeps some of the original.'};
+const GLOBPD={min:-12,max:12,def:0,u:' dB',d:1};
+const MAXU=12;
+
+function fmtVal(pd,v){if(pd.names)return pd.names[Math.round(v)];if(Math.abs(v)<.05&&pd.d)v=0;const n=pd.d?v.toFixed(pd.d):String(Math.round(v));return(pd.u===' dB'&&v>0?'+':'')+n+pd.u}
+function fmtShort(pd,v){if(pd.sn)return pd.sn[Math.round(v)];if(pd.names)return pd.names[Math.round(v)];if(Math.abs(v)<.05&&pd.d)v=0;return(pd.u===' dB'&&v>0?'+':'')+(pd.d?v.toFixed(pd.d):String(Math.round(v)))}
+function stepOf(pd){return pd.step||(pd.names?1:pd.d?Math.pow(10,-pd.d):1)}
+function toNorm(pd,v){return pd.log?Math.log(v/pd.min)/Math.log(pd.max/pd.min):(v-pd.min)/(pd.max-pd.min)}
+function fromNorm(pd,n){n=clamp(n,0,1);let v=pd.log?pd.min*Math.pow(pd.max/pd.min,n):pd.min+n*(pd.max-pd.min);const s=stepOf(pd);v=Math.round(v/s)*s;return clamp(+v.toFixed(4),pd.min,pd.max)}
+
+/* ============ State ============ */
+let nextId=1;
+const st={stages:[],inGain:0,outGain:0,bypass:false,sel:0};
+const settings={tips:true,power:false,look:'C'};try{Object.assign(settings,JSON.parse(localStorage.getItem('catrack-settings')||'{}'))}catch(e){}
+let T={};
+function tokens(){const c=getComputedStyle(root),g=n=>c.getPropertyValue(n).trim();return{disp:g('--disp'),line:g('--line'),dim:g('--dim'),acc:g('--accent'),ink:g('--ink'),title:g('--title'),gr:g('--gr'),plate:g('--plate2')}}
+function applySettings(){root.dataset.look=settings.look;T=tokens();try{localStorage.setItem('catrack-settings',JSON.stringify(settings))}catch(e){}}
+applySettings();
+function mkSlot(t,over,x){const u=UNITS[t],s={id:nextId++,t,on:true,solo:false,mute:false,lane:-6,p:u.params.map(pd=>pd.def),gr:0,hist:new Float32Array(180),hp:0,inD:-90,outD:-90,act:true,eqd:0};
+ if(over)u.params.forEach((pd,i)=>{if(over[pd.id]!=null)s.p[i]=clamp(over[pd.id],pd.min,pd.max)});if(x)Object.assign(s,x);return s}
+function allSlots(){return st.stages.flatMap(g=>g.slots)}
+function findSlot(id){return allSlots().find(s=>s.id===id)}
+function stageOf(s){return st.stages.find(g=>g.slots.includes(s))}
+function selSlot(){return findSlot(st.sel)}
+
+/* ============ Presets ============ */
+const F=(t,o)=>[t,o||{}];
+const PAR=(a,b,mix)=>({par:[a,b],mix:mix==null?100:mix});
+const TYPES=['Vocal','Drums','Mix','Bass','Kick','Synth','Master','Other'];
+const FACTORY=[
+ {name:'Start Here',type:'Mix',desc:'A safe first chain: a little tone, a gentle squeeze and light glue. Works on most things.',chain:[F('paw',{lb:2,hb:1.5}),F('purr',{in:2,ratio:3,rel:250}),F('apu',{thr:-10,ratio:2,mk:1.5})]},
+ {name:'Vocal Silk',type:'Vocal',desc:'Smooth leveling, a touch of air, then a soft catch for the loudest words.',chain:[F('lap',{red:42,gain:6,warm:35}),F('paw',{lb:0,hb:3,lc:0}),F('purr',{in:-2,ratio:2.5,atk:8,rel:200})]},
+ {name:'Vocal Up Front',type:'Vocal',desc:'Tube limiter for density, bright EQ, then a fast limiter for presence.',chain:[F('fur',{in:2,thr:-16,time:3}),F('paw',{hb:4,lb:.5}),F('fet',{in:10,ratio:4,out:-4,rel:200})]},
+ {name:'Drum Bus Glue',type:'Drums',desc:'Bus compressor to hold the kit together, then a light limiter on top.',chain:[F('apu',{thr:-14,ratio:4,atk:30,rel:200}),F('punch',{punch:30,ceil:-.5})]},
+ {name:'Drum Parallel Smash',type:'Drums',desc:'A hard limiter and a soft compressor side by side, blended with the original. Big and punchy.',chain:[PAR(F('fet',{in:24,ratio:20,atk:60,rel:100}),F('purr',{ratio:2}),55),F('paw',{lb:3,hb:3})]},
+ {name:'Mix Bus Glue',type:'Mix',desc:'Gentle tone, slow glue and a light ceiling. Finish a mix without squashing it.',chain:[F('paw',{lb:1,hb:1}),F('apu',{thr:-8,ratio:2,atk:30,rel:300,mk:2}),F('punch',{punch:20,ceil:-.3})]},
+ {name:'Mix Bus Tube Gloss',type:'Mix',desc:'Tube limiter for warmth, a lift in the lows and highs, then soft glue.',chain:[F('fur',{in:1,thr:-10,time:4,warm:35}),F('paw',{lb:2,hb:2.5}),F('apu',{ratio:2,thr:-6})]},
+ {name:'Bass Tight',type:'Bass',desc:'Level the notes, add weight at 60 Hz without mud, then catch the peaks.',chain:[F('lap',{red:55,gain:5}),F('paw',{lb:3,lc:2,lf:2,hb:0}),F('fet',{in:10,ratio:4,rel:150})]},
+ {name:'Bass Parallel Weight',type:'Bass',desc:'A clean lane and a smashed lane added together. Keeps the punch and adds body.',chain:[PAR(F('purr',{ratio:2}),F('fet',{in:20,ratio:12,rel:120}),65),F('paw',{lb:4,lc:2,lf:1})]},
+ {name:'Kick Slam',type:'Kick',desc:'Fast limiter for bite, then the drum limiter for a solid, loud kick.',chain:[F('fet',{in:16,ratio:8,atk:200,rel:120}),F('punch',{punch:60,ceil:-.5,rel:60})]},
+ {name:'Kick Trance Tight',type:'Kick',desc:'Short, tight kick: quick compressor, low end boost at 100 Hz, hard ceiling.',chain:[F('purr',{ratio:6,atk:5,rel:100}),F('paw',{lb:3,lf:3,lc:1}),F('punch',{ceil:-.3})]},
+ {name:'Lead Smooth',type:'Synth',desc:'Takes the sharp edges off a lead and keeps the shine.',chain:[F('lap',{red:35,gain:4,warm:40}),F('paw',{hb:3.5,hc:1})]},
+ {name:'Pad Gentle',type:'Synth',desc:'Slow tube limiting and a little air. Pads stay wide and steady.',chain:[F('fur',{in:0,thr:-20,time:5}),F('paw',{lb:1,hb:2})]},
+ {name:'Hard Dance Master',type:'Mix',desc:'Four units in a row: tone, glue, tube density, then a firm ceiling. For loud, tight masters.',chain:[F('paw',{lb:3,hb:2.5,lf:2}),F('apu',{thr:-9,ratio:3,atk:10,rel:250,mk:3}),F('fur',{thr:-8,time:3}),F('punch',{punch:55,ceil:-.2,look:2})]},
+ {name:'Parallel Mix Lift',type:'Mix',desc:'Tone, then a hard-squeezed lane blended in lightly under the mix, then a ceiling.',chain:[F('paw',{}),PAR(F('apu',{thr:-20,ratio:6,rel:150}),F('fet',{in:18,ratio:12}),30),F('punch',{ceil:-.5})]},
+ {name:'Mega Vocal Chain',type:'Vocal',desc:'Cut mud, squeeze, level, add air, then a plate and a short echo side by side, and a light maximizer. Seven units.',chain:[F('peq',{lg:-1.5,mg:2,mf:3000,hg:1.5}),F('clw',{thr:-20,ratio:3}),F('lap',{red:40}),F('air',{air:25}),PAR(F('shm',{type:0,mix:18,decay:40}),F('ech',{mix:15,time:300}),100),F('mxz',{squeeze:20})]},
+ {name:'Mega Drum Bus',type:'Drums',desc:'EQ, glue, then a hard limiter and a crusher side by side for parallel punch, saturation and a ceiling.',chain:[F('peq',{lg:2,mg:-2,mf:400,hg:2}),F('apu',{thr:-14,ratio:4,atk:30,rel:200}),PAR(F('fet',{in:20,ratio:12}),F('crc',{tube:35,mix:60}),50),F('fat',{drive:20}),F('punch',{punch:40})]},
+ {name:'Mega Mix Bus',type:'Mix',desc:'Tone, glue, a light four-band squeeze, a touch of width, and a maximizer on top.',chain:[F('peq',{lg:1,hg:1}),F('paw',{lb:1,hb:1}),F('apu',{thr:-8,ratio:2,atk:30,rel:300}),F('tms',{depth:25,mix:70}),F('ms',{wid:110}),F('mxz',{squeeze:25})]},
+ {name:'Mega Trance Lead',type:'Synth',desc:'Drive, EQ, chorus, then shimmer and echo side by side, duck under the kick, and finish with the maximizer.',chain:[F('ptr',{drv:30}),F('peq',{mg:2,mf:2500,hg:2}),F('cho',{mix:35}),PAR(F('shm',{type:3,mix:40,decay:75}),F('sdl',{dmix:30,dtime:375}),45),F('spc',{amount:55}),F('mxz',{squeeze:30})]},
+ {name:'Mega Bass',type:'Bass',desc:'Overtones for small speakers, EQ, a clean lane and a fat lane side by side, mono it, then catch the peaks.',chain:[F('bas',{harm:-8}),F('peq',{lg:2,mg:-2,mf:300}),PAR(F('clw',{ratio:3}),F('fat',{drive:50}),65),F('ms',{wid:15}),F('fet',{in:8,ratio:4}),F('punch',{punch:30})]},
+ {name:'Mega Master',type:'Master',desc:'Nine units for a final master: EQ, tone, glue, four-band squeeze, air, width, tube density, maximizer and ceiling.',chain:[F('peq',{lg:1,hg:1}),F('paw',{lb:2,hb:2}),F('apu',{thr:-9,ratio:2.5,rel:300}),F('tms',{depth:30,mix:60}),F('air',{air:20,mix:60}),F('ms',{wid:110}),F('fur',{thr:-8,time:4}),F('mxz',{squeeze:35}),F('punch',{punch:30,ceil:-.3})]},
+ {name:'Mega Full Rack 12',type:'Other',desc:'All 12 units at once with two parallel pairs. Shows how far the rack goes.',chain:[F('peq',{}),F('pdr',{}),PAR(F('clw',{}),F('fet',{in:14}),60),F('cho',{}),PAR(F('shm',{}),F('sdl',{}),80),F('air',{}),F('ms',{}),F('apu',{}),F('mxz',{}),F('punch',{})]},
+ {name:'Mega Freeze FX',type:'Synth',desc:'Grain freeze and shimmer for risers and breakdowns, with a ducker so it stays out of the kick.',chain:[F('hbl',{freeze:1,dance:30}),PAR(F('shm',{type:3,mix:50}),F('sdl',{dmix:35}),60),F('spc',{amount:60}),F('mxz',{squeeze:20})]},
+ {name:'Mega DJ Scratch Bus',type:'Mix',desc:'Scratch deck with EQ, a drive stage and a maximizer for DJ style effects on a track.',chain:[F('scr',{}),F('crc',{tube:25}),F('mxz',{squeeze:25})]},
+ {name:'Full Rack Demo',type:'Other',desc:'Eight units at once, with two parallel pairs. Shows how far the rack goes.',chain:[F('paw',{}),PAR(F('purr',{ratio:3}),F('fet',{in:14}),60),F('lap',{red:30}),PAR(F('fur',{}),F('apu',{thr:-10}),80),F('punch',{}),F('paw',{lb:0,hb:1.5})]}
+];
+let user=[];try{const j=JSON.parse(localStorage.getItem('catrack-user-presets')||'[]');if(Array.isArray(j))user=j.filter(validPreset)}catch(e){}
+function saveUser(){try{localStorage.setItem('catrack-user-presets',JSON.stringify(user))}catch(e){}}
+function allPresets(){return FACTORY.map(p=>Object.assign({factory:true},p)).concat(user)}
+function buildChain(chain){const stages=[];chain.forEach(c=>{if(c.par)stages.push({mix:c.mix,slots:c.par.map(a=>mkSlot(a[0],a[1]))});else stages.push({mix:100,slots:[mkSlot(c[0],c[1])]})});return stages}
+function serialize(){return{io:[st.inGain,st.outGain],stages:st.stages.map(g=>({mix:g.mix,slots:g.slots.map(s=>({t:s.t,on:s.on,solo:s.solo,mute:s.mute,lane:s.lane,p:s.p.slice()}))}))}}
+function fromSaved(c){const stages=c.stages.map(g=>({mix:g.mix,slots:g.slots.map(o=>{const s=mkSlot(o.t);s.on=!!o.on;s.solo=!!o.solo;s.mute=!!o.mute;s.lane=o.lane;s.p=o.p.map((v,i)=>clamp(+v,UNITS[o.t].params[i].min,UNITS[o.t].params[i].max));return s})}));return stages}
+function validPreset(p){try{if(!p||typeof p.name!=='string'||!p.name||p.name.length>40||typeof p.type!=='string')return false;const c=p.saved;if(!c||!Array.isArray(c.stages)||c.stages.length>MAXU)return false;let n=0;for(const g of c.stages){if(!g||!Array.isArray(g.slots)||g.slots.length<1||g.slots.length>2||typeof g.mix!=='number')return false;for(const o of g.slots){if(!UNITS[o.t]||!Array.isArray(o.p)||o.p.length!==UNITS[o.t].params.length||o.p.some(v=>typeof v!=='number'||!isFinite(v))||typeof o.lane!=='number')return false;n++}}return n>=1&&n<=MAXU&&Array.isArray(c.io)&&c.io.length===2}catch(e){return false}}
+let curName='Start Here',dirty=false;
+function loadPreset(p,quiet){if(p.saved){const c=p.saved;st.stages=fromSaved(c);st.inGain=c.io[0];st.outGain=c.io[1]}else{st.stages=buildChain(p.chain);st.inGain=0;st.outGain=0}
+ curName=p.name;dirty=false;const f=allSlots()[0];st.sel=f?f.id:0;renderAll();if(!quiet)toast('Loaded '+p.name)}
+function updatePName(){$('#pName').textContent=curName+(dirty?' *':'')}
+function touch(){if(!dirty){dirty=true;updatePName()}refreshKnobs()}
+
+/* ============ Knob widget ============ */
+const regs={rack:[],strip:[],detail:[]};
+function arcPath(a0,a1,R){const p=a=>[50+R*Math.sin(a*Math.PI/180),50-R*Math.cos(a*Math.PI/180)],s=p(a0),e=p(a1);return'M'+s[0].toFixed(2)+' '+s[1].toFixed(2)+'A'+R+' '+R+' 0 '+(Math.abs(a1-a0)>180?1:0)+' '+(a1>a0?1:0)+' '+e[0].toFixed(2)+' '+e[1].toFixed(2)}
+function Knob(size,pd,get,set,o){o=o||{};const h=el('div','knob ctl');h.style.width=h.style.height=size+'px';h.tabIndex=0;h.setAttribute('role','slider');h.setAttribute('aria-label',pd.l);h.dataset.tip=pd.tip;if(o.color)h.style.setProperty('--kc',o.color);
+ h.innerHTML='<svg viewBox="0 0 100 100"><path class="kt" d="'+arcPath(-135,135,40)+'"/><path class="kva" d=""/><circle class="kb" cx="50" cy="50" r="31"/><circle class="kb2" cx="50" cy="50" r="26"/><line class="kp" x1="50" y1="50" x2="50" y2="28"/></svg>';
+ const va=$('.kva',h),pt=$('.kp',h);
+ const k={h,upd(){const v=get(),n=clamp(toNorm(pd,v),0,1),a=-135+n*270;pt.setAttribute('transform','rotate('+a+' 50 50)');
+   const z=pd.min<0&&pd.max>0?toNorm(pd,0):0,az=-135+z*270;if(Math.abs(a-az)<.5)va.setAttribute('d','');else va.setAttribute('d',arcPath(Math.min(a,az),Math.max(a,az),40));
+   h.setAttribute('aria-valuenow',v);h.setAttribute('aria-valuetext',fmtVal(pd,v));h.setAttribute('aria-valuemin',pd.min);h.setAttribute('aria-valuemax',pd.max);
+   if(o.val)o.val.innerHTML='<b>'+esc(fmtVal(pd,v))+'</b>';if(o.lab&&k.show)o.lab.textContent=fmtShort(pd,v)}};
+ const showLab=on=>{if(!o.lab)return;k.show=on;o.lab.textContent=on?fmtShort(pd,get()):(o.labText||pd.s)};
+ let d=null;
+ h.addEventListener('pointerdown',e=>{e.stopPropagation();h.setPointerCapture(e.pointerId);d={y:e.clientY,n:toNorm(pd,get())};showLab(true);e.preventDefault()});
+ h.addEventListener('pointermove',e=>{if(!d)return;const sens=e.shiftKey?700:170;const v=fromNorm(pd,d.n+(d.y-e.clientY)/curScale()/sens);set(v);k.upd()});
+ h.addEventListener('pointerup',()=>{d=null;if(!h.matches(':hover'))showLab(false)});h.addEventListener('pointercancel',()=>{d=null;showLab(false)});
+ h.addEventListener('pointerenter',()=>showLab(true));h.addEventListener('pointerleave',()=>{if(!d)showLab(false)});
+ h.addEventListener('focus',()=>showLab(true));h.addEventListener('blur',()=>showLab(false));
+ h.addEventListener('dblclick',e=>{e.stopPropagation();set(pd.def);k.upd()});
+ h.addEventListener('wheel',e=>{e.preventDefault();const n=toNorm(pd,get())+(e.deltaY<0?1:-1)*(e.shiftKey?.01:.04);let v=fromNorm(pd,n);if(v===get())v=clamp(get()+(e.deltaY<0?1:-1)*stepOf(pd),pd.min,pd.max);set(v);k.upd()},{passive:false});
+ h.addEventListener('keydown',e=>{const s=stepOf(pd),big=(pd.max-pd.min)/10;let v=get();
+  if(e.key==='ArrowUp'||e.key==='ArrowRight')v+=e.shiftKey?s:Math.max(s,big/5);else if(e.key==='ArrowDown'||e.key==='ArrowLeft')v-=e.shiftKey?s:Math.max(s,big/5);else if(e.key==='Home')v=pd.min;else if(e.key==='End')v=pd.max;else if(e.key==='PageUp')v+=big;else if(e.key==='PageDown')v-=big;else if(e.key==='Delete'||e.key==='Backspace')v=pd.def;else return;
+  e.preventDefault();e.stopPropagation();set(clamp(Math.round(v/s)*s,pd.min,pd.max));k.upd();showLab(true)});
+ k.upd();return k}
+
+/* ============ Engine: a made-up level model, no audio ============ */
+const mt={inL:-90,inR:-90,outL:-90,outR:-90,pkInL:-90,pkInR:-90,pkOutL:-90,pkOutR:-90,clipIn:0,clipOut:0,hold:{}};
+let playing=true,tsrc=0,srcKind='drums',hacc=0;
+function hash(n){const x=Math.sin(n*127.1)*43758.5453;return x-Math.floor(x)}
+function srcLevel(kind,t){if(!playing)return[-90,-90];let a;const beat=60/126,ph=(t%beat)/beat,bi=Math.floor(t/beat)%4;
+ const kick=Math.exp(-ph*beat/.085);
+ if(kind==='drums'){const sn=(bi%2===1)?Math.exp(-ph*beat/.07)*.6:0,hp=(t%(beat/2))/(beat/2),hat=hp<.12?.12*(.8+.2*hash(Math.floor(t/(beat/2)))):0;a=Math.max(kick*.89,sn,hat,.03)}
+ else if(kind==='vocal'){const syl=Math.pow(Math.max(0,.5+.5*Math.sin(t*5.2)+.25*Math.sin(t*12.7+1)),1.4),phr=clamp(1.6*Math.sin(t*.55)+.7,0,1);a=.04+.55*syl*phr*(.8+.2*hash(Math.floor(t*5)))}
+ else if(kind==='mix'){a=clamp(.42+.38*kick+.04*hash(Math.floor(t*30)),0,1)}
+ else{const e=(t%(beat/2))/(beat/2);a=clamp(.3+.55*Math.exp(-e*2.2)*(.7+.3*Math.sin(t*.8)),0,1)}
+ const l=dbOf(a),r=l+.8*Math.sin(t*1.3)+.5*(hash(Math.floor(t*20))-.5);return[Math.max(-90,l),Math.max(-90,r)]}
+const pv=s=>{const o={};UNITS[s.t].params.forEach((pd,i)=>o[pd.id]=s.p[i]);return o};
+const FREQS=[20,30,60,100];
+function eqDb(s,f){const p=pv(s);if(s.t==='peq'){const w=1/p.q,bell=1/(1+Math.pow(Math.log2(f/p.mf)/(w*.6),2)),lo=1/(1+Math.pow(f/120,2)),hi=1/(1+Math.pow(6000/f,2));return p.lg*lo+p.mg*bell+p.hg*hi}const fc=FREQS[Math.round(p.lf)],w=.45+p.bw*.012;
+ const lowS=x=>1/(1+Math.pow(f/x,2));const bell=1/(1+Math.pow(Math.log2(f/8000)/w,2));const hiS=1/(1+Math.pow(10000/f,2));
+ return p.lb*lowS(fc)-p.lc*lowS(fc*1.8)+p.hb*bell-p.hc*hiS}
+function compParams(s){const p=pv(s);if(UNITS[s.t].cp)return UNITS[s.t].cp(p);switch(s.t){
+ case'purr':return{g:p.in,thr:-16,ratio:p.ratio,knee:4,atk:p.atk/1000,rel:p.rel/1000,mk:p.out,mix:p.mix/100};
+ case'fur':return{g:p.in,thr:p.thr,ratio:3,knee:14,atk:.003,rel:.05*Math.pow(2.2,p.time),mk:p.out+p.warm*.02,mix:p.mix/100};
+ case'lap':return{g:0,thr:-6-p.red*.38-p.emph*.04,ratio:p.mode?12:3,knee:10,atk:.012,rel:.6,mk:p.gain,mix:p.mix/100};
+ case'fet':return{g:p.in-12,thr:-10,ratio:p.ratio,knee:0,atk:p.atk/1e6,rel:p.rel/1000,mk:p.out+6,mix:p.mix/100};
+ case'punch':return{g:0,thr:p.ceil-p.punch*.12,ratio:20,knee:2,atk:.0005,rel:p.rel/1000,mk:0,mix:p.mix/100};
+ default:return{g:0,thr:p.thr,ratio:p.ratio,knee:6,atk:p.atk/1000,rel:p.rel/1000,mk:p.mk,mix:p.mix/100}}}
+function procSlot(s,l,r,dt){const U=UNITS[s.t];if(U.vz==='eq'){const g=(eqDb(s,60)+eqDb(s,8000)+eqDb(s,300))/3*.5+(pv(s).out||0);s.eqd=g;s.gr+=(0-s.gr)*.3;return[l+g,r+g]}
+ if(U.vz==='wet'){const g=U.gn(pv(s));s.gr+=(0-s.gr)*.3;return[l+g,r+g]}
+ const c=compParams(s),x=Math.max(l,r)+c.g,over=x-c.thr;let tg=0;
+ if(c.knee>0&&Math.abs(over)<=c.knee/2){const o=over+c.knee/2;tg=(1-1/c.ratio)*o*o/(2*c.knee)}else if(over>0)tg=over*(1-1/c.ratio);
+ const a=tg>s.gr?c.atk:c.rel,k=1-Math.exp(-dtG/Math.max(a,1e-4));s.gr+=(tg-s.gr)*k;
+ const gn=c.g-s.gr+c.mk,mx=c.mix,f=(v)=>dbOf(lin(v)*(1-mx)+lin(v+gn)*mx);return[f(l),f(r)]}
+let dtG=.016;
+function runSlot(s,l,r,anySolo){const active=s.on&&(!anySolo||s.solo);s.inD=Math.max(l,r);s.act=active;let o;
+ if(active)o=procSlot(s,l,r);else{s.gr+=(0-s.gr)*.2;o=[l,r]}
+ if(s.mute)o=[-120,-120];s.outD=Math.max(o[0],o[1]);return o}
+function runChain(inL,inR){let l=inL+st.inGain,r=inR+st.inGain;mt.inL=l;mt.inR=r;const rawL=inL,rawR=inR;const any=allSlots().some(s=>s.solo&&s.on);
+ if(st.bypass){allSlots().forEach(s=>{s.gr+=(0-s.gr)*.2;s.act=false});mt.outL=rawL;mt.outR=rawR;return}
+ st.stages.forEach(g=>{let o;
+  if(g.slots.length===1)o=runSlot(g.slots[0],l,r,any);
+  else{const a=runSlot(g.slots[0],l,r,any),b=runSlot(g.slots[1],l,r,any),m=g.mix/100,la=g.slots[0].lane,lb=g.slots[1].lane;
+   const f=(x0,xa,xb)=>dbOf(lin(x0)*(1-m)+(lin(xa+la)+lin(xb+lb))*m);o=[f(l,a[0],b[0]),f(r,a[1],b[1])]}
+  g.outD=Math.max(o[0],o[1]);l=Math.max(-120,o[0]);r=Math.max(-120,o[1])});
+ mt.outL=l+st.outGain;mt.outR=r+st.outGain}
+function step(dt){dtG=dt;if(playing)tsrc+=dt;const s=srcLevel(srcKind,tsrc);runChain(s[0],s[1]);
+ const fall=26*dt;['inL','inR','outL','outR'].forEach(k=>{const v=mt[k],d=mt.hold[k]==null?-90:mt.hold[k];mt.hold[k]=v>d?v:Math.max(v,d-fall)});
+ const pk=(a,b,c,d)=>{mt[a]=Math.max(mt[a],mt.hold[c]);mt[b]=Math.max(mt[b],mt.hold[d])};pk('pkInL','pkInR','inL','inR');pk('pkOutL','pkOutR','outL','outR');
+ if(mt.hold.inL>0||mt.hold.inR>0)mt.clipIn=1;if(mt.hold.outL>0||mt.hold.outR>0)mt.clipOut=1;
+ hacc+=dt;if(hacc>=1/30){hacc-=1/30;allSlots().forEach(s=>{s.hist[s.hp]=UNITS[s.t].vz==='wet'?s.outD:s.gr;s.hp=(s.hp+1)%180})}}
+
+/* ============ Canvas helpers ============ */
+function mkCv(w,h){const c=document.createElement('canvas');c.width=w*2;c.height=h*2;c.style.width=w+'px';c.style.height=h+'px';const g=c.getContext('2d');g.scale(2,2);return{c,g,w,h}}
+const FONT9='9px "JetBrains Mono",monospace';
+function drawEQ(g,s,x,y,w,h,big){const p=pv(s),X=f=>x+Math.log(f/20)/Math.log(1000)*w,Y=d=>y+h/2-d/12*h/2;
+ if(big){g.strokeStyle=T.line;g.lineWidth=1;g.fillStyle=T.dim;g.font=FONT9;g.textBaseline='middle';
+  [-12,-6,0,6,12].forEach(d=>{g.beginPath();g.moveTo(x,Math.round(Y(d))+.5);g.lineTo(x+w,Math.round(Y(d))+.5);g.globalAlpha=d===0?.9:.35;g.stroke();g.globalAlpha=1;g.textAlign='right';g.fillText((d>0?'+':'')+d,x-3,Y(d))});
+  g.textAlign='center';g.textBaseline='alphabetic';[[100,'100'],[1000,'1k'],[10000,'10k']].forEach(a=>{const xx=X(a[0]);g.globalAlpha=.35;g.beginPath();g.moveTo(Math.round(xx)+.5,y);g.lineTo(Math.round(xx)+.5,y+h);g.stroke();g.globalAlpha=1;g.fillText(a[1],xx,y+h+10)})}
+ else{g.strokeStyle=T.line;g.lineWidth=1;g.beginPath();g.moveTo(x,Math.round(Y(0))+.5);g.lineTo(x+w,Math.round(Y(0))+.5);g.stroke()}
+ g.beginPath();for(let i=0;i<=80;i++){const f=20*Math.pow(1000,i/80),d=clamp(eqDb(s,f),-12,12);i?g.lineTo(X(f),Y(d)):g.moveTo(X(f),Y(d))}
+ g.strokeStyle=UNITS[s.t].color;g.lineWidth=big?2:1.5;g.stroke()}
+function drawMini(v,s){const g=v.g,w=v.w,h=v.h;g.clearRect(0,0,w,h);g.font=FONT9;const vz=UNITS[s.t].vz;
+ if(vz==='wet'){const x0=2,bw=w-4,y0=3,bh=9;g.fillStyle=T.disp;g.fillRect(x0,y0,bw,bh);const f=clamp((s.outD+40)/40,0,1);g.fillStyle=UNITS[s.t].color;g.fillRect(x0,y0,f*bw,bh);g.strokeStyle=T.line;g.lineWidth=1;g.strokeRect(x0+.5,y0+.5,bw-1,bh-1);
+  const lab=[-40,-20,0];g.fillStyle=T.dim;g.textBaseline='alphabetic';lab.forEach((d,i)=>{const xx=x0+(d+40)/40*bw;g.strokeStyle=T.dim;g.beginPath();g.moveTo(Math.round(xx)+.5,y0+bh);g.lineTo(Math.round(xx)+.5,y0+bh+3);g.stroke();g.textAlign=i===0?'left':i===2?'right':'center';g.fillText(String(d),i===0?xx-1:i===2?xx+1:xx,h-2)});return}
+ if(vz==='eq'){g.fillStyle=T.disp;g.fillRect(2,2,w-4,h-14);g.strokeStyle=T.line;g.strokeRect(2.5,2.5,w-5,h-15);drawEQ(g,s,4,4,w-8,h-18,false);g.fillStyle=T.dim;g.textAlign='center';g.textBaseline='alphabetic';g.fillText('±12 dB',w/2,h-2);return}
+ const x0=2,bw=w-4,y0=3,bh=9;g.fillStyle=T.disp;g.fillRect(x0,y0,bw,bh);
+ g.fillStyle=T.gr;g.fillRect(x0,y0,clamp(s.gr/20,0,1)*bw,bh);g.strokeStyle=T.line;g.lineWidth=1;g.strokeRect(x0+.5,y0+.5,bw-1,bh-1);
+ const lab=w>=100?[0,5,10,15,20]:[0,10,20];g.fillStyle=T.dim;g.textBaseline='alphabetic';
+ lab.forEach((d,i)=>{const xx=x0+d/20*bw;g.strokeStyle=T.dim;g.beginPath();g.moveTo(Math.round(xx)+.5,y0+bh);g.lineTo(Math.round(xx)+.5,y0+bh+3);g.stroke();
+  g.textAlign=i===0?'left':i===lab.length-1?'right':'center';g.fillText(d?'-'+d:'0',i===0?xx-1:i===lab.length-1?xx+1:xx,h-2)})}
+function drawAna(v,s){const g=v.g,w=v.w,h=v.h,a=ANA[srcKind],L=['Note','Key','Chord','Tempo','Osc shape','Voices'],col=UNITS[s.t].color;g.clearRect(0,0,w,h);g.textBaseline='middle';
+ for(let i=0;i<6;i++){const x=8+Math.floor(i/3)*132,y=11+(i%3)*((h-22)/2);g.font=FONT9;g.fillStyle=T.dim;g.textAlign='left';g.fillText(L[i],x,y);g.fillStyle=col;g.font='bold 11px "JetBrains Mono",monospace';g.fillText(a[i],x+58,y)}}
+function drawLev(v,s){const g=v.g,w=v.w,h=v.h,gx=26,gw=w-gx-3,gy=3,gh=h-6,col=UNITS[s.t].color;g.clearRect(0,0,w,h);g.font=FONT9;g.fillStyle=T.dim;g.strokeStyle=T.line;g.lineWidth=1;g.textAlign='right';g.textBaseline='middle';
+ [0,-20,-40].forEach(d=>{const y=gy+(-d)/40*gh;g.globalAlpha=.4;g.beginPath();g.moveTo(gx,Math.round(y)+.5);g.lineTo(gx+gw,Math.round(y)+.5);g.stroke();g.globalAlpha=1;g.fillText(String(d),gx-3,clamp(y,6,h-6))});
+ g.beginPath();g.moveTo(gx,gy+gh);for(let i=0;i<180;i++){const val=clamp(s.hist[(s.hp+i)%180],-40,0);g.lineTo(gx+i/179*gw,gy+(-val)/40*gh)}g.lineTo(gx+gw,gy+gh);g.closePath();g.fillStyle=col;g.globalAlpha=.4;g.fill();g.globalAlpha=1;
+ g.beginPath();for(let i=0;i<180;i++){const val=clamp(s.hist[(s.hp+i)%180],-40,0);const X=gx+i/179*gw,Y=gy+(-val)/40*gh;i?g.lineTo(X,Y):g.moveTo(X,Y)}g.strokeStyle=col;g.lineWidth=1.5;g.stroke()}
+function drawHist(v,s){const g=v.g,w=v.w,h=v.h,gx=26,gw=w-gx-3,gy=3,gh=h-6;g.clearRect(0,0,w,h);g.font=FONT9;g.fillStyle=T.dim;g.strokeStyle=T.line;g.lineWidth=1;g.textAlign='right';g.textBaseline='middle';
+ [0,5,10,15,20].forEach(d=>{const y=gy+d/20*gh;g.globalAlpha=.4;g.beginPath();g.moveTo(gx,Math.round(y)+.5);g.lineTo(gx+gw,Math.round(y)+.5);g.stroke();g.globalAlpha=1;g.fillText(d?'-'+d:'0',gx-3,clamp(y,6,h-6))});
+ g.beginPath();g.moveTo(gx,gy);for(let i=0;i<180;i++){const val=s.hist[(s.hp+i)%180];g.lineTo(gx+i/179*gw,gy+clamp(val/20,0,1)*gh)}g.lineTo(gx+gw,gy);g.closePath();g.fillStyle=T.gr;g.globalAlpha=.55;g.fill();g.globalAlpha=1;
+ g.beginPath();for(let i=0;i<180;i++){const val=s.hist[(s.hp+i)%180];const X=gx+i/179*gw,Y=gy+clamp(val/20,0,1)*gh;i?g.lineTo(X,Y):g.moveTo(X,Y)}g.strokeStyle=T.gr;g.lineWidth=1.5;g.stroke()}
+
+/* meters */
+const mcv=$('#cvMeter'),mg=mcv.getContext('2d');mg.scale(2,2);
+const MW=84,MH=500,MTOP=8,MBOT=MH-6,DBMIN=-48,DBMAX=6;
+const mY=d=>MBOT-(clamp(d,DBMIN,DBMAX)-DBMIN)/(DBMAX-DBMIN)*(MBOT-MTOP);
+function zoneCol(d){return d>=0?'#FF1383':d>=-12?'#A43DFF':'#6CC9F5'}
+function drawMeters(){const g=mg;g.clearRect(0,0,MW,MH);const bars=[[0,'inL','pkInL'],[15,'inR','pkInR'],[55,'outL','pkOutL'],[70,'outR','pkOutR']],bw=14;
+ const fr=d=>(mY(d)-mY(DBMAX))/(mY(DBMIN)-mY(DBMAX));const gr=g.createLinearGradient(0,mY(DBMAX),0,mY(DBMIN));
+ const e=.002;gr.addColorStop(0,'#FF1383');gr.addColorStop(fr(0)-e,'#FF1383');gr.addColorStop(fr(0),'#A43DFF');gr.addColorStop(fr(-12)-e,'#A43DFF');gr.addColorStop(fr(-12),'#6CC9F5');gr.addColorStop(1,'#6CC9F5');
+ bars.forEach(b=>{const x=b[0]+.5;g.fillStyle=T.disp;g.fillRect(x,MTOP,bw,MBOT-MTOP);const v=mt.hold[b[1]]==null?-90:mt.hold[b[1]],y=mY(v);
+  if(v>DBMIN){g.save();g.beginPath();g.rect(x,y,bw,MBOT-y);g.clip();g.fillStyle=gr;g.fillRect(x,MTOP,bw,MBOT-MTOP);g.restore()}
+  const pk=mt[b[2]];if(pk>DBMIN){g.fillStyle=zoneCol(pk);g.fillRect(x,Math.round(mY(pk)),bw,2)}
+  g.strokeStyle=T.line;g.lineWidth=1;g.strokeRect(x,MTOP+.5,bw,MBOT-MTOP-1)});
+ const ci=mt.clipIn,co=mt.clipOut;g.fillStyle='#FF1383';[[0,ci],[15,ci],[55,co],[70,co]].forEach(a=>{g.globalAlpha=a[1]?1:.18;g.fillRect(a[0]+.5,1,bw,5)});g.globalAlpha=1;
+ g.font=FONT9;g.textAlign='center';g.textBaseline='middle';
+ for(let d=DBMAX;d>=DBMIN;d-=3){const y=Math.round(mY(d))+.5,major=(d%6===0);
+  g.strokeStyle=T.dim;g.globalAlpha=major?.9:.45;g.beginPath();g.moveTo(30,y);g.lineTo(major?34:32,y);g.moveTo(54,y);g.lineTo(major?50:52,y);g.stroke();
+  g.globalAlpha=major?.16:.07;g.strokeStyle='#fff';g.beginPath();g.moveTo(.5,y);g.lineTo(29.5,y);g.moveTo(54.5,y);g.lineTo(MW-.5,y);g.stroke();g.globalAlpha=1;
+  if(major){g.fillStyle=d>=0?'#FF7BB1':T.dim;g.fillText((d>0?'+':'')+d,42,y)}}
+ const pi=Math.max(mt.pkInL,mt.pkInR),po=Math.max(mt.pkOutL,mt.pkOutR);
+ setPk($('#pkIn'),pi);setPk($('#pkOut'),po)}
+function setPk(e,v){const t=v<=-90?'-∞':(v>0?'+':'')+v.toFixed(1);if(e.textContent!==t){e.textContent=t;e.style.color=v<=-90?'':zoneCol(v)}}
+mcv.addEventListener('click',()=>{mt.pkInL=mt.pkInR=mt.pkOutL=mt.pkOutR=-90;mt.clipIn=mt.clipOut=0});
+
+/* ============ Rendering ============ */
+const rowsEl=$('#rows');let views={},stripArr=[],det=null;
+function refreshKnobs(){['rack','strip','detail'].forEach(k=>regs[k].forEach(x=>x.upd()))}
+function renderAll(){renderStrip();renderRack();renderDetail();updatePName();$('#cnt').textContent=allSlots().length+' of '+MAXU+' units';$('#bAdd').disabled=allSlots().length>=MAXU;$('#bAdd').dataset.tip=allSlots().length>=MAXU?'The rack is full: 12 units is the most.':'Open the unit browser: dynamics, EQ, saturation, space, creative and utility units. The rack holds up to 12.';root.dataset.n=allSlots().length}
+function subOf(s,pairIdx){return pairIdx<0?UNITS[s.t].kind:'Lane '+(pairIdx?'B':'A')+' (parallel)'}
+function slotCard(s,pairIdx){const u=UNITS[s.t],pr=pairIdx>=0;const CPT=rowsEl.classList.contains('cp');const c=el('div','card'+(pr?' pr':'')+(s.on?'':' off')+(s.mute?' m':'')+(s.id===st.sel?' sel':''));c.style.setProperty('--uc',u.color);c.dataset.id=s.id;c.tabIndex=0;c.setAttribute('aria-label',u.name+', '+u.kind);
+ c.innerHTML='<div class="grip" data-tip="Drag to move this unit. Drop on the top or bottom edge of a row to put it before or after. Drop on the middle of another unit to run the two side by side."></div><div class="nm" data-tip="'+esc(u.name+': '+u.blurb+' Click to open its controls.')+'"><b>'+u.name+'</b><i>'+esc(subOf(s,pairIdx))+'</i></div><div class="mks"></div>';
+ const mks=$('.mks',c);
+ for(let i=0;i<3;i++){const pd=u.params[i],m=el('div','mk'),lab=el('span','ml',pd.s);const k=Knob(CPT?22:pr?28:30,pd,()=>s.p[i],v=>{s.p[i]=v;touch()},{color:u.color,lab});m.appendChild(k.h);m.appendChild(lab);mks.appendChild(m);regs.rack.push(k)}
+ const gw=pr?52:132,v=mkCv(gw,CPT?26:34);v.c.className='grw';v.c.dataset.tip=u.ana?'Example readouts for the test signal. The real plugin estimates these from your audio.':u.vz==='eq'?'Shows the EQ curve of this unit, plus or minus 12 dB. Open the unit to see it larger.':u.vz==='wet'?'Output level of this unit in dB, from -40 to 0.':'Gain reduction meter: how many dB this unit is turning the signal down right now. Scale from 0 to -20 dB.';c.appendChild(v.c);views[s.id]=v;
+ const b=el('div','btns');
+ [['ON','t-on','on','Switch this unit on or off. Off means the signal passes through untouched.',s.on],['S','t-s','solo','Solo: hear only the soloed units. All other units step out of the way, so you can listen to one on its own.',s.solo],['M','t-m','mute','Mute: silence this unit. In a parallel pair only this lane goes quiet. In a single row it silences everything after it.',s.mute]].forEach(a=>{
+  const t=el('button','tgl ctl '+a[1]+(a[4]?' on':''),a[0]);t.dataset.tip=a[3];t.setAttribute('aria-pressed',a[4]);t.setAttribute('aria-label',a[0]==='ON'?'On':a[0]==='S'?'Solo':'Mute');t.onclick=e=>{e.stopPropagation();s[a[2]]=!s[a[2]];touch();renderAll()};b.appendChild(t)});
+ c.appendChild(b);return c}
+function renderRack(){regs.rack=[];views={};rowsEl.innerHTML='';
+ {const n=st.stages.length,avail=rowsEl.clientHeight||430,more=allSlots().length<MAXU?1:0;let rh=52,gp=3;if(n&&n*52+(n-1)*3+(more?31:0)>avail){gp=2;rh=Math.floor((avail-(n-1)*2-(more?30:0))/n);rh=Math.max(30,Math.min(52,rh))}
+  rowsEl.classList.toggle('cp',rh<46);rowsEl.style.setProperty('--rh',rh+'px');rowsEl.style.gap=gp+'px'}
+ if(!st.stages.length){rowsEl.appendChild(el('div','empty','The rack is empty.<br>Press <b>+ Add unit</b>, or pick a chain preset with the arrows in the header.'));return}
+ st.stages.forEach((g,si)=>{const row=el('div','rrow'+(g.slots.length>1?' pair':''));row.dataset.si=si;g.slots.forEach((s,li)=>row.appendChild(slotCard(s,g.slots.length>1?li:-1)));rowsEl.appendChild(row)});
+ if(allSlots().length<MAXU){const b=el('button','rph','+ Add a unit &middot; '+(MAXU-allSlots().length)+' places left');b.dataset.tip='Open the unit browser to add something to the end of the rack.';b.onclick=()=>$('#bAdd').click();rowsEl.appendChild(b)}}
+function renderStrip(){regs.strip=[];stripArr=[];const S=$('#strip');S.innerHTML='<span class="cap">Signal path</span><span class="cap2">Left to right, top lane first</span>';
+ const mkEnd=(label,key,tip)=>{const d=el('div','endk');const lab=el('span','ml',label);lab.style.cssText='font-family:var(--font-num);font-size:9px;color:var(--dim);height:11px;line-height:11px;margin-top:1px;white-space:nowrap';
+  const pd=Object.assign({l:label+' trim',s:label,tip:tip},GLOBPD);const k=Knob(32,pd,()=>st[key],v=>{st[key]=v;touch()},{lab,labText:label,color:'#6CC9F5'});d.appendChild(k.h);d.appendChild(lab);regs.strip.push(k);return d};
+ S.appendChild(mkEnd('IN','inGain','Input trim: turns the signal up or down before the first unit.'));
+ const flow=el('div','flow');const arr=()=>{const a=el('div','arr','&#9656;');stripArr.push(a);return a};flow.appendChild(arr());
+ st.stages.forEach(g=>{const c=el('div','stg'+(g.slots.length>1?' pr':''));g.slots.forEach((s,i)=>{const u=UNITS[s.t];const b=el('button','chip ctl'+(s.id===st.sel?' sel':'')+(s.on?'':' off')+(s.solo?' solo':'')+(s.mute?' mute':''),'<i></i>'+u.code);b.style.setProperty('--uc',u.color);b.dataset.id=s.id;b.dataset.tip=u.name+(g.slots.length>1?', lane '+(i?'B':'A'):'')+': click to open its controls.';b.setAttribute('aria-label',u.name);b.onclick=()=>select(s.id);c.appendChild(b)});
+  if(g.slots.length>1){const pm=el('span','pm','mix '+Math.round(g.mix)+'%');c.appendChild(pm);c.dataset.tip='Parallel pair: the two units run side by side and are added together. Dry/Wet is '+Math.round(g.mix)+'%.'}
+  flow.appendChild(c);flow.appendChild(arr())});
+ if(!st.stages.length)flow.appendChild(el('span','hintp','Nothing in the rack: the signal goes straight through.'));
+ S.appendChild(flow);S.appendChild(mkEnd('OUT','outGain','Output trim: turns the signal up or down after the last unit.'))}
+function select(id){st.sel=id;$$('.card').forEach(c=>c.classList.toggle('sel',+c.dataset.id===id));$$('.chip').forEach(c=>c.classList.toggle('sel',+c.dataset.id===id));renderDetail()}
+
+function renderDetail(){regs.detail=[];const D=$('#detail');D.innerHTML='';det=null;const s=selSlot();
+ if(!s){D.appendChild(el('div','empty','No unit selected.<br>Click a unit in the rack: its controls appear here.'));return}
+ const u=UNITS[s.t],g=stageOf(s),pr=g.slots.length>1,li=g.slots.indexOf(s),si=st.stages.indexOf(g);
+ const h=el('div','dh','<i></i><div><small class="sel">Selected unit</small><b>'+u.name+'</b><small>'+esc(u.kind)+' &middot; '+esc(u.cat)+'</small></div>');h.style.setProperty('--uc',u.color);h.dataset.tip=u.blurb;D.appendChild(h);
+ const r1=el('div','drow');
+ [['ON','t-on','on','Switch this unit on or off. Off means the signal passes through untouched.'],['SOLO','t-s','solo','Solo: hear only the soloed units. All other units step out of the way.'],['MUTE','t-m','mute','Mute: silence this unit. In a parallel pair only this lane goes quiet.']].forEach(a=>{const t=el('button','tgl ctl '+a[1]+(s[a[2]]?' on':''),a[0]);t.style.cssText='height:24px;padding:0 9px;font-size:12px';t.dataset.tip=a[3];t.setAttribute('aria-pressed',!!s[a[2]]);t.onclick=()=>{s[a[2]]=!s[a[2]];touch();renderAll()};r1.appendChild(t)});
+ r1.appendChild(el('span','sp'));const rm=el('button','btn','Remove');rm.style.cssText='padding:2px 8px;font-size:13px';rm.dataset.tip='Take this unit out of the rack.';rm.onclick=()=>removeSlot(s.id);r1.appendChild(rm);D.appendChild(r1);
+ const PG=9,npg=Math.ceil(u.params.length/PG),pgi=Math.min(s.pg||0,npg-1),kg=el('div','kgrid');const KS=u.params.length>6?40:52;u.params.forEach((pd,i)=>{if(i<pgi*PG||i>=pgi*PG+PG)return;const kc=el('div','kc'),kl=el('div','kl',esc(pd.kl||pd.l)),kv=el('div','kv');const k=Knob(KS,pd,()=>s.p[i],v=>{s.p[i]=v;touch()},{color:u.color,val:kv});kc.appendChild(kl);kc.appendChild(k.h);kc.appendChild(kv);kg.appendChild(kc);regs.detail.push(k)});D.appendChild(kg);
+ if(npg>1){const pr2=el('div','drow'),sg2=el('div','seg');sg2.dataset.tip='This unit has more controls than fit at once. Switch between the pages.';for(let q=0;q<npg;q++){const b=el('button',q===pgi?'on':'','Controls '+(q+1)+' of '+npg);b.onclick=()=>{s.pg=q;renderDetail()};sg2.appendChild(b)}pr2.appendChild(sg2);D.appendChild(pr2)}
+ const cap=el('div','dcap','<span>'+(u.ana?'Estimates (example values)':u.vz==='eq'?'EQ response':u.vz==='wet'?'Output level, last 6 s':'Gain reduction, last 6 s')+'</span><span id="dRead">-</span>');D.appendChild(cap);
+ const v=mkCv(270,u.params.length>6?52:66);v.c.className='dcv';v.c.dataset.tip=u.vz==='eq'?'The EQ curve of this unit. Across: frequency from 20 Hz to 20 kHz. Up: boost or cut, plus or minus 12 dB.':u.vz==='wet'?'The output level of this unit over the last six seconds, in dB. 0 at the top, -40 at the bottom.':'How much this unit turned the signal down over the last six seconds, in dB. 0 at the top, -20 at the bottom.';D.appendChild(v.c);
+ det={v,s,read:$('#dRead')};
+ const r2=el('div','drow'),ph=pr?'Run beside the unit above is on':'';
+ const e=el('button','btn','&#9650; Earlier');e.style.cssText='padding:2px 6px;font-size:13px';e.dataset.tip='Move this row one place earlier in the chain (Alt+Up).';e.disabled=si===0;e.onclick=()=>moveRow(si,-1);
+ const l=el('button','btn','Later &#9660;');l.style.cssText='padding:2px 6px;font-size:13px';l.dataset.tip='Move this row one place later in the chain (Alt+Down).';l.disabled=si===st.stages.length-1;l.onclick=()=>moveRow(si,1);
+ const sg=el('div','seg');const prev=st.stages[si-1];
+ const bS=el('button',pr?'':'on','In series');bS.dataset.tip='In series: the signal goes through this unit on its own row, one after another.';bS.onclick=()=>{if(pr)splitOut(s.id)};
+ const bP=el('button',pr?'on':'','Beside above');const can=pr||(prev&&prev.slots.length===1);bP.disabled=!can;bP.dataset.tip=can?'Beside above: run this unit side by side with the unit above (parallel). You get lane levels and a Dry/Wet.':'Not possible here: there is no single unit above, or it already has a partner.';bP.onclick=()=>{if(!pr)joinAbove(s.id)};
+ sg.appendChild(bS);sg.appendChild(bP);r2.appendChild(e);r2.appendChild(l);r2.appendChild(sg);D.appendChild(r2);
+ const lanes=el('div','lanes');
+ if(pr){const o=g.slots[1-li];[[LANEPD,()=>s.lane,v=>{s.lane=v;touch()}],[Object.assign({},OTHERPD,{l:'Other lane'}),()=>o.lane,v=>{o.lane=v;touch()}],[PAIRMIXPD,()=>g.mix,v=>{g.mix=v;touch();renderStripLabelsOnly()}]].forEach(a=>{const kc=el('div','kc'),kl=el('div','kl',esc(a[0].l)),kv=el('div','kv');kl.style.fontSize='12px';const k=Knob(40,a[0],a[1],a[2],{color:u.color,val:kv});kc.appendChild(kl);kc.appendChild(k.h);kc.appendChild(kv);lanes.appendChild(kc);regs.detail.push(k)});
+  const t=el('div','sect','Parallel pair: lane '+(li?'B':'A')+' with '+UNITS[o.t].name);t.style.cssText='margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';D.appendChild(t)}
+ else{lanes.appendChild(el('p','hintp','Run this unit beside the one above (Beside above) to make a parallel pair. A pair gets a level for each lane and a Dry/Wet.'));lanes.style.alignItems='center'}
+ D.appendChild(lanes);refreshKnobs()}
+function renderStripLabelsOnly(){let i=0;st.stages.forEach(g=>{if(g.slots.length>1){const pm=$$('#strip .stg.pr .pm')[i++];if(pm)pm.textContent='mix '+Math.round(g.mix)+'%'}})}
+
+/* ============ Structure changes ============ */
+function removeSlot(id){const s=findSlot(id),g=stageOf(s),si=st.stages.indexOf(g);g.slots=g.slots.filter(x=>x!==s);if(!g.slots.length)st.stages.splice(si,1);
+ const rest=allSlots();const nx=rest.length?(st.stages[Math.min(si,st.stages.length-1)]||st.stages[0]).slots[0]:null;st.sel=nx?nx.id:0;touch();renderAll()}
+function addUnit(t){if(allSlots().length>=MAXU){toast('The rack is full: 12 units is the most');return}const s=mkSlot(t);st.stages.push({mix:100,slots:[s]});st.sel=s.id;touch();renderAll();toast('Added '+UNITS[t].name)}
+function moveRow(si,d){const j=si+d;if(j<0||j>=st.stages.length)return;const a=st.stages;[a[si],a[j]]=[a[j],a[si]];touch();renderAll()}
+function joinAbove(id){const s=findSlot(id),g=stageOf(s),si=st.stages.indexOf(g),prev=st.stages[si-1];if(!prev||prev.slots.length!==1||g.slots.length!==1)return;prev.slots.push(s);prev.mix=100;st.stages.splice(si,1);s.lane=-6;prev.slots[0].lane=-6;touch();renderAll()}
+function splitOut(id){const s=findSlot(id),g=stageOf(s),si=st.stages.indexOf(g);if(g.slots.length<2)return;g.slots=g.slots.filter(x=>x!==s);st.stages.splice(si+1,0,{mix:100,slots:[s]});touch();renderAll()}
+function moveSlot(id,tgt){const s=findSlot(id),old=stageOf(s);if(!s||tgt.mode==='none')return;
+ const ts=tgt.i!=null?st.stages[tgt.i]:null;
+ if(ts===old&&old.slots.length===1&&tgt.mode!=='end'&&tgt.mode!=='start')return;
+ old.slots=old.slots.filter(x=>x!==s);if(!old.slots.length)st.stages.splice(st.stages.indexOf(old),1);
+ if(tgt.mode==='par'){ts.slots.push(s);ts.mix=100;s.lane=-6;ts.slots[0].lane=-6}
+ else{const ns={mix:100,slots:[s]};let idx;if(tgt.mode==='end')idx=st.stages.length;else if(tgt.mode==='start')idx=0;else idx=st.stages.indexOf(ts)+(tgt.mode==='after'?1:0);st.stages.splice(idx,0,ns)}
+ st.sel=id;touch();renderAll()}
+
+/* ============ Drag and drop ============ */
+let drag=null;
+rowsEl.addEventListener('pointerdown',e=>{const c=e.target.closest('.card');if(!c||e.target.closest('.ctl'))return;drag={id:+c.dataset.id,x:e.clientX,y:e.clientY,on:false,card:c,tgt:null};e.preventDefault()});
+window.addEventListener('pointermove',e=>{if(!drag)return;if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<5)return;drag.on=true;drag.card.classList.add('dragging');const gh=el('div','ghost',UNITS[findSlot(drag.id).t].name);stage.appendChild(gh);drag.gh=gh;drag.ind=el('div','dropline');drag.ind.hidden=true;drag.par=el('div','droppar','');drag.par.hidden=true;rowsEl.appendChild(drag.ind);rowsEl.appendChild(drag.par)}
+ const sr=stage.getBoundingClientRect(),sc=curScale();drag.gh.style.left=((e.clientX-sr.left)/sc+12)+'px';drag.gh.style.top=((e.clientY-sr.top)/sc+8)+'px';
+ drag.tgt=dropTarget(e.clientY);showDrop(drag.tgt);drag.gh.textContent=UNITS[findSlot(drag.id).t].name+(drag.tgt&&drag.tgt.mode==='par'?'  \u00b7  side by side':'')});
+function dropTarget(y){const rs=$$('.rrow',rowsEl);if(!rs.length)return{mode:'end'};const s=findSlot(drag.id),own=stageOf(s);
+ let best=0,bd=1e9;rs.forEach((r,i)=>{const b=r.getBoundingClientRect();const d=y<b.top?b.top-y:y>b.bottom?y-b.bottom:0;if(d<bd){bd=d;best=i}});
+ const b=rs[best].getBoundingClientRect();if(best===rs.length-1&&y>b.bottom+6)return{mode:'end'};if(best===0&&y<b.top-6)return{mode:'start'};
+ const rel=(y-b.top)/b.height,g=st.stages[best],isOwn=g===own;
+ if(rel<.28)return{mode:'before',i:best};if(rel>.72)return{mode:'after',i:best};
+ if(!isOwn&&g.slots.length===1)return{mode:'par',i:best};
+ if(isOwn&&own.slots.length===1)return{mode:'none'};
+ return rel<.5?{mode:'before',i:best}:{mode:'after',i:best}}
+function showDrop(t){const rs=$$('.rrow',rowsEl),rb=rowsEl.getBoundingClientRect(),sc=curScale();drag.ind.hidden=drag.par.hidden=true;if(!t||t.mode==='none')return;
+ if(t.mode==='par'){const b=rs[t.i].getBoundingClientRect();Object.assign(drag.par.style,{left:(b.left-rb.left)/sc+'px',top:(b.top-rb.top)/sc+'px',width:b.width/sc+'px',height:b.height/sc+'px'});drag.par.hidden=false;return}
+ let y;if(t.mode==='end'){const b=rs[rs.length-1].getBoundingClientRect();y=b.bottom+1}else if(t.mode==='start'){y=rs[0].getBoundingClientRect().top-3}else{const b=rs[t.i].getBoundingClientRect();y=t.mode==='before'?b.top-3:b.bottom+1}
+ drag.ind.style.top=(y-rb.top)/sc+'px';drag.ind.hidden=false}
+window.addEventListener('pointerup',()=>{if(!drag)return;const d=drag;drag=null;if(d.on){d.gh.remove();d.ind.remove();d.par.remove();d.card.classList.remove('dragging');if(d.tgt)moveSlot(d.id,d.tgt)}else select(d.id)});
+rowsEl.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('.card');if(!c||e.target!==c)return;const id=+c.dataset.id,s=findSlot(id),si=st.stages.indexOf(stageOf(s));
+ if(e.key==='Enter'||e.key===' '){e.preventDefault();select(id)}
+ else if(e.altKey&&e.key==='ArrowUp'){e.preventDefault();moveRow(si,-1);focusCard(id)}else if(e.altKey&&e.key==='ArrowDown'){e.preventDefault();moveRow(si,1);focusCard(id)}
+ else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const a=allSlots(),i=a.indexOf(s)+(e.key==='ArrowDown'?1:-1);if(a[i]){select(a[i].id);focusCard(a[i].id)}}
+ else if(e.key==='Delete'){e.preventDefault();removeSlot(id)}});
+function focusCard(id){const c=$('.card[data-id="'+id+'"]');if(c)c.focus()}
+
+/* ============ Frame loop ============ */
+let visible=true,last=0;
+function frameLoop(t){requestAnimationFrame(frameLoop);if(!visible||document.hidden){last=t;return}if(settings.power&&t-last<62)return;const dt=clamp((t-last)/1000||.016,.001,.1);last=t;step(dt);draw()}
+function draw(){drawMeters();allSlots().forEach(s=>{const v=views[s.id];if(v)drawMini(v,s)});
+ stripArr.forEach((a,i)=>{const lv=i===0?Math.max(mt.inL,mt.inR):(st.stages[i-1]?st.stages[i-1].outD:-90);a.style.opacity=clamp((lv+70)/60,.2,1)});
+ if(det){const s=det.s,g=det.v.g;det.v.g.clearRect(0,0,det.v.w,det.v.h);
+  const vz=UNITS[s.t].vz;if(vz==='eq'){g.font=FONT9;drawEQ(g,s,26,3,det.v.w-30,det.v.h-16,true);const v=s.eqd;det.read.textContent='level '+(v>=0?'+':'')+v.toFixed(1)+' dB'}
+  else if(UNITS[s.t].ana){drawAna(det.v,s);det.read.textContent='pass-through'}
+  else if(vz==='wet'){drawLev(det.v,s);det.read.textContent=Math.max(-99,s.outD).toFixed(1)+' dB'}
+  else{drawHist(det.v,s);det.read.textContent=(s.act&&!st.bypass?'-':'-')+s.gr.toFixed(1)+' dB'}}}
+new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(frame);
+
+/* ============ Modal, toast, buttons ============ */
+function openModal(title,body,foot,wide){modal.innerHTML='';modal.hidden=false;const d=el('div','dlg');if(wide)d.style.width=wide;const h=el('h2','',esc(title));const x=el('button','btn','Close');x.onclick=closeModal;h.appendChild(x);
+ d.appendChild(h);const b=el('div','dbody');if(typeof body==='string')b.innerHTML=body;else b.appendChild(body);d.appendChild(b);if(foot){const f=el('div','dfoot');foot.forEach(a=>f.appendChild(a));d.appendChild(f)}modal.appendChild(d);return b}
+function closeModal(){modal.hidden=true;modal.innerHTML=''}
+modal.addEventListener('pointerdown',e=>{if(e.target===modal)closeModal()});
+const btn=(t,fn,c)=>{const b=el('button','btn'+(c?' '+c:''),t);b.onclick=fn;return b};
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,1700)}
+
+$('#bBypass').onclick=()=>setBypass(!st.bypass);
+function setBypass(v){st.bypass=v;$('#bBypass').classList.toggle('on',v);$('#bBypass').setAttribute('aria-pressed',v);$('#main').classList.toggle('bypassed',v)}
+$('#bPlay').onclick=()=>setPlay(!playing);
+function setPlay(v){playing=v;$('#bPlay').textContent=v?'Pause':'Play'}
+$('#selSrc').onchange=e=>{srcKind=e.target.value};
+$('#bClear').onclick=()=>{if(!allSlots().length)return;openModal('Clear the rack?','<p>This removes all '+allSlots().length+' units from the rack. You can load a preset again afterwards.</p>',[btn('Cancel',closeModal),btn('Clear',()=>{st.stages=[];st.sel=0;touch();renderAll();closeModal()},'on')],'420px')};
+/* add menu */
+const am=$('#addmenu');
+let abCat='Dynamics',abQ='';
+$('#bAdd').onclick=()=>openAddBrowser();
+function openAddBrowser(){const body=el('div','ab');const q=el('input');q.type='text';q.placeholder='Search units';q.value=abQ;q.setAttribute('aria-label','Search units');q.style.cssText='width:100%';body.appendChild(q);
+ const chips=el('div','chips');chips.style.margin='6px 0';['All'].concat(CATLIST).forEach(c=>{const b=el('button','chip2'+(abCat===c?' on':''),c);b.onclick=()=>{abCat=c;abQ='';q.value='';$$('.chip2',chips).forEach(x=>x.classList.toggle('on',x.textContent===c));draw2()};chips.appendChild(b)});body.appendChild(chips);
+ const head=el('div','sect','');head.style.margin='2px 0 4px';body.appendChild(head);const grid=el('div','agrid');body.appendChild(grid);
+ function draw2(){grid.innerHTML='';const all=Object.keys(UNITS),k=abQ.toLowerCase();const list=all.filter(t=>{const u=UNITS[t];return k?(u.name+' '+u.kind+' '+u.blurb+' '+u.cat).toLowerCase().includes(k):(abCat==='All'||u.cat===abCat)});
+  head.textContent=(k?'Search results':abCat==='All'?'All units':(CATNAME[abCat]||abCat))+' · '+list.length;
+  if(!list.length)grid.appendChild(el('div','',"<span style=\"color:var(--dim)\">Nothing matches. Try another word.</span>"));
+  list.forEach(t=>{const u=UNITS[t],full=allSlots().length>=MAXU;const b=el('button','aitem');b.disabled=full;b.style.setProperty('--uc',u.color);b.innerHTML='<i></i><span class="an"><b>'+esc(u.name)+'</b><em>'+esc(u.src)+'</em></span><span class="ad">'+esc(u.blurb.split('. ')[0].replace(/\.$/,''))+'</span>';b.onclick=()=>{closeModal();addUnit(t)};grid.appendChild(b)})}
+ q.oninput=()=>{abQ=q.value;draw2()};draw2();openModal('Add a unit ('+allSlots().length+' of '+MAXU+' used)',body,null,'760px');q.focus()}
+document.addEventListener('pointerdown',e=>{if(!am.hidden&&!e.target.closest('#addmenu')&&e.target.id!=='bAdd')am.hidden=true});
+
+/* settings, guide, about */
+$('#bSettings').onclick=()=>{const b=openModal('Settings','<label><input type="checkbox" id="sTips"> Info bubbles after hovering for about one second</label><label><input type="checkbox" id="sPow"> Power saving (redraw at 16 frames per second)</label><label>Colour look <select id="sLook"><option value="C">Look C, charcoal and white (default)</option><option value="A">Look A, neon navy</option><option value="B">Look B, purple soda pop</option></select></label><p style="color:var(--dim)">The look is saved with the plugin settings, not with each preset. Wood, cat logo, meter colours and dB scales stay the same in all three.</p><label><button class="btn" id="sReset">Reset window to 100%</button></label>',null);
+ b.querySelector('#sTips').checked=settings.tips;b.querySelector('#sPow').checked=settings.power;b.querySelector('#sLook').value=settings.look;
+ b.querySelector('#sTips').onchange=e=>{settings.tips=e.target.checked;applySettings()};b.querySelector('#sPow').onchange=e=>{settings.power=e.target.checked;applySettings()};
+ b.querySelector('#sLook').onchange=e=>{settings.look=e.target.value;applySettings()};b.querySelector('#sReset').onclick=()=>{setScale(s0);toast('Window reset to 100%')}};
+$('#bGuide').onclick=()=>openModal('Guide',`<p><b>The idea.</b> The rack holds up to 12 units. The signal goes through them from top to bottom, as the strip at the top shows from left to right. Click a unit and its controls appear in the panel on the right, headed Selected unit. The Add unit button opens a browser of every Studio 87 effect, sorted into six groups.</p>
+<p><b>Change the order.</b> Drag a unit by its dotted handle. Drop it on the top or bottom edge of a row to place it before or after. Drop it on the middle of another single unit to run the two side by side.</p>
+<p><b>Side by side (parallel).</b> Two units in one row are added together. Each lane has a level, and the pair has a Dry/Wet. A row holds two units at most. With many units the rows shrink so nothing needs scrolling.</p>
+<p><b>ON, S, M.</b> ON switches a unit on or off. S (solo) lets only the soloed units work so you can hear them alone. M (mute) silences a unit; in a pair only that lane goes quiet.</p>
+<table><tr><td><kbd>Space</kbd></td><td>Start or pause the preview signal</td></tr><tr><td><kbd>B</kbd></td><td>Bypass on or off</td></tr><tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Previous or next preset</td></tr><tr><td><kbd>Up</kbd> / <kbd>Down</kbd></td><td>On a focused unit: select the one above or below</td></tr><tr><td><kbd>Alt+Up</kbd> / <kbd>Alt+Down</kbd></td><td>Move the focused unit's row earlier or later</td></tr><tr><td><kbd>Delete</kbd></td><td>Remove the focused unit</td></tr><tr><td>Knobs</td><td>Drag up or down; Shift for fine; double-click to reset; arrow keys and mouse wheel also work</td></tr></table>`,null);
+$('#bAbout').onclick=()=>openModal('About & Support',`<p><b>CatRack</b> by Studio 87, version 0.1.2 (design mockup). A free and open source rack plugin inspired by classic hardware and written from public manuals. Licence AGPL-3.0-or-later. Collects nothing and never uses the network.</p>
+<p><b>Your presets are saved here:</b><br>Linux <kbd>~/.local/share/Studio 87/CatRack/presets</kbd><br>Windows <kbd>%APPDATA%\\Studio 87\\CatRack\\presets</kbd><br>macOS <kbd>~/Library/Application Support/Studio 87/CatRack/presets</kbd></p>
+<p><b>Install and uninstall:</b> the installer puts the VST3 in the standard folder for your system. The uninstaller removes everything it installed and asks before touching your presets (it keeps them by default).</p>
+<p style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="https://github.com/SpeakingColors/CatRack" target="_blank" rel="noopener">GitHub</a><a class="btn" href="https://github.com/SpeakingColors/CatRack/releases" target="_blank" rel="noopener">Releases</a><a class="btn" href="https://ko-fi.com/studio87" target="_blank" rel="noopener">Ko-fi studio87</a></p><p style="color:var(--dim)">Support is entirely optional. Nothing is locked.</p>`,null);
+
+/* preset bar */
+function listAll(){return allPresets()}
+function stepPreset(d){const a=listAll(),i=a.findIndex(p=>p.name===curName),n=a[(i<0?0:i+d+a.length)%a.length];loadPreset(n)}
+$('#pPrev').onclick=()=>stepPreset(-1);$('#pNext').onclick=()=>stepPreset(1);
+$('#pName').onclick=()=>openBrowser();
+$('#pName').ondblclick=()=>{const p=user.find(u=>u.name===curName);if(!p){toast('Save a copy first, factory presets cannot be renamed');return}openBrowser(true)};
+$('#pSave').onclick=()=>openSave();
+let pbSel=null,pbType='All',pbQ='';
+function chainText(p){const c=p.saved?p.saved.stages.map(g=>({par:g.slots.length>1,names:g.slots.map(o=>UNITS[o.t].name)})):p.chain.map(c=>c.par?{par:true,names:c.par.map(a=>UNITS[a[0]].name)}:{par:false,names:[UNITS[c[0]].name]});return c.map(g=>g.par?'['+g.names.join(' || ')+']':g.names[0]).join('  >  ')}
+function openBrowser(renameMode){const all=listAll();if(!pbSel||!all.some(p=>p.name===pbSel))pbSel=curName;
+ const body=el('div','pb');const lc=el('div','lcol'),rc=el('div','rcol');body.appendChild(lc);body.appendChild(rc);
+ const q=el('input');q.type='text';q.placeholder='Search presets';q.value=pbQ;q.setAttribute('aria-label','Search presets');q.style.width='100%';lc.appendChild(q);
+ const chips=el('div','chips');['All'].concat(TYPES).concat(['Mine']).forEach(t=>{const c=el('button','chip2'+(pbType===t?' on':''),t);c.onclick=()=>{pbType=t;renderList();$$('.chip2',chips).forEach(x=>x.classList.toggle('on',x.textContent===t))};chips.appendChild(c)});lc.appendChild(chips);
+ const list=el('div','list');lc.appendChild(list);
+ function renderList(){list.innerHTML='';const a=listAll().filter(p=>(pbType==='All'||(pbType==='Mine'?!p.factory:p.type===pbType))&&(!pbQ||(p.name+' '+p.type).toLowerCase().includes(pbQ.toLowerCase())));
+  if(!a.length)list.appendChild(el('div','item','<span style="color:var(--dim)">'+(pbType==='Mine'?'No presets of your own yet. Press Save to add one.':'Nothing matches.')+'</span>'));
+  a.forEach(p=>{const it=el('div','item'+(pbSel===p.name?' sel':''),'<span>'+esc(p.name)+'</span><small>'+(p.factory?p.type:'mine · '+p.type)+'</small>');it.onclick=()=>{pbSel=p.name;renderList();renderRight()};it.ondblclick=()=>{loadPreset(p);closeModal()};list.appendChild(it)});
+}
+ q.oninput=()=>{pbQ=q.value;renderList()};
+ function renderRight(rn){rc.innerHTML='';const p=listAll().find(x=>x.name===pbSel);if(!p){rc.innerHTML='<p style="color:var(--dim)">Pick a preset on the left.</p>';return}
+  rc.appendChild(el('h3','',esc(p.name)));rc.appendChild(el('div','',p.factory?'Factory &middot; '+p.type:'Mine &middot; '+p.type));rc.appendChild(el('p','',esc(p.desc||'Your own chain.')));
+  rc.appendChild(el('div','sect','Chain'));rc.appendChild(el('div','chain',esc(chainText(p)).replace(/\|\|/g,'&#8214;')+'<br><span style="font-size:11px">&#8214; means side by side (parallel)</span>'));
+  const row=el('div','chips');row.style.marginTop='auto';row.appendChild(btn('Load',()=>{loadPreset(p);closeModal()},'on'));
+  if(!p.factory){const rnb=btn('Rename',()=>renderRight(true));row.appendChild(rnb);const del=btn('Delete',()=>{del.textContent='Really delete?';del.onclick=()=>{user=user.filter(u=>u.name!==p.name);saveUser();pbSel=curName;renderList();renderRight();toast('Deleted')}});row.appendChild(del)}
+  row.appendChild(btn('Export',()=>openExport(p)));row.appendChild(btn('Import',openImport));
+  if(rn&&!p.factory){const r=el('div','',`<label>New name <input type="text" id="rnN" maxlength="40" value="${esc(p.name)}"></label>`);const ok=btn('OK',()=>{const n=r.querySelector('#rnN').value.trim();if(!n||allPresets().some(x=>x.name.toLowerCase()===n.toLowerCase()&&x!==p)){toast('Pick a name that is not used yet');return}if(curName===p.name)curName=n;p.name=n;pbSel=n;saveUser();updatePName();renderList();renderRight()});r.appendChild(ok);rc.appendChild(r)}
+  rc.appendChild(row)}
+ renderList();renderRight(renameMode);openModal('Preset browser',body,null,'760px')}
+function openExport(p){const data={catrack:1,presets:[p.saved?{name:p.name,type:p.type,desc:p.desc||'',saved:p.saved}:{name:p.name,type:p.type,desc:p.desc,saved:savedFromChain(p)}]};
+ const body=el('div','','<p>Copy this text and keep it as your backup. Import it again later or on another computer.</p><textarea id="exT" readonly></textarea>');body.querySelector('#exT').value=JSON.stringify(data,null,1);
+ openModal('Export',body,[btn('Copy',()=>{const t=body.querySelector('#exT');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Copied'),()=>toast('Press Ctrl+C to copy'))}catch(e){toast('Press Ctrl+C to copy')}}),btn('Back',()=>openBrowser())],'620px')}
+function savedFromChain(p){const stages=buildChain(p.chain);const keep=st.stages;st.stages=stages;const o=serialize();st.stages=keep;o.io=[0,0];return o}
+function openImport(){const body=el('div','','<p>Paste exported preset text here. Unknown settings are ignored and anything invalid is refused.</p><textarea id="imT"></textarea><div id="imW" class="warn"></div>');
+ openModal('Import',body,[btn('Back',()=>openBrowser()),btn('Import',()=>{const w=body.querySelector('#imW');try{const o=JSON.parse(body.querySelector('#imT').value);if(!o||o.catrack!==1||!Array.isArray(o.presets))throw 0;const ok=o.presets.filter(validPreset);if(!ok.length||ok.length!==o.presets.length)throw 0;
+  ok.forEach(x=>{const n={name:x.name,type:TYPES.includes(x.type)?x.type:'Other',desc:String(x.desc||'').slice(0,200),saved:x.saved};while(allPresets().some(f=>f.name.toLowerCase()===n.name.toLowerCase()))n.name+=' (imported)';user.push(n)});saveUser();toast('Imported '+ok.length+' preset'+(ok.length>1?'s':''));openBrowser()}catch(e){w.textContent='That text is not a valid CatRack preset export.'}},'on')],'620px')}
+function openSave(){const cur=allPresets().find(p=>p.name===curName);
+ const body=el('div','',`<label>Name <input type="text" id="svN" maxlength="40" style="flex:1" value="${esc(cur&&cur.factory?'My '+curName:curName)}"></label><label>Type <select id="svT">${TYPES.map(t=>'<option'+((cur&&cur.type===t)?' selected':'')+'>'+t+'</option>').join('')}</select></label><p style="color:var(--dim)">Saves the whole chain: units, order, routing and every knob. Factory presets are never changed; saving makes your own copy.</p><div id="svW" class="warn"></div>`);
+ const foot=[btn('Cancel',closeModal)];
+ const doSave=(name,replace)=>{const type=body.querySelector('#svT').value,p={name,type,desc:'Your own chain.',saved:serialize()};if(replace)user=user.filter(u=>u.name!==name);user.push(p);saveUser();curName=name;dirty=false;updatePName();closeModal();toast('Saved '+name)};
+ const sv=btn('Save',()=>{const w=body.querySelector('#svW');const name=body.querySelector('#svN').value.trim();if(!name){w.textContent='Type a name first.';return}
+  const f=FACTORY.find(p=>p.name.toLowerCase()===name.toLowerCase());if(f){w.textContent='"'+f.name+'" is a factory name. Pick another name; factory presets stay as they are.';return}
+  const ex=user.find(u=>u.name.toLowerCase()===name.toLowerCase());
+  if(ex){w.innerHTML='A preset called "'+esc(ex.name)+'" already exists. What now?';const fo=$('.dfoot',modal);fo.innerHTML='';fo.appendChild(btn('Cancel',closeModal));fo.appendChild(btn('Save as new',()=>{let n=name,i=2;while(allPresets().some(p=>p.name.toLowerCase()===n.toLowerCase()))n=name+' '+(i++);doSave(n,false)}));fo.appendChild(btn('Overwrite',()=>doSave(ex.name,true),'on'));return}
+  doSave(name,false)},'on');foot.push(sv);openModal('Save preset',body,foot,'520px');body.querySelector('#svN').select()}
+
+/* ============ Tooltips ============ */
+let tipT=null,tipEl=$('#tip');
+stage.addEventListener('pointerover',e=>{const t=e.target.closest('[data-tip]');clearTimeout(tipT);tipEl.hidden=true;if(!t||!settings.tips||!t.dataset.tip||drag&&drag.on)return;
+ tipT=setTimeout(()=>{const r=t.getBoundingClientRect(),sr=stage.getBoundingClientRect(),sc=curScale();tipEl.textContent=t.dataset.tip;tipEl.hidden=false;
+  let x=(r.left-sr.left)/sc,y=(r.bottom-sr.top)/sc+6;const tw=tipEl.offsetWidth;x=Math.max(60,Math.min(1200-tw-60,x));if(y+tipEl.offsetHeight>636)y=(r.top-sr.top)/sc-tipEl.offsetHeight-6;tipEl.style.left=x+'px';tipEl.style.top=y+'px'},1000)});
+stage.addEventListener('pointerout',e=>{if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('[data-tip]')){clearTimeout(tipT);tipEl.hidden=true}});
+stage.addEventListener('pointerdown',()=>{clearTimeout(tipT);tipEl.hidden=true});
+
+/* ============ Scaling and resize handles ============ */
+const W0=1200,H0=640;let s0=1,sc=1;
+function avail(){return Math.max(160,(app.clientWidth||window.innerWidth-32))}
+function curScale(){return sc}
+function setScale(s){const mx=Math.min(1.5*s0,avail()/W0*1.0);sc=Math.max(.4*s0,Math.min(Math.max(mx,s0),s));
+ frame.style.width=W0*sc+'px';frame.style.height=H0*sc+'px';stage.style.transform='scale('+sc+')';$('#zPct').textContent=Math.round(sc/s0*100)+'%';$('#winsz').textContent=Math.round(W0*sc)+' × '+Math.round(H0*sc)+' px'}
+function fit(){s0=Math.min(1,avail()/W0);return s0}
+window.addEventListener('resize',()=>{const r=sc/s0;fit();setScale(s0*r)});
+fit();setScale(s0);
+$$('.rh').forEach(h=>{let d=null;h.addEventListener('pointerdown',e=>{h.setPointerCapture(e.pointerId);d={x:e.clientX,y:e.clientY,s:sc};e.preventDefault()});
+ h.addEventListener('pointermove',e=>{if(!d)return;const k=h.dataset.h,dx=e.clientX-d.x,dy=e.clientY-d.y;
+  const ex=k.includes('e')?dx*2:k.includes('w')?-dx*2:0,ey=k.includes('s')?dy*2:k.includes('n')?-dy*2:0;
+  const rx=ex/(W0*d.s),ry=ey/(H0*d.s);setScale(d.s*(1+(Math.abs(rx)>Math.abs(ry)?rx:ry)))});
+ h.addEventListener('pointerup',()=>d=null);h.addEventListener('pointercancel',()=>d=null)});
+$('#zMinus').onclick=()=>setScale(sc*.9);$('#zPlus').onclick=()=>setScale(sc*1.1);$('#zPct').onclick=()=>setScale(s0);
+$$('.cheek').forEach(c=>c.addEventListener('dblclick',()=>{setScale(s0);toast('Window reset to 100%')}));
+
+/* ============ Keyboard ============ */
+document.addEventListener('keydown',e=>{if(!modal.hidden){if(e.key==='Escape')closeModal();return}if(e.key==='Escape'){am.hidden=true}const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'||t.classList&&t.classList.contains('knob')||t.classList&&t.classList.contains('card')))return;
+ if(e.key===' '&&t.tagName!=='BUTTON'){e.preventDefault();setPlay(!playing)}
+ else if(e.key==='b'||e.key==='B'){setBypass(!st.bypass)}
+ else if(e.key==='['){stepPreset(-1)}else if(e.key===']'){stepPreset(1)}});
+
+/* ============ Start ============ */
+loadPreset(FACTORY[0],true);
+requestAnimationFrame(frameLoop);
+window.__cr={st,UNITS,FACTORY,loadPreset,renderAll,setScale,mt,get sc(){return sc},get s0(){return s0},moveSlot,openBrowser,allSlots,setPlay,step,draw};
+})();
+</script>
